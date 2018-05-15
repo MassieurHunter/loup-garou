@@ -1,5 +1,5 @@
 				<footer>
-					By Nissa Hunter, 2014
+					By Massieur Hunter, 2014
 				</footer>
 			</div>
 		</div>

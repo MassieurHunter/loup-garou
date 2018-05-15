@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Extension of CI_Loader wich give us the possibility to use params in models constructors
  *
- * @author Nissa Hunter <nissa@eapc2.com>
+ * @author Massieur Hunter
  */
 class MY_Loader extends CI_Loader
 {
