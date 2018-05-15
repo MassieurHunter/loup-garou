@@ -1,0 +1,15 @@
+{
+  "name": "loup-garou",
+  "description": "Play Loup Garou with members of the e-penser discord",
+  "main": "index.js",
+  "authors": [
+    "Mâssieur Hunter"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "public/bower_components"
+  ],
+  "license": "ISC",
+  "homepage": ""
+}

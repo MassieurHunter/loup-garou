@@ -1,0 +1,14 @@
+{
+  "name": "loup-garou",
+  "version": "1.0.0",
+  "description": "Play Loup Garou with members of the e-penser discord",
+  "main": "index.js",
+  "author": "Mâssieur Hunter",
+  "license": "ISC",
+  "scripts": {
+    "bower": "bower"
+  },
+  "dependencies": {
+    "bower": "^1.8.4"
+  }
+}
