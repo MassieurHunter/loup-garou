@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * @link https://github.com/avenirer/CodeIgniter-MY_Model documentation
  *
- * Heavily modified by Nissa Hunter <nissa@eapc2.com>
+ * Heavily modified by Mâssieur Hunter
  *
  * */
 class MY_Model extends CI_Model

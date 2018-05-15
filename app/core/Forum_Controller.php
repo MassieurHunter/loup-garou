@@ -8,7 +8,7 @@
  * @property boolean $touchInterface is the user with a touch interface device
  * @property \Forum_model $oForum
  *
- * @author Nissa Hunter <nissa@eapc2.com>
+ * @author Massieur Hunter
  */
 class Forum_Controller extends MY_Controller
 {

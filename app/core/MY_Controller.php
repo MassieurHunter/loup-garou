@@ -3,12 +3,10 @@
 /**
  * Extension OF CI_Controller
  *
- * @author Nissa Hunter <nissa@eapc2.com>
+ * @author Massieur Hunter
  * @property \Template $template Template engine
  * @property \CI_Input $input
- * @property \DOMPDF $dompdf DomPDF instance
- * @property \User_model $oCurrentUser Current User of the website
- * @property \CI_Email $email Email library
+ * @property \Player_model $oCurrentPlayer
  * @property \CI_Session $session Session library
  */
 class MY_Controller extends CI_Controller
@@ -78,7 +76,6 @@ class MY_Controller extends CI_Controller
                 'url',
                 'string',
                 'cookie',
-                'tools_helper',
                 'text',
                 'array',
                 'date',
@@ -89,7 +86,7 @@ class MY_Controller extends CI_Controller
          * Get al the availables languages
          */
 
-        $this->initCurrentUser();
+        $this->initCurrentPlayer();
 
         $this->template->setVar('svgPath', URL_SVG);
     }
@@ -97,8 +94,8 @@ class MY_Controller extends CI_Controller
     /**
      * Init the user and set the lang from his preferences
      */
-    public function initCurrentUser() {
-        $this->load->model('user/user_model', 'oCurrentUser');
+    public function initCurrentPlayer() {
+        $this->load->model('user/user_model', 'oCurrentPlayer');
         /*
          * We check for the id cookie
          * If it's there we set the id session
@@ -106,50 +103,11 @@ class MY_Controller extends CI_Controller
         if ($this->input->cookie('id')) {
             $this->session->set_userdata('id', $this->input->cookie('id'));
         }
-        /*
-                 * We check for the auto_login cookie
-                 * If it's there we set the auto_login session
-                 */
-        if ($this->input->cookie('auto_login')) {
-            $this->session->set_userdata('auto_login', $this->input->cookie('auto_login'));
-        }
 
-        /*
-         * We check for the id session
-         * If we have one we try to set the user
-         */
+
         if ($this->session->has_userdata('id')) {
-            /*
-             * We load a user model
-             */
-
-            /*
-             * if the ws_auth is correct we set the correct language from user's infos
-             */
-            if ($this->oCurrentUser->wsAuthLogin()) {
-                $this->langText = $this->oCurrentUser->getLanguage();
-                /*
-                 * We set the language cookie there
-                 */
-                $cookieLang = [
-                    'name'   => 'language',
-                    'value'  => $this->getLangText(),
-                    'expire' => strtotime('+1 year'),
-                    'domain' => BASE_URL_WITHOUT_HTTP,
-                    'path'   => '/',
-                ];
-
-                $this->input->set_cookie($cookieLang);
-                $this->session->set_userdata('language', $this->getLangText());
-                /*
-                 * if the ws_auth is incorrect we unset the user
-                 */
-            }
-        }
-
-        if (!$this->oCurrentUser->getID() && $this->input->cookie('v2_cookie')) {
-            $this->load->helper('cookie');
-            delete_cookie("v2_cookie");
+            $playerUid = $this->session->get_userdata('id');
+            $this->oCurrentPlayer->init($playerUid);
         }
     }
 
@@ -165,12 +123,9 @@ class MY_Controller extends CI_Controller
     }
 
     public function isUserLoggedIn() {
-        return $this->oCurrentUser->getID() > 0;
+        return $this->oCurrentPlayer->getID() > 0;
     }
 
-    public function updateWhoIsOnline() {
-        $this->oWebsite->updateWhoIsOnline();
-    }
 
     /**
      * Return execustion time from contruction of the controller

@@ -29,19 +29,15 @@ class Role_model extends MY_Model
     /**
      * @var bool
      */
-    protected $isLoup;
+    protected $loup;
     /**
      * @var bool
      */
-    protected $isTanneur;
+    protected $tanneur;
     /**
      * @var bool
      */
-    protected $isVillageois;
-    /**
-     * @var bool
-     */
-    protected $hasAction;
+    protected $villageois;
 
     /**
      * @return int
@@ -111,15 +107,15 @@ class Role_model extends MY_Model
      * @return bool
      */
     public function isLoup() {
-        return $this->isLoup;
+        return $this->loup;
     }
 
     /**
-     * @param bool $isLoup
+     * @param bool $loup
      * @return Role_model
      */
-    public function setIsLoup($isLoup) {
-        $this->isLoup = $isLoup;
+    public function setLoup($loup) {
+        $this->loup = $loup;
         return $this;
     }
 
@@ -127,15 +123,15 @@ class Role_model extends MY_Model
      * @return bool
      */
     public function isTanneur() {
-        return $this->isTanneur;
+        return $this->tanneur;
     }
 
     /**
-     * @param bool $isTanneur
+     * @param bool $tanneur
      * @return Role_model
      */
-    public function setIsTanneur($isTanneur) {
-        $this->isTanneur = $isTanneur;
+    public function setTanneur($tanneur) {
+        $this->tanneur = $tanneur;
         return $this;
     }
 
@@ -143,33 +139,20 @@ class Role_model extends MY_Model
      * @return bool
      */
     public function isVillageois() {
-        return $this->isVillageois;
+        return $this->villageois;
     }
 
     /**
-     * @param bool $isVillageois
+     * @param bool $villageois
      * @return Role_model
      */
-    public function setIsVillageois($isVillageois) {
-        $this->isVillageois = $isVillageois;
+    public function setVillageois($villageois) {
+        $this->villageois = $villageois;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isHasAction() {
-        return $this->hasAction;
-    }
 
-    /**
-     * @param bool $hasAction
-     * @return Role_model
-     */
-    public function setHasAction($hasAction) {
-        $this->hasAction = $hasAction;
-        return $this;
-    }
+
 
 
 
