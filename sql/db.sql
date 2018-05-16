@@ -16,6 +16,7 @@ CREATE TABLE `games_players` (
 CREATE TABLE `players` (
   `playerUid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`playerUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -36,7 +37,7 @@ CREATE TABLE `players_game_roles` (
 CREATE TABLE `roles` (
   `roleUid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `model` varchar(45) DEFAULT NULL,
   `nb` tinyint(1) DEFAULT '1',
   `loup` tinyint(1) DEFAULT NULL,
@@ -59,15 +60,6 @@ INSERT INTO `roles` VALUES
   (9,'Sbire','Pendant la nuit, l’identité des loups lui est révélé. S’il meurt lors du vote et qu’aucun loup n’est tué, lui et les loups gagnent la partie. Si les loups ne sont pas joués, il ne gagne que si un autre joueur est tué.','sbire',1,1,0,0, 70, 20),
   (10,'Chasseur','S’il meurt lors du vote, la personne contre qui il a voté meurt aussi.','chasseur',1,0,0,1, 90, 999),
   (11,'Franc Maçon','Pendant la nuit, il va prendre connaissance de l’identité de son semblable.','francmac',2,0,0,1, 100, 30);
-
-CREATE TABLE `players_game_roles` (
-  `playersRoleUid` INT NOT NULL,
-  `playerUid` INT NULL,
-  `gameUid` INT NULL,
-  `roleUid` INT NULL,
-  `order` INT NULL,
-  PRIMARY KEY (`playersRoleUid`));
-
 
 CREATE TABLE `votes` (
   `voteUid` int(11) NOT NULL AUTO_INCREMENT,

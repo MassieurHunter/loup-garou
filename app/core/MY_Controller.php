@@ -117,17 +117,23 @@ class MY_Controller extends CI_Controller
     public function initCurrentPlayer() {
         $this->load->model('player_model', 'oCurrentPlayer');
         /*
-         * We check for the id cookie
-         * If it's there we set the id session
+         * We check for the ws_auth cookie
+         * If it's there we set the ws_auth session
          */
-        if ($this->input->cookie('playerUid')) {
-            $this->session->set_userdata('playerUid', $this->input->cookie('playerUid'));
+        if ($this->input->cookie('ws_auth')) {
+            $this->session->set_userdata('ws_auth', $this->input->cookie('ws_auth'));
         }
 
+        /*
+         * We check for the ws_auth session
+         * If we have one we try to set the user
+         */
+        if ($this->session->has_userdata('ws_auth')) {
 
-        if ($this->session->has_userdata('playerUid')) {
-            $playerUid = $this->session->get_userdata('playerUid');
-            $this->oCurrentPlayer->init($playerUid);
+            /*
+             * if the ws_auth is correct we set the correct language from user's infos
+             */
+            $this->oCurrentPlayer->wsAuthLogin();
         }
     }
 

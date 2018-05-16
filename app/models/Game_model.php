@@ -60,6 +60,15 @@ class Game_model extends MY_Model
     }
 
     /**
+     * @return $this
+     */
+    public function generateCode(){
+        $newCode = random_string();
+        $this->setCode($newCode);
+        return $this;
+    }
+
+    /**
      * @param $code
      */
     public function initByCode($code) {
@@ -138,7 +147,7 @@ class Game_model extends MY_Model
 
 
         if ($arrRoles[$nbPlayers - 1]->getModel() === 'francmac' && $arrRoles[$nbPlayers - 2]->getModel() !== 'francmac') {
-            unset($arrRoles[$nbPlayers - 1]);
+            unset($arrRoles[$nbPlayers - 2]);
         }
 
         return array_splice($arrRoles, 0, $nbPlayers);

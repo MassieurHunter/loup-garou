@@ -3,7 +3,7 @@
 
 /**
  *
- *
+ * @property \Player_model $_oTestPlayer
  * @property \Role_model $_roleModel
  * @property \Vote_model $newVote
  *
@@ -78,16 +78,103 @@ class Player_model extends MY_Model
      * @param string $password
      * @return Player_model
      */
-    public function setPassword($password) {
+    public function setPassword(string $password) {
         $this->password = $password;
         return $this;
+    }
+
+    /**
+     * Generate and return a key to autolog on the website
+     *
+     * @return string
+     */
+    public function getAutoLoginHash() {
+        return sha1(
+            $this->getPlayerUid()
+            . ' toi pas changer assiette pour fromage'
+            . $this->getName()
+            . 'la fleur en bouquet fanne... et jamais de renait !'
+        );
+    }
+
+
+    /**
+     * Login with ws_auth cookie or session
+     *
+     * @return boolean
+     */
+    public function wsAuthLogin()
+    {
+        $this->load->model('player/player_model', '_oTestPlayer');
+        $wsAuth = $this->session->playerdata('ws_auth');
+        $splitedAuth = explode(':', $wsAuth);
+        $ok = false;
+        /*
+         * We test if the cookie is valid
+         */
+        if (count($splitedAuth) == 2) {
+            $playerUid = $splitedAuth[0];
+            $hashedPassword = $splitedAuth[1];
+            /*
+             * we test if the two inputs aren't empty
+             */
+            if ($playerUid && $hashedPassword) {
+                /*
+                 * We init the player's infos from his playerId
+                 */
+                $this->_oTestPlayer->init($playerUid);
+
+                /*
+                 * We test the email to see if the init succeded
+                 */
+                if ($this->_oTestPlayer->getName()) {
+                    /*
+                     * We test the hashed password
+                     */
+                    if ($this->_oTestPlayer->testPassword($hashedPassword, true)) {
+                        $ok = true;
+                        $this->init($playerUid);
+                    }
+                }//end test email for init
+            }//end inputs
+        } //end valid cookie
+
+        return $ok;
+    }
+
+    /**
+     * Test the password for the user
+     *
+     * @param string $password
+     * @param boolean $hashed set to true if you want to test a hash
+     * @return boolean
+     */
+    public function testPassword($password, $hashed = false) {
+        $hash = $hashed ? $password : $this->hashPassword($password);
+        return $hash == $this->getPassword();
+    }
+
+    /**
+     * Return the hashed version of the inputed password
+     *
+     * @param string $password
+     * @return string
+     */
+    public function hashPassword($password) {
+        $pass	 = sha1(stripslashes($password));
+
+        $hashedPassword = password_hash($pass, PASSWORD_BCRYPT, array(
+            "salt"	 => "le mot de passe c'est trois",
+            "cost"	 => 12));  // Cost : If we use a higher cost, the algorithm will use more time. (Against Brute Force)
+
+        return $hashedPassword;
     }
 
     /**
      * @param int $gameUid
      * @param Role_model $newRole
      */
-    public function addNewRole($gameUid, $newRole) {
+    public function addNewRole(int $gameUid, Role_model $newRole) {
 
         $arrRoleModels = $this->getArrRoleModel($gameUid);
 
@@ -111,7 +198,7 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return Role_model[]
      */
-    public function getArrRoleModel($gameUid) {
+    public function getArrRoleModel(int $gameUid) {
         if (!isset($this->arrRoleModel[$gameUid]) || empty($this->arrRoleModel[$gameUid])) {
             $this->initRoles($gameUid);
         }
@@ -122,7 +209,7 @@ class Player_model extends MY_Model
     /**
      * @param int $gameUid
      */
-    public function initRoles($gameUid) {
+    public function initRoles(int $gameUid) {
 
         $this->arrRoleModel[$gameUid] = [];
         $this->load->model('Roles/role_model', '_roleModel');
@@ -158,7 +245,7 @@ class Player_model extends MY_Model
      * @param int $playerUid
      * @return Player_model
      */
-    public function setPlayerUid($playerUid) {
+    public function setPlayerUid(int $playerUid) {
         $this->playerUid = $playerUid;
         return $this;
     }
@@ -167,7 +254,7 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return Role_model
      */
-    public function getCurrentRoleModel($gameUid) {
+    public function getCurrentRoleModel(int $gameUid) {
         $arrRoleModel = $this->getArrRoleModel($gameUid);
 
         return end($arrRoleModel);
@@ -177,7 +264,7 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return string
      */
-    public function getOriginalRoleName($gameUid) {
+    public function getOriginalRoleName(int $gameUid) {
 
         return $this->getOriginalRoleModel($gameUid)->getName();
 
@@ -187,7 +274,7 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return Role_model
      */
-    public function getOriginalRoleModel($gameUid) {
+    public function getOriginalRoleModel(int $gameUid) {
         $arrRoleModel = $this->getArrRoleModel($gameUid);
 
         return $arrRoleModel[0];
@@ -196,7 +283,7 @@ class Player_model extends MY_Model
     /**
      * @param int $gameUid
      */
-    public function executeOriginalRoleAction($gameUid) {
+    public function executeOriginalRoleAction(int $gameUid) {
 
         $this->getOriginalRoleModel($gameUid)->action();
 
@@ -206,7 +293,7 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return string
      */
-    public function getCurrentRoleName($gameUid) {
+    public function getCurrentRoleName(int $gameUid) {
 
         return $this->getCurrentRoleModel($gameUid)->getName();
 
@@ -218,7 +305,7 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @param int $targetUid
      */
-    public function vote($gameUid, $targetUid) {
+    public function vote(int $gameUid, int $targetUid) {
 
         $this->load->model('vote_model', 'newVote');
         $this->newVote
@@ -232,7 +319,7 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @param mixed ...$arguments
      */
-    public function roleAction($gameUid, ...$arguments) {
+    public function roleAction(int $gameUid, ...$arguments) {
         return $this->getOriginalRoleModel($gameUid)->action(...$arguments);
     }
 
@@ -241,7 +328,7 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @param mixed ...$arguments
      */
-    public function roleSecondAction($gameUid, ...$arguments) {
+    public function roleSecondAction(int $gameUid, ...$arguments) {
         return $this->getOriginalRoleModel($gameUid)->secondAction(...$arguments);
     }
 
