@@ -3,3 +3,6 @@ nbproject/
 .DS_Store
 node_modules/
 public/bower_components/
+app/views/cache/*
+!app/views/cache/index.html
+!app/views/cache/.htaccess

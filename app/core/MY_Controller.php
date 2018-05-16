@@ -6,6 +6,7 @@
  * @author Massieur Hunter
  * @property \Template $template Template engine
  * @property \CI_Input $input
+ * @property \Game_model $oCurrentGame
  * @property \Player_model $oCurrentPlayer
  * @property \CI_Session $session Session library
  */
@@ -68,7 +69,6 @@ class MY_Controller extends CI_Controller
         $this->microtime = microtime(true);
         parent::__construct();
         $this->load->library('template');
-        $this->load->library('dompdf');
         $this->load->library('session');
         $this->load->helper(
             [
@@ -87,26 +87,46 @@ class MY_Controller extends CI_Controller
          */
 
         $this->initCurrentPlayer();
+        $this->initCurrentGame();
 
-        $this->template->setVar('svgPath', URL_SVG);
+    }
+
+    /**
+     * Init the user and set the lang from his preferences
+     */
+    public function initCurrentGame() {
+        $this->load->model('game_model', 'oCurrentGame');
+        /*
+         * We check for the id cookie
+         * If it's there we set the id session
+         */
+        if ($this->input->cookie('gameCode')) {
+            $this->session->set_userdata('gameCode', $this->input->cookie('gameCode'));
+        }
+
+
+        if ($this->session->has_userdata('gameCode')) {
+            $gameCode = $this->session->get_userdata('gameCode');
+            $this->oCurrentGame->initByCode($gameCode);
+        }
     }
 
     /**
      * Init the user and set the lang from his preferences
      */
     public function initCurrentPlayer() {
-        $this->load->model('user/user_model', 'oCurrentPlayer');
+        $this->load->model('player_model', 'oCurrentPlayer');
         /*
          * We check for the id cookie
          * If it's there we set the id session
          */
-        if ($this->input->cookie('id')) {
-            $this->session->set_userdata('id', $this->input->cookie('id'));
+        if ($this->input->cookie('playerUid')) {
+            $this->session->set_userdata('playerUid', $this->input->cookie('playerUid'));
         }
 
 
-        if ($this->session->has_userdata('id')) {
-            $playerUid = $this->session->get_userdata('id');
+        if ($this->session->has_userdata('playerUid')) {
+            $playerUid = $this->session->get_userdata('playerUid');
             $this->oCurrentPlayer->init($playerUid);
         }
     }
@@ -120,10 +140,6 @@ class MY_Controller extends CI_Controller
     public function addUrlParam($param, $value) {
         $this->arrUrlParams[$param] = $value;
         return $this;
-    }
-
-    public function isUserLoggedIn() {
-        return $this->oCurrentPlayer->getID() > 0;
     }
 
 

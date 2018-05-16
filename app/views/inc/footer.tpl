@@ -1,3 +1,6 @@
-        <div class="footer"></div>
+        <footer>
+            By Massieur Hunter, 2018
+        </footer>
+
     </body>
 </html>

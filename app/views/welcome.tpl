@@ -1,7 +1,1 @@
-				<footer>
-					By Massieur Hunter, 2014
-				</footer>
-			</div>
-		</div>
-	</body>
-</html>
+<h1>Loup Garou</h1>

@@ -25,7 +25,11 @@ class Role_model extends MY_Model
     /**
      * @var string
      */
-    protected $class;
+    protected $model;
+    /**
+     * @var int
+     */
+    protected $nb;
     /**
      * @var bool
      */
@@ -38,6 +42,11 @@ class Role_model extends MY_Model
      * @var bool
      */
     protected $villageois;
+
+    /**
+     * @var Role_model
+     */
+    public $subModel;
 
     /**
      * @return int
@@ -90,17 +99,35 @@ class Role_model extends MY_Model
     /**
      * @return string
      */
-    public function getClass() {
-        return $this->class;
+    public function getModel()
+    {
+        return $this->model;
     }
 
     /**
-     * @param string $class
+     * @param string $model
      * @return Role_model
      */
-    public function setClass($class) {
-        $this->class = $class;
+    public function setModel($model)
+    {
+        $this->model = $model;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNb()
+    {
+        return $this->nb;
+    }
+
+    /**
+     * @param int $nb
+     */
+    public function setNb($nb)
+    {
+        $this->nb = $nb;
     }
 
     /**
@@ -151,7 +178,30 @@ class Role_model extends MY_Model
         return $this;
     }
 
+    /**
+     * @return Role_model
+     */
+    public function getSubmodel()
+    {
 
+        if (empty($this->subModel)) {
+
+            $this->load->model('Roles/' . $this->getModel() . '_model', 'subModel');
+
+        }
+
+        return $this->subModel;
+
+    }
+
+    public function action()
+    {
+    }
+
+
+    public function secondAction()
+    {
+    }
 
 
 

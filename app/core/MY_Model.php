@@ -86,7 +86,7 @@ class MY_Model extends CI_Model
 	 *        'pivot_local_key'=>'', this is the related key in the pivot table to the local key
 	 *      'pivot_foreign_key'=>'', the same as above, but for foreign table's keys
 	 *      'foreign_key'=>'',
-	 *        'type' => '', type of JOIN (LEFT,RIGHT)v
+	 *        'type' => '', type of JOIN (LEFT,RIGHT)
 	 * )
 	 *
 	 * @var array
@@ -124,7 +124,6 @@ class MY_Model extends CI_Model
 		$this->microtime = microtime(true);
 		parent::__construct();
 		$this->load->library('session');
-		$this->load->library('date');
 		$this->load->helper(
 			[
 				'string',
