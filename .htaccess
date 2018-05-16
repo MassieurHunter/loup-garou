@@ -1,0 +1,13 @@
+DirectoryIndex index.php index.html
+Options +FollowSymLinks
+RewriteEngine on
+RewriteBase /
+
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php\ HTTP/
+RewriteRule ^index\.php$ http://%{HTTP_HOST}/ [R=301,L,NC]
+
+
+##############################
+### CSS / JS / IMG / FONTS ###
+##############################
+RewriteRule ^(img|css|js|fonts|bower_components|dist|videos)/([a-zA-Z0-9_/%-\.]+)$ www/$1/$2 [QSA,L]
