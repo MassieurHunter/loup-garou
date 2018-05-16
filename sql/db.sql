@@ -40,7 +40,18 @@ CREATE TABLE `roles` (
   PRIMARY KEY (`roleUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `roles` VALUES (1,'Loup',NULL,'loup',2,1,0,0),(2,'Voleur',NULL,'voleur',1,0,0,1),(3,'Noiseuse',NULL,'noiseuse',1,0,0,1),(4,'Tanneur',NULL,'tanneur',1,0,1,0),(5,'Soulard',NULL,'soulard',1,0,0,1),(6,'Insomniaque',NULL,'insomniaque',1,0,0,1),(7,'Voyante',NULL,'voyante',1,0,0,1),(8,'Doppelganger',NULL,'doppelganger',1,0,0,1),(9,'Sbire',NULL,'sbire',1,1,0,0),(10,'Chasseur',NULL,'chasseur',1,0,0,1),(11,'Franc Maçon',NULL,'francmac',2,0,0,1);
+INSERT INTO `roles` VALUES 
+  (1,'Loup','Pendant la nuit, il va prendre connaissance de l’identité de son semblable. Si un loup est seul dans la partie, il a le droit de regarder un des rôles centraux.','loup',2,1,0,0),
+  (2,'Voleur','Pendant la nuit, il va pouvoir choisir une cible avec laquelle il échangera de rôle et prendra connaissance de son nouveau rôle.','voleur',1,0,0,1),
+  (3,'Noiseuse','Pendant la nuit, elle va pouvoir désigner deux personnes (elle peut se choisir elle-même) qui vont échanger de rôle. Elle ne prend pas connaissance des rôles échangés.','noiseuse',1,0,0,1),
+  (4,'Tanneur','Il ne fait pas partie de l’équipe des villageois et ne gagne que s’il meurt lors du vote.','tanneur',1,0,1,0),
+  (5,'Soulard','Pendant la nuit, il va échanger son rôle avec l’un des rôles centraux sans en prendre connaissance.','soulard',1,0,0,1),
+  (6,'Insomniaque','A la fin de la nuit, il va prendre connaissance de son rôle final.','insomniaque',1,0,0,1),
+  (7,'Voyante','Pendant la nuit, elle va pouvoir soit regarder le rôle d’un joueur, soit regarder 2 des 3 rôles centraux.','voyante',1,0,0,1),
+  (8,'Doppelganger','Pendant la nuit, elle va copier le rôle et rejoindre l’équipe d’un autre joueur.','doppelganger',1,0,0,1),
+  (9,'Sbire','Pendant la nuit, l’identité des loups lui est révélé. S’il meurt lors du vote et qu’aucun loup n’est tué, lui et les loups gagnent la partie. Si les loups ne sont pas joués, il ne gagne que si un autre joueur est tué.','sbire',1,1,0,0),
+  (10,'Chasseur','S’il meurt lors du vote, la personne contre qui il a voté meurt aussi.','chasseur',1,0,0,1),
+  (11,'Franc Maçon','Pendant la nuit, il va prendre connaissance de l’identité de son semblable.','francmac',2,0,0,1);
 
 CREATE TABLE `players_game_roles` (
   `playersRoleUid` INT NOT NULL,
