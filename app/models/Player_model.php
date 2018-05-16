@@ -36,61 +36,25 @@ class Player_model extends MY_Model
     protected $playerUid;
 
     /**
-     * @var int
-     */
-    protected $gameUid;
-
-    /**
      * @var string
      */
     protected $name;
 
-    /**
-     * @var Role_model[]
-     */
-    protected $arrRoleModel;
 
     /**
-     * @return int
+     * @var string
      */
-    public function getPlayerUid()
-    {
-        return $this->playerUid;
-    }
+    protected $password;
 
     /**
-     * @param int $playerUid
-     * @return Player_model
+     * @var array
      */
-    public function setPlayerUid($playerUid)
-    {
-        $this->playerUid = $playerUid;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getGameUid()
-    {
-        return $this->gameUid;
-    }
-
-    /**
-     * @param int $gameUid
-     * @return Player_model
-     */
-    public function setGameUid($gameUid)
-    {
-        $this->gameUid = $gameUid;
-        return $this;
-    }
+    protected $arrRoleModel = [];
 
     /**
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -98,27 +62,75 @@ class Player_model extends MY_Model
      * @param string $name
      * @return Player_model
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getPassword() {
+        return $this->password;
+    }
 
-    public function initRoles()
-    {
-        $CI = get_instance();
+    /**
+     * @param string $password
+     * @return Player_model
+     */
+    public function setPassword($password) {
+        $this->password = $password;
+        return $this;
+    }
 
-        /** @var Game_model $oGame */
-        $oGame = $CI->oCurrentGame;
+    /**
+     * @param int $gameUid
+     * @param Role_model $newRole
+     */
+    public function addNewRole($gameUid, $newRole) {
 
-        $this->arrRoleModel = array();
+        $arrRoleModels = $this->getArrRoleModel($gameUid);
+
+        $newRoleOrder = $this->getCurrentRoleModel($gameUid)->getRoleUid() ? count($arrRoleModels) : 0;
+
+        $this->arrRoleModel = [];
+        $this->load->model('Roles/role_model', '_roleModel');
+
+        $this->db
+            ->set('playerUid', $this->getPlayerUid())
+            ->set('gameUid', $gameUid)
+            ->set('roleUid', $newRole->getRoleUid())
+            ->set('order', $newRoleOrder)
+            ->insert($this->player_roles_table);
+
+        $this->arrRoleModel[$gameUid][] = $newRole;
+
+    }
+
+    /**
+     * @param int $gameUid
+     * @return Role_model[]
+     */
+    public function getArrRoleModel($gameUid) {
+        if (!isset($this->arrRoleModel[$gameUid]) || empty($this->arrRoleModel[$gameUid])) {
+            $this->initRoles($gameUid);
+        }
+
+        return $this->arrRoleModel[$gameUid];
+    }
+
+    /**
+     * @param int $gameUid
+     */
+    public function initRoles($gameUid) {
+
+        $this->arrRoleModel[$gameUid] = [];
         $this->load->model('Roles/role_model', '_roleModel');
 
         $arrRoles = $this->db
             ->select($this->_roleModel->table . '.*')
             ->where('playerUid', $this->getPlayerUid())
-            ->where('gameUid', $oGame->getGameUid())
+            ->where('gameUid', $gameUid)
             ->join($this->player_roles_table, $this->_roleModel->primary_key)
             ->order_by('order')
             ->get($this->_roleModel->table)
@@ -126,101 +138,111 @@ class Player_model extends MY_Model
 
         foreach ($arrRoles as $role) {
             $roleModel = clone $this->_roleModel;
-            $this->arrRoleModel[] = $roleModel->init(false, $role);
+            $this->arrRoleModel[$gameUid][] = $roleModel->init(false, $role);
         }
 
-        if (empty($this->arrRoleModel)) {
-            $this->arrRoleModel[] = $this->_roleModel;
+        if (empty($this->arrRoleModel[$gameUid])) {
+            $this->arrRoleModel[$gameUid] = $this->_roleModel;
         }
 
     }
 
     /**
-     * @return Role_model[]
+     * @return int
      */
-    public function getArrRoleModel()
-    {
-        if (empty($this->arrRoleModel)) {
-            $this->initRoles();
-        }
-
-        return $this->arrRoleModel;
+    public function getPlayerUid() {
+        return $this->playerUid;
     }
 
     /**
+     * @param int $playerUid
+     * @return Player_model
+     */
+    public function setPlayerUid($playerUid) {
+        $this->playerUid = $playerUid;
+        return $this;
+    }
+
+    /**
+     * @param int $gameUid
      * @return Role_model
      */
-    public function getOriginalRoleModel()
-    {
-        $arrRoleModel = $this->getArrRoleModel();
-
-        return $arrRoleModel[0];
-    }
-
-    /**
-     * @return Role_model
-     */
-    public function getCurrentRoleModel()
-    {
-        $arrRoleModel = $this->getArrRoleModel();
+    public function getCurrentRoleModel($gameUid) {
+        $arrRoleModel = $this->getArrRoleModel($gameUid);
 
         return end($arrRoleModel);
     }
 
     /**
+     * @param int $gameUid
      * @return string
      */
-    public function getOriginalRoleName()
-    {
+    public function getOriginalRoleName($gameUid) {
 
-        return $this->getOriginalRoleModel()->getName();
+        return $this->getOriginalRoleModel($gameUid)->getName();
 
     }
 
     /**
-     *
+     * @param int $gameUid
+     * @return Role_model
      */
-    public function executeOriginalRoleAction()
-    {
+    public function getOriginalRoleModel($gameUid) {
+        $arrRoleModel = $this->getArrRoleModel($gameUid);
 
-        $this->getOriginalRoleModel()->getSubmodel()->action();
+        return $arrRoleModel[0];
+    }
+
+    /**
+     * @param int $gameUid
+     */
+    public function executeOriginalRoleAction($gameUid) {
+
+        $this->getOriginalRoleModel($gameUid)->action();
 
     }
 
     /**
+     * @param int $gameUid
      * @return string
      */
-    public function getCurrentRoleName()
-    {
+    public function getCurrentRoleName($gameUid) {
 
-        return $this->getCurrentRoleName()->getName();
+        return $this->getCurrentRoleModel($gameUid)->getName();
 
     }
-
 
 
     /**
      * Voter pour un joueur
-     * @param $targetUid
+     * @param int $gameUid
+     * @param int $targetUid
      */
-    public function voter($targetUid)
-    {
-        $CI = get_instance();
-
-        /** @var Game_model $oGame */
-        $oGame = $CI->oCurrentGame;
+    public function vote($gameUid, $targetUid) {
 
         $this->load->model('vote_model', 'newVote');
         $this->newVote
-            ->setGameUid($oGame->getGameUid())
+            ->setGameUid($gameUid)
             ->setPlayerUid($this->getPlayerUid())
             ->setTargetUid($targetUid)
             ->create();
     }
 
-    public function actionRole()
-    {
-        $this->getOriginalRoleModel();
+    /**
+     * @param int $gameUid
+     * @param mixed ...$arguments
+     */
+    public function roleAction($gameUid, ...$arguments) {
+        return $this->getOriginalRoleModel($gameUid)->action(...$arguments);
+    }
+
+    /**
+     *
+     * @param int $gameUid
+     * @param mixed ...$arguments
+     */
+    public function roleSecondAction($gameUid, ...$arguments) {
+        return $this->getOriginalRoleModel($gameUid)->secondAction(...$arguments);
     }
 
 

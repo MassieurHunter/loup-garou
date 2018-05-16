@@ -14,41 +14,29 @@ class Loup_model extends Role_model
     public $middleCard;
 
     /**
+     * @param int $gameUid
+     * @param Player_model $oPlayer
      * @return string
      */
-    public function action() {
+    public function action($gameUid, $oPlayer) {
 
-        return $this->getOtherLoup();
+        return $this->getOtherLoup($gameUid, $oPlayer);
 
     }
 
     /**
-     * @return string
-     */
-    public function secondAction()
-    {
-
-        return $this->getOneMiddleCard();
-
-    }
-
-
-    /**
+     * @param int $gameUid
+     * @param Player_model $oPlayer
      * @return String
      */
-    private function getOtherLoup()
-    {
-        $CI = get_instance();
-
-        /** @var Player_model $oPlayer */
-        $oPlayer = $CI->oCurrentPlayer;
-        $oGame = $CI->oCurrentGame;
+    private function getOtherLoup($gameUid, $oPlayer) {
 
         $otherLoup = $this->db
             ->select($oPlayer->table . '.*')
             ->join($oPlayer->player_roles_table, $oPlayer->primary_key)
-            ->where('gameUid', $oGame->getGameUid())
+            ->where('gameUid', $gameUid)
             ->where($this->primary_key, $this->getRoleUid())
+            ->where($oPlayer->primary_key, $oPlayer->getPlayerUid())
             ->where('order', 0)
             ->get($oPlayer->table)
             ->row();
@@ -61,33 +49,29 @@ class Loup_model extends Role_model
     }
 
     /**
+     * @param int $gameUid
+     * @param int $cardNumber
+     * @return string
+     */
+    public function secondAction($gameUid, $cardNumber) {
+
+        return $this->getOneMiddleCard($gameUid, $cardNumber);
+
+    }
+
+    /**
      *
+     * @param int $gameUid
      * @param int $cardNumber
      *
      * @return string
      */
-    private function getOneMiddleCard($cardNumber)
-    {
-        $CI = get_instance();
+    private function getOneMiddleCard($gameUid, $cardNumber) {
+        
+        $this->load->model('player_model', 'middleCard');
+        $this->middleCard->init($cardNumber);
 
-        /** @var Player_model $oPlayer */
-        $oPlayer = $CI->oCurrentPlayer;
-        $oGame = $CI->oCurrentGame;
-
-        $middleCard = $this->db
-            ->select($oPlayer->table . '.*')
-            ->join($oPlayer->player_roles_table, $oPlayer->primary_key)
-            ->where('gameUid', $oGame->getGameUid())
-            ->where($this->primary_key, $this->getRoleUid())
-            ->where('playerUid', $cardNumber)
-            ->where('order', 0)
-            ->get($oPlayer->table)
-            ->row();
-
-        $this->load->model('player_model', 'otherLoup');
-        $this->middleCard->init(false, $middleCard);
-
-        return $this->middleCard->getCurrentRoleName();
+        return $this->middleCard->getCurrentRoleName($gameUid);
 
     }
 

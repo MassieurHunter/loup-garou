@@ -44,22 +44,6 @@ class Game_model extends MY_Model
     protected $arrRoles = [];
 
     /**
-     * @return int
-     */
-    public function getGameUid() {
-        return $this->gameUid;
-    }
-
-    /**
-     * @param int $gameUid
-     * @return Game_model
-     */
-    public function setGameUid($gameUid) {
-        $this->gameUid = $gameUid;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getCode() {
@@ -78,8 +62,7 @@ class Game_model extends MY_Model
     /**
      * @param $code
      */
-    public function initByCode($code)
-    {
+    public function initByCode($code) {
         $infos = $this
             ->where('code', $code)
             ->get($this->table)
@@ -91,8 +74,7 @@ class Game_model extends MY_Model
     /**
      * @param Player_model $oPlayer
      */
-    public function addPlayer($oPlayer)
-    {
+    public function addPlayer($oPlayer) {
         $this->db
             ->set('gameUid', $this->getGameUid())
             ->set('playerUid', $oPlayer->getPlayerUid())
@@ -102,10 +84,84 @@ class Game_model extends MY_Model
     }
 
     /**
+     * @return int
+     */
+    public function getGameUid() {
+        return $this->gameUid;
+    }
+
+    /**
+     * @param int $gameUid
+     * @return Game_model
+     */
+    public function setGameUid($gameUid) {
+        $this->gameUid = $gameUid;
+        return $this;
+    }
+
+    /**
      *
      */
-    public function initRoles()
-    {
+    public function giveRoleToPlayers() {
+
+        $arrRoles = $this->getRolesForCasting();
+        $arrPlayer = $this->getPlayers();
+
+        shuffle($arrRoles);
+        shuffle($arrPlayer);
+
+        foreach ($arrPlayer as $key => $playerModel) {
+            $roleModel = $arrRoles[$key];
+            $playerModel->addNewRole($this->getGameUid(), $roleModel);
+        }
+
+
+    }
+
+    /**
+     * @return Role_model[]
+     */
+    public function getRolesForCasting() {
+        $arrRoles = $this->getRoles();
+        $arrPlayers = $this->getPlayers();
+        $nbPlayers = count($arrPlayers);
+
+        $arrSort = [];
+
+        foreach ($arrRoles as $roleModel) {
+
+            $arrSort[] = $roleModel->getCastingOrder();
+
+        }
+
+        array_multisort($arrSort, SORT_ASC, $arrRoles);
+
+
+        if ($arrRoles[$nbPlayers - 1]->getModel() === 'francmac' && $arrRoles[$nbPlayers - 2]->getModel() !== 'francmac') {
+            unset($arrRoles[$nbPlayers - 1]);
+        }
+
+        return array_splice($arrRoles, 0, $nbPlayers);
+
+    }
+
+    /**
+     * @return Role_model[]
+     */
+    public function getRoles() {
+
+        if (empty($this->arrRoles)) {
+            $this->initRoles();
+        }
+
+        return $this->arrRoles;
+
+    }
+
+    /**
+     *
+     */
+    public function initRoles() {
         $this->load->model('Roles/role_model', '_roleModel');
 
         $arrRoles = $this->db
@@ -126,24 +182,22 @@ class Game_model extends MY_Model
     }
 
     /**
-     * @return Role_model[]
+     * @return Player_model[]
      */
-    public function getRoles()
-    {
+    public function getPlayers() {
 
-        if (empty($this->arrRoles)) {
-            $this->initRoles();
+        if (empty($this->arrPlayers)) {
+            $this->initPlayers();
         }
 
-        return $this->arrRoles;
+        return $this->arrPlayers;
 
     }
 
     /**
      *
      */
-    public function initPlayers()
-    {
+    public function initPlayers() {
         $this->load->model('player_model', '_playerModel');
 
         $arrPlayers = $this->db
@@ -163,26 +217,23 @@ class Game_model extends MY_Model
     }
 
     /**
-     * @return Player_model[]
+     * @return Role_model[]
      */
-    public function getPlayers()
-    {
+    public function getRolesForRunning() {
+        $arrRoles = $this->getRolesForCasting();
 
-        if (empty($this->arrPlayers)) {
-            $this->initPlayers();
+        $arrSort = [];
+
+        foreach ($arrRoles as $roleModel) {
+
+            $arrSort[] = $roleModel->getRunningOrder();
+
         }
 
-        return $this->arrPlayers;
-
-    }
-
-    /**
-     *
-     */
-    public function giveRoleToPlayers()
-    {
+        array_multisort($arrSort, SORT_ASC, $arrRoles);
 
 
+        return $arrRoles;
     }
 
 }

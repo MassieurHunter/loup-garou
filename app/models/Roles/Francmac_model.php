@@ -2,8 +2,6 @@
 
 /**
  * Class Francmac_model
- *
- *
  */
 class Francmac_model extends Role_model
 {
@@ -14,27 +12,24 @@ class Francmac_model extends Role_model
     public $otherFrancMac;
 
     /**
-     * @return Player_model|void
+     * @param int $gameUid
+     * @param Player_model $oPlayer
+     * @return string
      */
-    public function action() {
-        return $this->getOtherFrancMac();
+    public function action($gameUid, $oPlayer) {
+        return $this->getOtherFrancMac($gameUid, $oPlayer)->getName();
     }
 
     /**
+     * @param int $gameUid
+     * @param Player_model $oPlayer
      * @return Player_model
      */
-    private function getOtherFrancMac()
-    {
-        $CI = get_instance();
-
-        /** @var Player_model $oPlayer */
-        $oPlayer = $CI->oCurrentPlayer;
-        $oGame = $CI->oCurrentGame;
-
+    private function getOtherFrancMac($gameUid, $oPlayer) {
         $otherFrancMac = $this->db
             ->select($oPlayer->table . '.*')
             ->join($oPlayer->player_roles_table, $oPlayer->primary_key)
-            ->where('gameUid', $oGame->getGameUid())
+            ->where('gameUid', $gameUid)
             ->where($this->primary_key, $this->getRoleUid())
             ->where('order', 0)
             ->get($oPlayer->table)

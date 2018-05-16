@@ -11,6 +11,10 @@ class Role_model extends MY_Model
      */
     public $primary_key = 'roleUid';
     /**
+     * @var Role_model
+     */
+    public $subModel;
+    /**
      * @var int
      */
     protected $roleUid;
@@ -42,11 +46,14 @@ class Role_model extends MY_Model
      * @var bool
      */
     protected $villageois;
-
     /**
-     * @var Role_model
+     * @var int
      */
-    public $subModel;
+    protected $castingOrder;
+    /**
+     * @var int
+     */
+    protected $runningOrder;
 
     /**
      * @return int
@@ -97,36 +104,16 @@ class Role_model extends MY_Model
     }
 
     /**
-     * @return string
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
-     * @param string $model
-     * @return Role_model
-     */
-    public function setModel($model)
-    {
-        $this->model = $model;
-        return $this;
-    }
-
-    /**
      * @return int
      */
-    public function getNb()
-    {
+    public function getNb() {
         return $this->nb;
     }
 
     /**
      * @param int $nb
      */
-    public function setNb($nb)
-    {
+    public function setNb($nb) {
         $this->nb = $nb;
     }
 
@@ -179,10 +166,41 @@ class Role_model extends MY_Model
     }
 
     /**
+     * @return int
+     */
+    public function getCastingOrder() {
+        return $this->castingOrder;
+    }
+
+    /**
+     * @param int $castingOrder
      * @return Role_model
      */
-    public function getSubmodel()
-    {
+    public function setCastingOrder($castingOrder) {
+        $this->castingOrder = $castingOrder;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRunningOrder() {
+        return $this->runningOrder;
+    }
+
+    /**
+     * @param int $runningOrder
+     * @return Role_model
+     */
+    public function setRunningOrder($runningOrder) {
+        $this->runningOrder = $runningOrder;
+        return $this;
+    }
+
+    /**
+     * @return Role_model
+     */
+    public function getSubmodel() {
 
         if (empty($this->subModel)) {
 
@@ -194,16 +212,35 @@ class Role_model extends MY_Model
 
     }
 
-    public function action()
-    {
+    /**
+     * @return string
+     */
+    public function getModel() {
+        return $this->model;
     }
 
-
-    public function secondAction()
-    {
+    /**
+     * @param string $model
+     * @return Role_model
+     */
+    public function setModel($model) {
+        $this->model = $model;
+        return $this;
     }
 
+    /**
+     * @param mixed ...$arguments
+     */
+    public function action(...$arguments) {
+        $this->getSubmodel()->action(...$arguments);
+    }
 
+    /**
+     * @param mixed ...$arguments
+     */
+    public function secondAction(...$arguments) {
+        $this->getSubmodel()->secondAction(...$arguments);
+    }
 
 
 }
