@@ -52,6 +52,36 @@ class Player_model extends MY_Model
     protected $arrRoleModel = [];
 
     /**
+     * Generate and return a key to autolog on the website
+     *
+     * @return string
+     */
+    public function getAutoLoginHash() {
+        return sha1(
+            $this->getPlayerUid()
+            . ' toi pas changer assiette pour fromage'
+            . $this->getName()
+            . 'la fleur en bouquet fanne... et jamais de renait !'
+        );
+    }
+
+    /**
+     * @return int
+     */
+    public function getPlayerUid() {
+        return $this->playerUid;
+    }
+
+    /**
+     * @param int $playerUid
+     * @return Player_model
+     */
+    public function setPlayerUid(int $playerUid) {
+        $this->playerUid = $playerUid;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getName() {
@@ -68,78 +98,65 @@ class Player_model extends MY_Model
     }
 
     /**
+     * Init the user with email and test the password
+     *
+     * @param string $name
+     * @param string $password
      * @return string
      */
-    public function getPassword() {
-        return $this->password;
+    public function login($name, $password) {
+        /*
+         * check if the inputs aren't empty
+         */
+        if ($name && $password) {
+
+            $this->initFromName($name);
+            /*
+             * Check if the player exists
+             */
+            if ($this->getPlayerUid()) {
+                /*
+                 * Check if the password is correct
+                 */
+                if ($this->testPassword($password)) {
+
+                    $return = 'ok';
+
+                } else {
+
+                    $return = 'no_match';
+
+                }// end password
+            } else {
+
+                $return = 'no_player';
+
+            }// end player exists
+
+        } else {
+
+            $return = 'no_data';
+
+        }// end inputs
+
+        return $return;
     }
 
     /**
-     * @param string $password
+     * @param $name
      * @return Player_model
      */
-    public function setPassword(string $password) {
-        $this->password = $password;
+    public function initFromName($name) {
+        $player = $this->db
+            ->select('*')
+            ->from($this->table)
+            ->where('name', $name)
+            ->get()
+            ->row();
+        if (!empty($player)) {
+            $this->init(false, $player);
+        }
         return $this;
-    }
-
-    /**
-     * Generate and return a key to autolog on the website
-     *
-     * @return string
-     */
-    public function getAutoLoginHash() {
-        return sha1(
-            $this->getPlayerUid()
-            . ' toi pas changer assiette pour fromage'
-            . $this->getName()
-            . 'la fleur en bouquet fanne... et jamais de renait !'
-        );
-    }
-
-
-    /**
-     * Login with ws_auth cookie or session
-     *
-     * @return boolean
-     */
-    public function wsAuthLogin()
-    {
-        $this->load->model('player/player_model', '_oTestPlayer');
-        $wsAuth = $this->session->playerdata('ws_auth');
-        $splitedAuth = explode(':', $wsAuth);
-        $ok = false;
-        /*
-         * We test if the cookie is valid
-         */
-        if (count($splitedAuth) == 2) {
-            $playerUid = $splitedAuth[0];
-            $hashedPassword = $splitedAuth[1];
-            /*
-             * we test if the two inputs aren't empty
-             */
-            if ($playerUid && $hashedPassword) {
-                /*
-                 * We init the player's infos from his playerId
-                 */
-                $this->_oTestPlayer->init($playerUid);
-
-                /*
-                 * We test the email to see if the init succeded
-                 */
-                if ($this->_oTestPlayer->getName()) {
-                    /*
-                     * We test the hashed password
-                     */
-                    if ($this->_oTestPlayer->testPassword($hashedPassword, true)) {
-                        $ok = true;
-                        $this->init($playerUid);
-                    }
-                }//end test email for init
-            }//end inputs
-        } //end valid cookie
-
-        return $ok;
     }
 
     /**
@@ -161,13 +178,88 @@ class Player_model extends MY_Model
      * @return string
      */
     public function hashPassword($password) {
-        $pass	 = sha1(stripslashes($password));
+        $pass = sha1(stripslashes($password));
 
-        $hashedPassword = password_hash($pass, PASSWORD_BCRYPT, array(
-            "salt"	 => "le mot de passe c'est trois",
-            "cost"	 => 12));  // Cost : If we use a higher cost, the algorithm will use more time. (Against Brute Force)
+        $hashedPassword = password_hash($pass, PASSWORD_BCRYPT, [
+            "salt" => "le mot de passe c'est trois",
+            "cost" => 12]);
 
         return $hashedPassword;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword() {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     * @return Player_model
+     */
+    public function setPassword(string $password) {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Login with ws_auth cookie or session
+     *
+     * @return boolean
+     */
+    public function autoLogin() {
+        $this->load->model('player/player_model', '_oTestPlayer');
+        $autoLogString = $this->session->userdata('autoLog');
+        $splitedAutoLog = explode(':', $autoLogString);
+        $ok = false;
+
+        /*
+         * We test if the auto-login string is valid
+         */
+        if (count($splitedAutoLog) == 2) {
+
+            $playerUid = $splitedAutoLog[0];
+            $hashedPassword = $splitedAutoLog[1];
+            /*
+             * we test if the two inputs aren't empty
+             */
+            if ($playerUid && $hashedPassword) {
+                /*
+                 * We init the player's infos from his playerUid
+                 */
+                $this->_oTestPlayer->init($playerUid);
+
+                if ($this->_oTestPlayer->getPlayerUid()) {
+                    /*
+                     * We test the hashed password
+                     */
+                    if ($this->_oTestPlayer->testPassword($hashedPassword, true)) {
+                        $ok = true;
+                        $this->init($playerUid);
+                    }
+                }
+            }
+        }
+
+        return $ok;
+    }
+
+    /**
+     *
+     */
+    public function createCookieAndSession() {
+
+        $autoLogCookie = [
+            'name'   => 'autoLog',
+            'value'  => $this->getPlayerUid() . ':' . $this->getPassword(),
+            'expire' => strtotime('+1 year'),
+            'path'   => '/',
+        ];
+
+        $this->session->set_userdata('autoLog', $this->getPlayerUid() . ':' . $this->getPassword());
+        $this->input->set_cookie($autoLogCookie);
+
     }
 
     /**
@@ -232,22 +324,6 @@ class Player_model extends MY_Model
             $this->arrRoleModel[$gameUid] = $this->_roleModel;
         }
 
-    }
-
-    /**
-     * @return int
-     */
-    public function getPlayerUid() {
-        return $this->playerUid;
-    }
-
-    /**
-     * @param int $playerUid
-     * @return Player_model
-     */
-    public function setPlayerUid(int $playerUid) {
-        $this->playerUid = $playerUid;
-        return $this;
     }
 
     /**

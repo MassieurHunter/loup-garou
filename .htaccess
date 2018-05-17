@@ -10,4 +10,4 @@ RewriteRule ^index\.php$ http://%{HTTP_HOST}/ [R=301,L,NC]
 ##############################
 ### CSS / JS / IMG / FONTS ###
 ##############################
-RewriteRule ^(img|css|js|fonts|bower_components|dist|videos)/([a-zA-Z0-9_/%-\.]+)$ www/$1/$2 [QSA,L]
+RewriteRule ^(img|css|js|fonts|dist|videos)/([a-zA-Z0-9_/%-\.]+)$ public/$1/$2 [QSA,L]

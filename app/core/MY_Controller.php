@@ -6,8 +6,8 @@
  * @author Massieur Hunter
  * @property \Template $template Template engine
  * @property \CI_Input $input
- * @property \Game_model $oCurrentGame
- * @property \Player_model $oCurrentPlayer
+ * @property \Game_model $currentGame
+ * @property \Player_model $currentPlayer
  * @property \CI_Session $session Session library
  */
 class MY_Controller extends CI_Controller
@@ -65,6 +65,9 @@ class MY_Controller extends CI_Controller
      */
     protected $lastMicrotime;
 
+    /**
+     * MY_Controller constructor.
+     */
     public function __construct() {
         $this->microtime = microtime(true);
         parent::__construct();
@@ -82,10 +85,6 @@ class MY_Controller extends CI_Controller
             ]
         );
 
-        /*
-         * Get al the availables languages
-         */
-
         $this->initCurrentPlayer();
         $this->initCurrentGame();
 
@@ -94,28 +93,8 @@ class MY_Controller extends CI_Controller
     /**
      * Init the user and set the lang from his preferences
      */
-    public function initCurrentGame() {
-        $this->load->model('game_model', 'oCurrentGame');
-        /*
-         * We check for the id cookie
-         * If it's there we set the id session
-         */
-        if ($this->input->cookie('gameCode')) {
-            $this->session->set_userdata('gameCode', $this->input->cookie('gameCode'));
-        }
-
-
-        if ($this->session->has_userdata('gameCode')) {
-            $gameCode = $this->session->get_userdata('gameCode');
-            $this->oCurrentGame->initByCode($gameCode);
-        }
-    }
-
-    /**
-     * Init the user and set the lang from his preferences
-     */
     public function initCurrentPlayer() {
-        $this->load->model('player_model', 'oCurrentPlayer');
+        $this->load->model('player_model', 'currentPlayer');
         /*
          * We check for the ws_auth cookie
          * If it's there we set the ws_auth session
@@ -133,7 +112,27 @@ class MY_Controller extends CI_Controller
             /*
              * if the ws_auth is correct we set the correct language from user's infos
              */
-            $this->oCurrentPlayer->wsAuthLogin();
+            $this->currentPlayer->autoLogin();
+        }
+    }
+
+    /**
+     * Init the user and set the lang from his preferences
+     */
+    public function initCurrentGame() {
+        $this->load->model('game_model', 'currentGame');
+        /*
+         * We check for the id cookie
+         * If it's there we set the id session
+         */
+        if ($this->input->cookie('gameCode')) {
+            $this->session->set_userdata('gameCode', $this->input->cookie('gameCode'));
+        }
+
+
+        if ($this->session->has_userdata('gameCode')) {
+            $gameCode = $this->session->userdata('gameCode');
+            $this->currentGame->initByCode($gameCode);
         }
     }
 
@@ -178,13 +177,13 @@ class MY_Controller extends CI_Controller
      */
     protected function getFromPost($name) {
         //$this->load->helper('form_helper');
-        $value = '';
+        $post = null;
         if ($this->input->post($name, true)) {
-            $value = $this->input->post($name, true);
+            $post = $this->input->post($name, true);
             //set_value($name, '');
             //$this->input->post($name);
         }
-        return $value;
+        return $post;
     }
 
     /**
@@ -193,98 +192,12 @@ class MY_Controller extends CI_Controller
      * @return mixed
      */
     protected function getFromSession($name) {
-        $value = '';
+        $value = null;
         if ($this->session->has_userdata($name)) {
             $value = $this->session->userdata($name);
         }
         return $value;
     }
-
-    /**
-     * Get a url parameter
-     *
-     * @param string $name
-     * @return mixed
-     */
-    protected function getParamFromUrl($name) {
-        if (empty($this->arrUrlParams)) {
-            $this->initParamsFromUrl();
-        }
-
-        return isset($this->arrUrlParams[$name]) ? $this->arrUrlParams[$name] : NULL;
-    }
-
-    /**
-     * fill the url params array
-     */
-    protected function initParamsFromUrl() {
-        $arrSegments = $this->uri->segment_array();
-
-        $classNamePassed = false;
-        $methodPassed = false;
-        $i = 0;
-        $lastParameName = '';
-        foreach ($arrSegments as $segment) {
-            if (!$methodPassed) {
-                if (!$classNamePassed) {
-                    if (strtolower($segment) == strtolower(get_class($this))) {
-                        $classNamePassed = true;
-                    }
-                } else {
-                    if (method_exists($this, $segment)) {
-                        $methodPassed = true;
-                    }
-                }
-            } else {
-                if ($i % 2 === 0) {
-                    $lastParameName = xss_clean($segment);
-                } else {
-                    $this->arrUrlParams[$lastParameName] = xss_clean($segment);
-                }
-
-                $i++;
-            }
-        }
-    }
-
-    /**
-     * Get a url parameter
-     *
-     * @param string $name
-     * @return mixed
-     */
-    protected function getPostOrUrl($name, $xssClean = false) {
-        if (empty($this->arrPostUrl)) {
-            $this->initPostUrl();
-        }
-
-        $return = isset($this->arrPostUrl[$name]) ? $this->arrPostUrl[$name] : NULL;
-
-        if ($xssClean) {
-            $return = $this->security->xss_clean($return);
-        }
-
-        return $return;
-    }
-
-    /**
-     * fill the url params array
-     */
-    protected function initPostUrl() {
-        $arrPost = $this->input->post();
-        $arrUrl = $this->getAllUrlParams();
-
-        foreach ($arrPost as $key => $value) {
-            $this->arrPostUrl[$key] = $value;
-        }
-
-        foreach ($arrUrl as $key => $value) {
-            if (!isset($this->arrPostUrl[$key])) {
-                $this->arrPostUrl[$key] = $value;
-            }
-        }
-    }
-
 
     /*
      *
@@ -304,27 +217,6 @@ class MY_Controller extends CI_Controller
 
         return $this->arrUrlParams;
     }
-
-    /**
-     * Get all the params from the url
-     *
-     * @return array
-     */
-    protected function getAllPostOrGet() {
-        if (empty($this->arrPostUrl)) {
-            $this->initPostUrl();
-        }
-
-        return $this->arrPostUrl;
-    }
-
-    /*
-     *
-     *
-     * WHO IS ONLINE
-     *
-     *
-     */
 
     /**
      * send the response to the user
@@ -348,21 +240,19 @@ class MY_Controller extends CI_Controller
      * set the header to json
      * echo the json
      *
-     * @param string $response
-     * @param boolean $withCSRF
+     * @param array $response
+     * @param boolean $withHeader
      */
-    public function sendJson($response = [], $withCSRF = true, $withHeader = true) {
+    public function sendJson($response = [], $withHeader = true) {
         if ($withHeader) {
             header('Content-Type: application/json');
         }
 
-        if ($withCSRF) {
-            $response['csrfToken'] = [
-                'name'  => $this->csrfTokenName,
-                'value' => $this->csrfHash,];
-        }
-
         echo json_encode($response);
+    }
+
+    public function displayWithHeaderAndFooter(){
+
     }
 
 }

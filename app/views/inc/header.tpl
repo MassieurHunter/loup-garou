@@ -6,10 +6,9 @@
 			  content="Loup Garou">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Loup Garou</title>
-		<script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
-		<script src="/bower_components/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
-		<script src="/main.js" type="text/javascript"></script>
-		<link rel="stylesheet" href="/css/main.css">
+		<link rel="stylesheet" href="/css/bootstrap.css">
+		<link rel="stylesheet" href="/css/style.css">
 		<base href="{$baseUrl}">
 	</head>
 	<body>
+	<div class="container">

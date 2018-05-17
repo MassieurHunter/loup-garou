@@ -72,7 +72,7 @@ class Game_model extends MY_Model
      * @param $code
      */
     public function initByCode($code) {
-        $infos = $this
+        $infos = $this->db
             ->where('code', $code)
             ->get($this->table)
             ->row();

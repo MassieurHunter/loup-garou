@@ -2,7 +2,10 @@
 nbproject/
 .DS_Store
 node_modules/
-public/bower_components/
+public/css/*
+!public/css/index.html
+public/js/*
+!public/js/index.html
 app/views/cache/*
 !app/views/cache/index.html
 !app/views/cache/.htaccess

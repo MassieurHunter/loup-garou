@@ -1,51 +1,61 @@
 <?php
 
 /**
- * @property Game_model $game
- * 
+ * @property Game $game
+ *
  * @author Mâssieur Hunter
  */
 class Game extends MY_Controller
 {
+    /**
+     * Game constructor.
+     */
+    public function __construct() {
+        parent::__construct();
 
-	/*
-	 *
-	 *
-	 * PUBLIC METHODS
-	 * REACHABLES BY URL
-	 *
-	 *
-	 */
+        $this->template
+            ->setVar('header', $this->template->saveInVar('inc/header'))
+            ->setVar('footer', $this->template->saveInVar('inc/footer'));
 
-	public function index() {
-
-		$this->welcome();
-
-	}
-
-	/**
-	 * Display the list of the groups
-	 */
-	public function welcome() {
-
-		$this->template->display('welcome');
-
-	}
+        if(!$this->currentPlayer->getPlayerUid()){
+            $this->login();
+            die;
+        }
+    }
 
 
-	public function creator(){
+    public function index() {
 
-	    $this->template->display('game/create');
+        $this->welcome();
 
     }
 
-	public function create(){
+    public function login(){
+        $this->template->display('login');
+    }
+
+    /**
+     * Display the list of the groups
+     */
+    public function welcome() {
+
+        $this->template->display('welcome');
+
+    }
+
+
+    public function creator() {
+
+        $this->template->display('game/create');
+
+    }
+
+    public function create() {
 
         $this->load->model('game_model', 'game');
         $this->game
             ->generateCode()
-            ->create()
-        ;
+            ->create();
 
         $this->template
             ->setVar('newGameCode', $this->game->getCode())
@@ -53,10 +63,24 @@ class Game extends MY_Controller
 
     }
 
-    public function join($code){
+    public function join($code = null) {
 
-        $this->load->model('game_model', 'game');
-        $this->game->initByCode($code);
+        if($code){
+            $this->session->set_userdata('gameCode', $code);
+        }
+
+        $this->initCurrentGame();
+
+        if($this->currentGame->getGameUid()){
+            redirect('/game/play');
+        }
+
+
+    }
+
+    public function play(){
+
+        var_dump($this->currentGame);
 
     }
 
