@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @property Game $game
+ * @property Game_model $game
  *
  * @author Mâssieur Hunter
  */
@@ -13,12 +13,15 @@ class Game extends MY_Controller
     public function __construct() {
         parent::__construct();
 
+        $this->lang->load('main');
+
         $this->template
+            ->setVar('langMain', $this->lang->language)
             ->setVar('header', $this->template->saveInVar('inc/header'))
             ->setVar('footer', $this->template->saveInVar('inc/footer'));
 
-        if(!$this->currentPlayer->getPlayerUid()){
-            $this->login();
+        if (!$this->currentPlayer->getPlayerUid() && !preg_match('/login/si', $this->uri->uri_string)) {
+            redirect('/game/login');
             die;
         }
     }
@@ -30,10 +33,6 @@ class Game extends MY_Controller
 
     }
 
-    public function login(){
-        $this->template->display('login');
-    }
-
     /**
      * Display the list of the groups
      */
@@ -43,42 +42,33 @@ class Game extends MY_Controller
 
     }
 
+    public function login() {
+        $this->template->display('login');
+    }
 
-    public function creator() {
+    public function create() {
 
         $this->template->display('game/create');
 
     }
 
-    public function create() {
-
-        $this->load->model('game_model', 'game');
-        $this->game
-            ->generateCode()
-            ->create();
-
-        $this->template
-            ->setVar('newGameCode', $this->game->getCode())
-            ->display('game/create');
-
-    }
-
     public function join($code = null) {
 
-        if($code){
+        if ($code) {
             $this->session->set_userdata('gameCode', $code);
         }
 
         $this->initCurrentGame();
 
-        if($this->currentGame->getGameUid()){
+        if ($this->currentGame->getGameUid()) {
             redirect('/game/play');
         }
 
 
+
     }
 
-    public function play(){
+    public function play() {
 
         var_dump($this->currentGame);
 

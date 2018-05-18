@@ -118,7 +118,7 @@ class Forum_Controller extends MY_Controller
 		if ($this->isDataPost) {
 			$response = array(
 				'html' => $this->response);
-			$this->sendJson($response);
+			$this->jsonResult($response);
 		} else {
 			echo $this->response;
 		}

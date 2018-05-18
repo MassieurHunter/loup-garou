@@ -3,8 +3,13 @@ CREATE DATABASE `loup_garou` /*!40100 DEFAULT CHARACTER SET utf8 */;
 CREATE TABLE `games` (
   `gameUid` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(10) DEFAULT NULL,
+	maxPlayers int DEFAULT '10',
+	nbPlayers int DEFAULT '0',
+	finished tinyint(1) DEFAULT '0',
   PRIMARY KEY (`gameUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 CREATE TABLE `games_players` (
   `gamePlayerUid` int(11) NOT NULL AUTO_INCREMENT,

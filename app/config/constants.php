@@ -90,11 +90,3 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
  */
 defined('PUBLIC_PATH') OR define('PUBLIC_PATH', FCPATH . 'public/');
 defined('IMG_PATH') OR define('IMG_PATH', PUBLIC_PATH . 'img/');
-defined('SMILIES_PATH') OR define('SMILIES_PATH', IMG_PATH . 'smilies/');
-defined('SVG_PATH') OR define('SVG_PATH', IMG_PATH . 'icons/svg/');
-defined('UPLOAD_PATH') OR define('UPLOAD_PATH', PUBLIC_PATH . 'uploads/');
-
-/*
- * URLS
- */
-defined('SMILES_URL') OR define('SMILES_URL', '/img/smilies/');

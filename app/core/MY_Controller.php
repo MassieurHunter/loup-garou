@@ -96,21 +96,21 @@ class MY_Controller extends CI_Controller
     public function initCurrentPlayer() {
         $this->load->model('player_model', 'currentPlayer');
         /*
-         * We check for the ws_auth cookie
-         * If it's there we set the ws_auth session
+         * We check for the autoLog cookie
+         * If it's there we set the autoLog session
          */
-        if ($this->input->cookie('ws_auth')) {
-            $this->session->set_userdata('ws_auth', $this->input->cookie('ws_auth'));
+        if ($this->input->cookie('autoLog')) {
+            $this->session->set_userdata('autoLog', $this->input->cookie('autoLog'));
         }
 
         /*
-         * We check for the ws_auth session
+         * We check for the autoLog session
          * If we have one we try to set the user
          */
-        if ($this->session->has_userdata('ws_auth')) {
+        if ($this->session->has_userdata('autoLog')) {
 
             /*
-             * if the ws_auth is correct we set the correct language from user's infos
+             * if the autoLog is correct we set the correct language from user's infos
              */
             $this->currentPlayer->autoLogin();
         }
@@ -160,99 +160,5 @@ class MY_Controller extends CI_Controller
         return number_format($microtimePassed, 6, '.', ' ') . ' seconds';
     }
 
-    /**
-     *
-     * @param string $name
-     * @return mixed
-     */
-    protected function getFromPostOrSession($name) {
-        $postValue = $this->getFromPost($name);
-        return (!empty($postValue) ? $postValue : $this->getFromSession($name));
-    }
-
-    /**
-     *
-     * @param string $name
-     * @return mixed
-     */
-    protected function getFromPost($name) {
-        //$this->load->helper('form_helper');
-        $post = null;
-        if ($this->input->post($name, true)) {
-            $post = $this->input->post($name, true);
-            //set_value($name, '');
-            //$this->input->post($name);
-        }
-        return $post;
-    }
-
-    /**
-     *
-     * @param string $name
-     * @return mixed
-     */
-    protected function getFromSession($name) {
-        $value = null;
-        if ($this->session->has_userdata($name)) {
-            $value = $this->session->userdata($name);
-        }
-        return $value;
-    }
-
-    /*
-     *
-     * Current User
-     *
-     */
-
-    /**
-     * Get all the params from the url
-     *
-     * @return array
-     */
-    protected function getAllUrlParams() {
-        if (empty($this->arrUrlParams)) {
-            $this->initParamsFromUrl();
-        }
-
-        return $this->arrUrlParams;
-    }
-
-    /**
-     * send the response to the user
-     * in a json object
-     * or in plain html
-     * depending of the "json" post request
-     */
-    protected function htmlOrJson() {
-        if ($this->isDataPost) {
-            $response = [
-                'html' => $this->response];
-            $this->sendJson($response);
-        } else {
-            echo $this->response;
-        }
-    }
-
-    /**
-     * Send a json response
-     * automatically encode the param in json
-     * set the header to json
-     * echo the json
-     *
-     * @param array $response
-     * @param boolean $withHeader
-     */
-    public function sendJson($response = [], $withHeader = true) {
-        if ($withHeader) {
-            header('Content-Type: application/json');
-        }
-
-        echo json_encode($response);
-    }
-
-    public function displayWithHeaderAndFooter(){
-
-    }
 
 }

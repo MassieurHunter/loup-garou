@@ -1,10 +1,24 @@
+import Forms from './components/Forms';
+
 let loupGraou = {
 
   init() {
-    let bootstrap = require('bootstrap');
+    this.bootstrap = require('bootstrap');
+    this.jquery = require('jquery');
+    this.forms = new Forms();
 
-    let jquery = require('jquery');
-  }
+    this.listenCreateGame();
+
+  },
+
+  listenCreateGame(){
+    $('.max-players-range').on('input', (event) => {
+      let range = $(event.target)
+      $('.nb-max-players').html(range.val());
+    }).trigger('input')
+  },
+
+
 }
 
 loupGraou.init();

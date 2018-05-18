@@ -34,6 +34,21 @@ class Game_model extends MY_Model
     protected $code;
 
     /**
+     * @var int
+     */
+    protected $maxPlayers;
+
+    /**
+     * @var int
+     */
+    protected $nbPlayers;
+
+    /**
+     * @var boolean
+     */
+    protected $finished;
+
+    /**
      * @var Player_model[]
      */
     protected $arrPlayers = [];
@@ -46,7 +61,7 @@ class Game_model extends MY_Model
     /**
      * @return string
      */
-    public function getCode() {
+    public function getCode(): string {
         return $this->code;
     }
 
@@ -54,7 +69,7 @@ class Game_model extends MY_Model
      * @param string $code
      * @return Game_model
      */
-    public function setCode($code) {
+    public function setCode(string $code): Game_model {
         $this->code = $code;
         return $this;
     }
@@ -62,7 +77,7 @@ class Game_model extends MY_Model
     /**
      * @return $this
      */
-    public function generateCode(){
+    public function generateCode(): Game_model {
         $newCode = random_string();
         $this->setCode($newCode);
         return $this;
@@ -71,7 +86,7 @@ class Game_model extends MY_Model
     /**
      * @param $code
      */
-    public function initByCode($code) {
+    public function initByCode(string $code) {
         $infos = $this->db
             ->where('code', $code)
             ->get($this->table)
@@ -83,7 +98,7 @@ class Game_model extends MY_Model
     /**
      * @param Player_model $oPlayer
      */
-    public function addPlayer($oPlayer) {
+    public function addPlayer(Player_model $oPlayer) {
         $this->db
             ->set('gameUid', $this->getGameUid())
             ->set('playerUid', $oPlayer->getPlayerUid())
@@ -95,7 +110,7 @@ class Game_model extends MY_Model
     /**
      * @return int
      */
-    public function getGameUid() {
+    public function getGameUid(): int {
         return $this->gameUid;
     }
 
@@ -103,10 +118,59 @@ class Game_model extends MY_Model
      * @param int $gameUid
      * @return Game_model
      */
-    public function setGameUid($gameUid) {
+    public function setGameUid(int $gameUid): Game_model {
         $this->gameUid = $gameUid;
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxPlayers(): int {
+        return $this->maxPlayers;
+    }
+
+    /**
+     * @param int $maxPlayers
+     * @return Game_model
+     */
+    public function setMaxPlayers(int $maxPlayers): Game_model {
+        $this->maxPlayers = $maxPlayers;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNbPlayers(): int {
+        return $this->nbPlayers;
+    }
+
+    /**
+     * @param int $nbPlayers
+     * @return Game_model
+     */
+    public function setNbPlayers(int $nbPlayers): Game_model {
+        $this->nbPlayers = $nbPlayers;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFinished(): bool {
+        return $this->finished;
+    }
+
+    /**
+     * @param bool $finished
+     * @return Game_model
+     */
+    public function setFinished(bool $finished): Game_model {
+        $this->finished = $finished;
+        return $this;
+    }
+
 
     /**
      *
@@ -130,7 +194,7 @@ class Game_model extends MY_Model
     /**
      * @return Role_model[]
      */
-    public function getRolesForCasting() {
+    public function getRolesForCasting(): array {
         $arrRoles = $this->getRoles();
         $arrPlayers = $this->getPlayers();
         $nbPlayers = count($arrPlayers);
@@ -157,7 +221,7 @@ class Game_model extends MY_Model
     /**
      * @return Role_model[]
      */
-    public function getRoles() {
+    public function getRoles(): array {
 
         if (empty($this->arrRoles)) {
             $this->initRoles();
@@ -193,7 +257,7 @@ class Game_model extends MY_Model
     /**
      * @return Player_model[]
      */
-    public function getPlayers() {
+    public function getPlayers(): array {
 
         if (empty($this->arrPlayers)) {
             $this->initPlayers();
@@ -228,7 +292,7 @@ class Game_model extends MY_Model
     /**
      * @return Role_model[]
      */
-    public function getRolesForRunning() {
+    public function getRolesForRunning(): array {
         $arrRoles = $this->getRolesForCasting();
 
         $arrSort = [];

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @property Player $game
+ * @property Player_model $player
  *
  * @author Mâssieur Hunter
  */
@@ -15,16 +15,15 @@ class Player extends MY_Controller
 
     }
 
-    public function create() {
+    public function create($name, $password) {
 
-        $this->load->model('game_model', 'game');
-        $this->game
-            ->generateCode()
+        $this->load->model('player_model', 'player');
+        $this->player
+            ->setName($name)
+            ->hashAndSetPassword($password)
             ->create();
 
-        $this->template
-            ->setVar('newGameCode', $this->game->getCode())
-            ->display('game/create');
+        echo "Joueur $name créé\n";
 
     }
 

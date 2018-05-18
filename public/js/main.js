@@ -19417,17 +19417,32 @@ module.exports = function (regExp, replace) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function($) {
 
+var _Forms = __webpack_require__(332);
+
+var _Forms2 = _interopRequireDefault(_Forms);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var loupGraou = {
   init: function init() {
-    var bootstrap = __webpack_require__(330);
+    this.bootstrap = __webpack_require__(330);
+    this.jquery = __webpack_require__(125);
+    this.forms = new _Forms2.default();
 
-    var jquery = __webpack_require__(125);
+    this.listenCreateGame();
+  },
+  listenCreateGame: function listenCreateGame() {
+    $('.max-players-range').on('input', function (event) {
+      var range = $(event.target);
+      $('.nb-max-players').html(range.val());
+    }).trigger('input');
   }
 };
 
 loupGraou.init();
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(125)))
 
 /***/ }),
 /* 330 */
@@ -25890,6 +25905,466 @@ Popper.Defaults = Defaults;
 //# sourceMappingURL=popper.js.map
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(64)))
+
+/***/ }),
+/* 332 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); //
+// Tools
+
+var _Ajax = __webpack_require__(333);
+
+var _Ajax2 = _interopRequireDefault(_Ajax);
+
+var _Constants = __webpack_require__(335);
+
+var _Constants2 = _interopRequireDefault(_Constants);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Forms = function () {
+  function Forms() {
+    var _this = this;
+
+    _classCallCheck(this, Forms);
+
+    this.forms = $('FORM');
+
+    this.forms.each(function (index, element) {
+
+      var form = $(element);
+
+      _this.onSubmit(form);
+    });
+  }
+
+  _createClass(Forms, [{
+    key: 'onSubmit',
+    value: function onSubmit(form) {
+      var _this2 = this;
+
+      var target = form.data('target');
+
+      form.on('submit', function (event) {
+
+        // prevent real submit
+        event.stopPropagation();
+        event.preventDefault();
+
+        _this2.clearMessages(form);
+
+        //fields
+        var fields = form.serializeArray();
+
+        _Ajax2.default.post(target, fields, function (aResponse) {});
+      });
+    }
+  }, {
+    key: 'clearMessages',
+    value: function clearMessages(form) {
+      form.find('.form-message').html('').addClass('d-none');
+    }
+  }]);
+
+  return Forms;
+}();
+
+exports.default = Forms;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(125)))
+
+/***/ }),
+/* 333 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _ABuilder = __webpack_require__(334);
+
+var _ABuilder2 = _interopRequireDefault(_ABuilder);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Ajax = function () {
+	function Ajax() {
+		_classCallCheck(this, Ajax);
+	}
+
+	_createClass(Ajax, [{
+		key: 'get',
+		value: function get(aTarget, aData, aCallback) {
+			var _this = this;
+
+			var url = '/ajax';
+			var data = aData || [];
+
+			data.push({
+				name: 'target',
+				value: aTarget
+			});
+
+			$.get(url, data, function (transport) {
+				// --
+			}).always(function (aData) {
+
+				var data = {};
+
+				if (aData.responseJSON) {
+					data = aData.responseJSON;
+				} else {
+					data = aData;
+				}
+
+				var result = _this.evaluate(data);
+
+				if (aCallback) {
+					aCallback(result);
+				}
+			});
+		}
+	}, {
+		key: 'post',
+		value: function post(aTarget, aData, aCallback) {
+			var _this2 = this;
+
+			var url = '/ajax';
+			var data = aData || [];
+
+			data.push({
+				name: 'target',
+				value: aTarget
+			});
+
+			$.post(url, data, function (transport) {
+				// --
+			}).always(function (aData) {
+
+				var data = {};
+
+				if (aData.responseJSON) {
+					data = aData.responseJSON;
+				} else {
+					data = aData;
+				}
+
+				var result = _this2.evaluate(data);
+
+				if (aCallback) {
+					aCallback(result);
+				}
+			});
+		}
+	}, {
+		key: 'evaluate',
+		value: function evaluate(transport) {
+
+			var responseData = transport;
+
+			if (responseData.actions) {
+
+				this.evaluateAction(responseData);
+
+				delete responseData.actions;
+			}
+
+			return responseData;
+		}
+	}, {
+		key: 'evaluateAction',
+		value: function evaluateAction(pData) {
+			var _this3 = this;
+
+			var actions = pData.actions;
+			var target = pData.formTarget;
+			var form = $('FORM[data-target="' + target + '"]');
+
+			$.each(actions, function (index, action) {
+
+				console.log(target);
+				console.log(form);
+				console.log(action);
+
+				switch (action.method) {
+
+					case "error":
+
+						if (form) {
+
+							if (action.information) {
+
+								var errorMessage = form.find('.form-message-error');
+
+								if (errorMessage) {
+									errorMessage.html(action.information);
+									errorMessage.removeClass('d-none');
+								}
+							}
+						}
+
+						break;
+
+					case "success":
+
+						if (form) {
+
+							if (action.information) {
+
+								var _errorMessage = form.find('.form-message-success');
+
+								if (_errorMessage) {
+									_errorMessage.html(action.information);
+									_errorMessage.removeClass('d-none');
+								}
+							}
+						}
+
+						break;
+
+					case "load":
+						setTimeout(function () {
+							return location.href = action.location;
+						}, action.timeout);
+						break;
+					case "postRedirect":
+						_this3.postRedirect(action.location, action.params);
+						break;
+					case "reload":
+						location.reload();
+						break;
+					case "insert":
+						$(action.selector).html(action.content);
+						break;
+					case "append":
+						$(action.selector).append(action.content);
+						break;
+					case "val":
+						$(action.selector).val(action.value);
+						break;
+					case "alert":
+						alert(action.information);
+						break;
+					case "delete":
+						$(action.selector).remove();
+						break;
+					case "show":
+						$(action.selector).show();
+						break;
+					case "hide":
+						$(action.selector).hide();
+						break;
+					case "enableButton":
+						$(action.selector).removeAttr('disabled');
+						break;
+					case "disableButton":
+						$(action.selector).attr('disabled', 'disabled');
+						break;
+					case "attr":
+						$(action.selector).attr(action.attr, action.value);
+						break;
+					case "removeAttr":
+						$(action.selector).removeAttr(action.attr);
+						break;
+					case "trigger":
+						$(action.selector).trigger(action.type);
+						break;
+					case "linkUpdateParams":
+						_this3.linkUpdateParams(action.selector, action.params);
+						break;
+					case "call":
+
+						var callFunction = eval(action.name);
+
+						if (callFunction !== "undefined") {
+
+							var bindTarget = null;
+							if (action.name.split('.').size() > 0) {
+								var parts = action.name.split('.').slice(0, -1);
+								bindTarget = eval(parts.join('.'));
+							}
+
+							if (action.parms) {
+								callFunction.apply(bindTarget, action.parms);
+							} else {
+								callFunction();
+							}
+						} else {
+							console.log('Function not found!');
+						}
+						break;
+					case "class":
+
+						var element = $(action.selector);
+
+						if (element) {
+
+							switch (action.type) {
+								case "toggle":
+									element.toggleClass(action.class);
+									break;
+								case "add":
+									element.addClass(action.class);
+									break;
+								case "remove":
+									element.removeClass(action.class);
+									break;
+							}
+						}
+
+						break;
+				}
+			});
+		}
+	}, {
+		key: 'postRedirect',
+		value: function postRedirect(aURL) {
+			var aParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+
+			// build helper form
+			var form = (0, _ABuilder2.default)('FORM', { 'action': aURL, 'method': 'POST' });
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = Object.keys(aParams)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var key = _step.value;
+
+					var value = aParams[key];
+					var input = (0, _ABuilder2.default)('INPUT', { 'type': 'hidden', 'name': key, 'value': value });
+					form.append(input);
+				}
+
+				// add form to DOM
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			$('body').append(form);
+
+			// submit form, aka redirecting ...
+			form.submit();
+		}
+
+		/**
+   * Update a link url with the given parameters
+   * @param aSelector
+   * @param aParams
+   */
+
+	}, {
+		key: 'linkUpdateParams',
+		value: function linkUpdateParams(aSelector) {
+			var aParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+
+			var element = $(aSelector);
+			var href = element.attr('href');
+
+			element.attr('href', href);
+		}
+	}]);
+
+	return Ajax;
+}();
+
+exports.default = new Ajax();
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(125)))
+
+/***/ }),
+/* 334 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(jQuery, $) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+
+/**
+ * Helper for creation of DOM Elements
+ *
+ * @param aTagName
+ * @param aAttributes
+ * @returns {*|jQuery|HTMLElement}
+ * @constructor
+ */
+function ABuilder(aTagName, aAttributes) {
+
+    var _element = jQuery('<' + aTagName + '/>');
+
+    var content = arguments.length > 2 ? arguments[2] : '';
+
+    if ($.isArray(content)) {
+        $.each(content, function (index, value) {
+            _element.append(value);
+        });
+    } else {
+        _element.html(content);
+    }
+
+    $.each(aAttributes, function (key, value) {
+        _element.attr(key, value);
+    });
+
+    return _element;
+}
+
+exports.default = ABuilder;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(125), __webpack_require__(125)))
+
+/***/ }),
+/* 335 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = {
+
+	Events: {
+
+		AJAX_FORM_REQUESTED: 'ajax.form.requested',
+		AJAX_FORM_RESPONDED: 'ajax.form.responded',
+		FORM_ELEMENT_CHANGED: 'form.element.changed'
+
+	}
+
+};
 
 /***/ })
 /******/ ]);

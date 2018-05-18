@@ -102,9 +102,15 @@ class Player_model extends MY_Model
      *
      * @param string $name
      * @param string $password
-     * @return string
+     *
+     *
+     * array['result']  boolean login successfull
+     * array['message'] string translation key
+     * @return array
      */
     public function login($name, $password) {
+        $result = false;
+
         /*
          * check if the inputs aren't empty
          */
@@ -118,28 +124,33 @@ class Player_model extends MY_Model
                 /*
                  * Check if the password is correct
                  */
-                if ($this->testPassword($password)) {
+                if ($this->verifyPassword($password)) {
 
-                    $return = 'ok';
+                    $result = true;
+                    $message = 'login_success';
+                    $this->createCookieAndSession();
 
                 } else {
 
-                    $return = 'no_match';
+                    $message = 'error_wrong_name_password';
 
                 }// end password
             } else {
 
-                $return = 'no_player';
+                $message = 'error_wrong_name_password';
 
             }// end player exists
 
         } else {
 
-            $return = 'no_data';
+            $message = 'error_no_data';
 
         }// end inputs
 
-        return $return;
+        return [
+            'result'  => $result,
+            'message' => $message,
+        ];
     }
 
     /**
@@ -163,12 +174,13 @@ class Player_model extends MY_Model
      * Test the password for the user
      *
      * @param string $password
-     * @param boolean $hashed set to true if you want to test a hash
+     * @param boolean $hashed
      * @return boolean
      */
-    public function testPassword($password, $hashed = false) {
-        $hash = $hashed ? $password : $this->hashPassword($password);
-        return $hash == $this->getPassword();
+    public function verifyPassword($password, $hashed = false) {
+        return $hashed
+            ? $password == $this->getPassword()
+            : password_verify($password, $this->getPassword());
     }
 
     /**
@@ -178,11 +190,8 @@ class Player_model extends MY_Model
      * @return string
      */
     public function hashPassword($password) {
-        $pass = sha1(stripslashes($password));
 
-        $hashedPassword = password_hash($pass, PASSWORD_BCRYPT, [
-            "salt" => "le mot de passe c'est trois",
-            "cost" => 12]);
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT, ["cost" => 12]);
 
         return $hashedPassword;
     }
@@ -200,6 +209,15 @@ class Player_model extends MY_Model
      */
     public function setPassword(string $password) {
         $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * @param string $password
+     * @return Player_model
+     */
+    public function hashAndSetPassword(string $password) {
+        $this->setPassword($this->hashPassword($password));
         return $this;
     }
 
@@ -234,9 +252,10 @@ class Player_model extends MY_Model
                     /*
                      * We test the hashed password
                      */
-                    if ($this->_oTestPlayer->testPassword($hashedPassword, true)) {
+                    if ($this->_oTestPlayer->verifyPassword($hashedPassword, true)) {
                         $ok = true;
                         $this->init($playerUid);
+                        $this->createCookieAndSession();
                     }
                 }
             }
