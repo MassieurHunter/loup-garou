@@ -83,7 +83,7 @@ class Ajax {
 
 		let actions = pData.actions;
 		let target = pData.formTarget;
-		let form = $('FORM[data-target="' + target + '"]');
+		let form = $('FORM.ajax-form[data-target="' + target + '"]');
 
 		$.each(actions, (index, action) => {
 

@@ -54,24 +54,40 @@ class Game extends MY_Controller
 
     public function join($code = null) {
 
+        $error = null;
+
         if ($code) {
-            $this->session->set_userdata('gameCode', $code);
+            $this->load->model('game_model', 'game');
+            $this->game->initByCode($code);
+
+            $joinResult = $this->currentPlayer->joinGame($this->game);
+
+            if ($joinResult['success']) {
+                $this->session->set_userdata('gameCode', $code);
+                redirect('/game/play/');
+            } else {
+                $this->lang->load('game');
+                $error = $this->lang->line($joinResult['message']);
+            }
         }
 
-        $this->initCurrentGame();
 
-        if ($this->currentGame->getGameUid()) {
-            redirect('/game/play');
-        }
-
-
+        $this->template
+            ->setVar('hideError', $error === null ? 'd-none' : '')
+            ->setVar('error', $error)
+            ->display('game/join');
 
     }
 
     public function play() {
 
-        var_dump($this->currentGame);
+        if(!$this->currentGame->getGameUid()){
+            redirect('game/join');
+        }
 
+        $this->template
+            ->setVar('game', $this->currentGame->getBasicInfos())
+            ->display('game/play');
     }
 
 

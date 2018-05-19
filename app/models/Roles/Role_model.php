@@ -56,6 +56,17 @@ class Role_model extends MY_Model
     protected $runningOrder;
 
     /**
+     * @var array
+     */
+    public $basics = [
+        'name' => 'getName',
+        'description' => 'getDescription',
+        'loup' => 'isLoup',
+        'villageois' => 'isVillageois',
+        'tanneur' => 'isTanneur',
+    ];
+
+    /**
      * @return int
      */
     public function getRoleUid() {

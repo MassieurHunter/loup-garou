@@ -1,5 +1,3 @@
-CREATE DATABASE `loup_garou` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
 CREATE TABLE `games` (
   `gameUid` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(10) DEFAULT NULL,
@@ -9,13 +7,12 @@ CREATE TABLE `games` (
   PRIMARY KEY (`gameUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-
 CREATE TABLE `games_players` (
   `gamePlayerUid` int(11) NOT NULL AUTO_INCREMENT,
   `gameUid` int(11) NOT NULL,
   `playerUid` int(11) NOT NULL,
-  PRIMARY KEY (`gamePlayerUid`)
+  PRIMARY KEY (`gamePlayerUid`),
+  UNIQUE KEY `unique_player_game` (`gameUid`,`playerUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `players` (

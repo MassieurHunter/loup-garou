@@ -59,11 +59,22 @@ class Game_model extends MY_Model
     protected $arrRoles = [];
 
     /**
+     * @var array
+     */
+    public $basics = [
+        'code' => 'getCode',
+        'maxPlayers' => 'getMaxPlayers',
+        'nbPlayers' => 'getNbPlayers',
+        'finished' => 'isFinished',
+    ];
+
+    /**
      * @return string
      */
     public function getCode(): string {
         return $this->code;
     }
+
 
     /**
      * @param string $code
@@ -99,19 +110,31 @@ class Game_model extends MY_Model
      * @param Player_model $oPlayer
      */
     public function addPlayer(Player_model $oPlayer) {
-        $this->db
+        if (empty($this->arrPlayers)) {
+            $this->initPlayers();
+        }
+
+        $insertQuery = $this->db
             ->set('gameUid', $this->getGameUid())
             ->set('playerUid', $oPlayer->getPlayerUid())
-            ->insert($this->player_games_table);
+            ->get_compiled_insert($this->player_games_table);
+
+        $insertIgnoreQuery = str_replace('INSERT INTO', 'INSERT IGNORE INTO', $insertQuery);
+
+        $this->db->query($insertIgnoreQuery);
 
         $this->arrPlayers[$oPlayer->getPlayerUid()] = $oPlayer;
+
+        $this
+            ->setNbPlayers(count($this->arrPlayers))
+            ->saveModifications();
     }
 
     /**
      * @return int
      */
     public function getGameUid(): int {
-        return $this->gameUid;
+        return (int)$this->gameUid;
     }
 
     /**
@@ -284,7 +307,7 @@ class Game_model extends MY_Model
             $playerModel = clone $this->_playerModel;
             $playerModel->init(false, $player);
 
-            $this->arrPlayers[] = $playerModel;
+            $this->arrPlayers[$playerModel->getPlayerUid()] = $playerModel;
         }
 
     }
@@ -308,5 +331,6 @@ class Game_model extends MY_Model
 
         return $arrRoles;
     }
+
 
 }

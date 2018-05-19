@@ -52,11 +52,19 @@ class Player_model extends MY_Model
     protected $arrRoleModel = [];
 
     /**
+     * @var array
+     */
+    public $basics = [
+        'name' => 'getName',
+    ];
+
+    /**
      * Generate and return a key to autolog on the website
      *
      * @return string
      */
-    public function getAutoLoginHash() {
+    public function getAutoLoginHash(): string
+    {
         return sha1(
             $this->getPlayerUid()
             . ' toi pas changer assiette pour fromage'
@@ -68,15 +76,17 @@ class Player_model extends MY_Model
     /**
      * @return int
      */
-    public function getPlayerUid() {
-        return $this->playerUid;
+    public function getPlayerUid(): int
+    {
+        return (int) $this->playerUid;
     }
 
     /**
      * @param int $playerUid
      * @return Player_model
      */
-    public function setPlayerUid(int $playerUid) {
+    public function setPlayerUid(int $playerUid): Player_model
+    {
         $this->playerUid = $playerUid;
         return $this;
     }
@@ -84,7 +94,8 @@ class Player_model extends MY_Model
     /**
      * @return string
      */
-    public function getName() {
+    public function getName(): string
+    {
         return $this->name;
     }
 
@@ -92,7 +103,8 @@ class Player_model extends MY_Model
      * @param string $name
      * @return Player_model
      */
-    public function setName($name) {
+    public function setName(string $name): Player_model
+    {
         $this->name = $name;
         return $this;
     }
@@ -108,8 +120,9 @@ class Player_model extends MY_Model
      * array['message'] string translation key
      * @return array
      */
-    public function login($name, $password) {
-        $result = false;
+    public function login(string $name, string $password): array
+    {
+        $success = false;
 
         /*
          * check if the inputs aren't empty
@@ -126,7 +139,7 @@ class Player_model extends MY_Model
                  */
                 if ($this->verifyPassword($password)) {
 
-                    $result = true;
+                    $success = true;
                     $message = 'login_success';
                     $this->createCookieAndSession();
 
@@ -148,7 +161,7 @@ class Player_model extends MY_Model
         }// end inputs
 
         return [
-            'result'  => $result,
+            'success' => $success,
             'message' => $message,
         ];
     }
@@ -157,7 +170,8 @@ class Player_model extends MY_Model
      * @param $name
      * @return Player_model
      */
-    public function initFromName($name) {
+    public function initFromName(string $name): Player_model
+    {
         $player = $this->db
             ->select('*')
             ->from($this->table)
@@ -177,7 +191,8 @@ class Player_model extends MY_Model
      * @param boolean $hashed
      * @return boolean
      */
-    public function verifyPassword($password, $hashed = false) {
+    public function verifyPassword(string $password, bool $hashed = false): bool
+    {
         return $hashed
             ? $password == $this->getPassword()
             : password_verify($password, $this->getPassword());
@@ -189,7 +204,8 @@ class Player_model extends MY_Model
      * @param string $password
      * @return string
      */
-    public function hashPassword($password) {
+    public function hashPassword(string $password): string
+    {
 
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT, ["cost" => 12]);
 
@@ -199,7 +215,8 @@ class Player_model extends MY_Model
     /**
      * @return string
      */
-    public function getPassword() {
+    public function getPassword(): string
+    {
         return $this->password;
     }
 
@@ -207,7 +224,8 @@ class Player_model extends MY_Model
      * @param string $password
      * @return Player_model
      */
-    public function setPassword(string $password) {
+    public function setPassword(string $password): Player_model
+    {
         $this->password = $password;
         return $this;
     }
@@ -216,7 +234,8 @@ class Player_model extends MY_Model
      * @param string $password
      * @return Player_model
      */
-    public function hashAndSetPassword(string $password) {
+    public function hashAndSetPassword(string $password): Player_model
+    {
         $this->setPassword($this->hashPassword($password));
         return $this;
     }
@@ -226,7 +245,8 @@ class Player_model extends MY_Model
      *
      * @return boolean
      */
-    public function autoLogin() {
+    public function autoLogin(): bool
+    {
         $this->load->model('player/player_model', '_oTestPlayer');
         $autoLogString = $this->session->userdata('autoLog');
         $splitedAutoLog = explode(':', $autoLogString);
@@ -281,6 +301,54 @@ class Player_model extends MY_Model
 
     }
 
+
+    /**
+     * @param Game_model $game
+     * @return array
+     */
+    public function joinGame(Game_model $game): array
+    {
+
+        $success = false;
+
+        if ($this->getPlayerUid()) {
+
+            if ($game->getGameUid()) {
+
+                if (!$game->isFinished()) {
+
+                    if ($game->getNbPlayers() < $game->getMaxPlayers()) {
+
+                        $game->addPlayer($this);
+                        $success = true;
+                        $message = 'joining_game';
+
+                    } else {
+
+                        $message = 'error_game_full';
+                    }
+
+                } else {
+
+                    $message = 'error_game_finished';
+
+                }
+
+            } else {
+                $message = 'error_game_not_exists';
+            }
+
+        } else {
+            $message = 'error_not_logged_in';
+        }
+
+        return [
+            'success' => $success,
+            'message' => $message,
+        ];
+
+    }
+
     /**
      * @param int $gameUid
      * @param Role_model $newRole
@@ -309,7 +377,8 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return Role_model[]
      */
-    public function getArrRoleModel(int $gameUid) {
+    public function getArrRoleModel(int $gameUid): array
+    {
         if (!isset($this->arrRoleModel[$gameUid]) || empty($this->arrRoleModel[$gameUid])) {
             $this->initRoles($gameUid);
         }
@@ -349,7 +418,8 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return Role_model
      */
-    public function getCurrentRoleModel(int $gameUid) {
+    public function getCurrentRoleModel(int $gameUid): Role_model
+    {
         $arrRoleModel = $this->getArrRoleModel($gameUid);
 
         return end($arrRoleModel);
@@ -359,7 +429,8 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return string
      */
-    public function getOriginalRoleName(int $gameUid) {
+    public function getOriginalRoleName(int $gameUid): string
+    {
 
         return $this->getOriginalRoleModel($gameUid)->getName();
 
@@ -369,7 +440,8 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return Role_model
      */
-    public function getOriginalRoleModel(int $gameUid) {
+    public function getOriginalRoleModel(int $gameUid): Role_model
+    {
         $arrRoleModel = $this->getArrRoleModel($gameUid);
 
         return $arrRoleModel[0];
@@ -388,7 +460,8 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @return string
      */
-    public function getCurrentRoleName(int $gameUid) {
+    public function getCurrentRoleName(int $gameUid): string
+    {
 
         return $this->getCurrentRoleModel($gameUid)->getName();
 

@@ -4,6 +4,7 @@
  * @property Game_model $game
  * @property Player_model $player
  * @property AjaxResponse $ajax
+ * @property CI_Lang $lang
  *
  * @author Mâssieur Hunter
  */
@@ -17,7 +18,6 @@ class Ajax extends MY_Controller
         $this->lang->load('main');
         $this->load->library('ajaxResponse', NULL, 'ajax');
 
-        header('Content-Type: application/json');
         $this->executeMethod();
 
     }
@@ -40,6 +40,8 @@ class Ajax extends MY_Controller
             $data = $this->ajax->f($messageTranslation);
         }
 
+
+        header('Content-Type: application/json');
         // override HTTP status code
         http_response_code($data['code']);
 
@@ -58,17 +60,16 @@ class Ajax extends MY_Controller
         $this->lang->load('player');
         $messageTranslation = $this->lang->line($loginResult['message']);
 
-        if($loginResult['result']){
+        if ($loginResult['success']) {
             $this->ajax->success($messageTranslation);
             $this->ajax->redirect('/', 1500);
         } else {
             $this->ajax->error($messageTranslation);
         }
 
-        return $loginResult['result']
+        return $loginResult['success']
             ? $this->ajax->t()
             : $this->ajax->f($loginResult['message']);
-
 
     }
 
@@ -80,7 +81,37 @@ class Ajax extends MY_Controller
             ->setMaxPlayers($this->input->post_get('max-players'))
             ->create();
 
-        return $this->t([$this->game->getCode()]);
+        $this->lang->load('game');
+        $this->ajax->success($this->lang->line('game_created'));
+        $this->ajax->redirect('/game/join/' .$this->game->getCode(), 2000);
+
+        return $this->ajax->t([$this->game->getCode()]);
+
+    }
+
+    private function gameJoin()
+    {
+
+        $code = $this->input->post_get('game-code');
+        $this->load->model('game_model', 'game');
+
+        $this->game->initByCode($code);
+
+        $joinResult = $this->currentPlayer->joinGame($this->game);
+        $this->lang->load('game');
+        $messageTranslation = $this->lang->line($joinResult['message']);
+
+        if ($joinResult['success']) {
+            $this->session->set_userdata('gameCode', $code);
+            $this->ajax->success($messageTranslation);
+            $this->ajax->redirect('/game/play/', 1500);
+        } else {
+            $this->ajax->error($messageTranslation);
+        }
+
+        return $joinResult['success']
+            ? $this->ajax->t()
+            : $this->ajax->f($joinResult['message']);
 
     }
 

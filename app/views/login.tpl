@@ -2,8 +2,8 @@
 <h2 class="text-center">{$langMain['please_sign_in']}</h2>
 
 <div class="row">
-    <div class="col-lg-6 offset-lg-4 col-md-6 offset-md-3 border rounded p-5 my-5">
-        <form id="login-form" data-target="player/login" method="post">
+    <div class="col-lg-6 offset-lg-3 col-md-6 offset-md-3 border rounded p-5 my-5">
+        <form id="login-form" data-target="player/login" class="ajax-form">
             <div class="form-group">
                 <input class="form-control" name="name" value="" required placeholder="{$langMain['name']}" type="text">
             </div>

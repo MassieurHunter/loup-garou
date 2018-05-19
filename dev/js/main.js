@@ -8,6 +8,7 @@ let loupGraou = {
     this.forms = new Forms();
 
     this.listenCreateGame();
+      this.play();
 
   },
 
@@ -17,6 +18,12 @@ let loupGraou = {
       $('.nb-max-players').html(range.val());
     }).trigger('input')
   },
+
+  play() {
+      if($('#play-socket').val() === '1'){
+        let socket = io.connect('http://192.168.10.10:3000');
+      }
+  }
 
 
 }

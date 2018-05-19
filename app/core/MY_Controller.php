@@ -121,32 +121,12 @@ class MY_Controller extends CI_Controller
      */
     public function initCurrentGame() {
         $this->load->model('game_model', 'currentGame');
-        /*
-         * We check for the id cookie
-         * If it's there we set the id session
-         */
-        if ($this->input->cookie('gameCode')) {
-            $this->session->set_userdata('gameCode', $this->input->cookie('gameCode'));
-        }
-
 
         if ($this->session->has_userdata('gameCode')) {
             $gameCode = $this->session->userdata('gameCode');
             $this->currentGame->initByCode($gameCode);
         }
     }
-
-    /**
-     *
-     * @param string $param
-     * @param string $value
-     * @return \MY_Controller
-     */
-    public function addUrlParam($param, $value) {
-        $this->arrUrlParams[$param] = $value;
-        return $this;
-    }
-
 
     /**
      * Return execustion time from contruction of the controller

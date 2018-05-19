@@ -8,7 +8,7 @@ class Forms {
 
   constructor() {
 
-    this.forms = $('FORM');
+    this.forms = $('FORM.ajax-form');
 
     this.forms.each((index, element) => {
 

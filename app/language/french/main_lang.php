@@ -10,13 +10,14 @@ $lang['welcome'] = "Bienvenue";
  * join game page
  */
 $lang['join_game'] = "Rejoindre une partie";
+$lang['game_code'] = "Code de la partie";
+$lang['join'] = "Rejoindre";
+
 /*
  * create game page
  */
 $lang['create_game'] = "Créer une partie";
-$lang['max_players'] = "Nombre maximum de joueurs";
-$lang['game_code_is'] = "Le code de la partie est :";
-$lang['join_the_game'] = "Rejoindre la partie";
+$lang['max_players'] = "Nombre de joueurs";
 $lang['create'] = "Créer";
 
 /*
@@ -27,3 +28,12 @@ $lang['sign_in'] = "Se connecter";
 $lang['name'] = "Nom";
 $lang['password'] = "Mot de passe";
 
+/*
+ * Play game
+ */
+$lang['play_game'] = 'Jouer';
+$lang['nb_players'] = 'Nombre de joueurs';
+$lang['waiting_for_players'] = 'En attente des autres joueurs';
+$lang['action'] = 'Action';
+$lang['vote_for'] = 'Voter pour';
+$lang['vote'] = 'Voter';

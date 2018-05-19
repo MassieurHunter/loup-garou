@@ -1,5 +1,10 @@
 <?php
 /*
+ * Server
+ */
+defined('BASE_URL') OR define('BASE_URL', 'http://loup-garou.local/');
+defined('URI_PROTOCOL') OR define('URI_PROTOCOL', 'REQUEST_URL');
+/*
  * Database
  */
 defined('DB_HOST') OR define('DB_HOST', 'localhost');
