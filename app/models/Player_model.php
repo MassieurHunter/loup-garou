@@ -349,6 +349,15 @@ class Player_model extends MY_Model
 
     }
 
+    public function setSocketUid(Game_model $game, string $socketUid)
+    {
+        $this->db
+            ->set('socketUid', $socketUid)
+            ->where('gameUid', $game->getGameUid())
+            ->where('playerUid', $this->getPlayerUid())
+            ->update($this->player_games_table);
+    }
+
     /**
      * @param int $gameUid
      * @param Role_model $newRole

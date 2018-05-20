@@ -14,8 +14,6 @@ class Ajax extends MY_Controller
     public function __construct() {
         parent::__construct();
 
-
-        $this->lang->load('main');
         $this->load->library('ajaxResponse', NULL, 'ajax');
 
         $this->executeMethod();
@@ -57,7 +55,6 @@ class Ajax extends MY_Controller
 
         $loginResult = $this->currentPlayer->login($name, $password);
 
-        $this->lang->load('player');
         $messageTranslation = $this->lang->line($loginResult['message']);
 
         if ($loginResult['success']) {
@@ -81,7 +78,6 @@ class Ajax extends MY_Controller
             ->setMaxPlayers($this->input->post_get('max-players'))
             ->create();
 
-        $this->lang->load('game');
         $this->ajax->success($this->lang->line('game_created'));
         $this->ajax->redirect('/game/join/' .$this->game->getCode(), 2000);
 
@@ -98,7 +94,6 @@ class Ajax extends MY_Controller
         $this->game->initByCode($code);
 
         $joinResult = $this->currentPlayer->joinGame($this->game);
-        $this->lang->load('game');
         $messageTranslation = $this->lang->line($joinResult['message']);
 
         if ($joinResult['success']) {
@@ -112,6 +107,23 @@ class Ajax extends MY_Controller
         return $joinResult['success']
             ? $this->ajax->t()
             : $this->ajax->f($joinResult['message']);
+
+    }
+
+    private function socketConnection()
+    {
+
+        $socketUid = $this->input->post_get('socketUid');
+        $this->currentPlayer->setSocketUid($this->currentGame, $socketUid);
+
+        $socketClient = new SocketIO('localhost', 3000);
+
+        $socketClient->emit('playerConnected', [
+            'socketUid' => $socketUid,
+            'nbPlayers' => $this->currentGame->getNbPlayers(),
+        ]);
+
+        $this->ajax->t();
 
     }
 

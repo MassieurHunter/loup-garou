@@ -1,32 +1,37 @@
+DROP TABLE `games`;
 CREATE TABLE `games` (
-  `gameUid` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(10) DEFAULT NULL,
-	maxPlayers int DEFAULT '10',
-	nbPlayers int DEFAULT '0',
-	finished tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`gameUid`)
+`gameUid` int(11) NOT NULL AUTO_INCREMENT,
+`code` varchar(10) DEFAULT NULL,
+maxPlayers int DEFAULT '10',
+nbPlayers int DEFAULT '0',
+finished tinyint(1) DEFAULT '0',
+PRIMARY KEY (`gameUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE `games_players`;
 CREATE TABLE `games_players` (
   `gamePlayerUid` int(11) NOT NULL AUTO_INCREMENT,
   `gameUid` int(11) NOT NULL,
   `playerUid` int(11) NOT NULL,
+  `socketUid` varchar(25) NULL,
   PRIMARY KEY (`gamePlayerUid`),
   UNIQUE KEY `unique_player_game` (`gameUid`,`playerUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE `players`;
 CREATE TABLE `players` (
-  `playerUid` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`playerUid`)
+`playerUid` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(45) DEFAULT NULL,
+`password` varchar(255) DEFAULT NULL,
+PRIMARY KEY (`playerUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `players` VALUES
-  (1, 'Carte 1', 'XXXXX'),
-  (2, 'Carte 2', 'XXXXX'),
-  (3, 'Carte 3', 'XXXXX');
+(1, 'Carte 1', 'XXXXX'),
+(2, 'Carte 2', 'XXXXX'),
+(3, 'Carte 3', 'XXXXX');
 
+DROP TABLE `players_game_roles`;
 CREATE TABLE `players_game_roles` (
   `playersRoleUid` int(11) NOT NULL AUTO_INCREMENT,
   `playerUid` int(11) DEFAULT NULL,
@@ -36,6 +41,7 @@ CREATE TABLE `players_game_roles` (
   PRIMARY KEY (`playersRoleUid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE `roles`;
 CREATE TABLE `roles` (
   `roleUid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
@@ -63,6 +69,7 @@ INSERT INTO `roles` VALUES
   (10,'Chasseur','S’il meurt lors du vote, la personne contre qui il a voté meurt aussi.','chasseur',1,0,0,1, 90, 999),
   (11,'Franc Maçon','Pendant la nuit, il va prendre connaissance de l’identité de son semblable.','francmac',2,0,0,1, 100, 30);
 
+DROP TABLE `votes`;
 CREATE TABLE `votes` (
   `voteUid` int(11) NOT NULL AUTO_INCREMENT,
   `gameUid` int(11) DEFAULT NULL,

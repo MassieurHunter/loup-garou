@@ -376,7 +376,7 @@ if ( ! function_exists('is_cli'))
 	 *
 	 * @return 	bool
 	 */
-	function is_cli()
+        function is_cli()
 	{
 		return (PHP_SAPI === 'cli' OR defined('STDIN'));
 	}

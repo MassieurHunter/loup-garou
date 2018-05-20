@@ -87,10 +87,6 @@ class Ajax {
 
 		$.each(actions, (index, action) => {
 
-			console.log(target);
-			console.log(form);
-			console.log(action);
-
 			switch (action.method) {
 
 				case "error":

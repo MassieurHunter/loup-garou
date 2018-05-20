@@ -13,10 +13,8 @@ class Game extends MY_Controller
     public function __construct() {
         parent::__construct();
 
-        $this->lang->load('main');
-
         $this->template
-            ->setVar('langMain', $this->lang->language)
+            ->setVar('lang', $this->lang->language)
             ->setVar('header', $this->template->saveInVar('inc/header'))
             ->setVar('footer', $this->template->saveInVar('inc/footer'));
 
@@ -66,7 +64,6 @@ class Game extends MY_Controller
                 $this->session->set_userdata('gameCode', $code);
                 redirect('/game/play/');
             } else {
-                $this->lang->load('game');
                 $error = $this->lang->line($joinResult['message']);
             }
         }

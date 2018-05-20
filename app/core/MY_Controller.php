@@ -85,6 +85,7 @@ class MY_Controller extends CI_Controller
             ]
         );
 
+        $this->template->setVar('baseUrl', substr($this->config->item('base_url'), 0, -1));
         $this->initCurrentPlayer();
         $this->initCurrentGame();
 

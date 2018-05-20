@@ -1,17 +1,34 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+let http = require('http');
+let server = http.createServer();
+let io = require('socket.io').listen(server);
 
-io.on('connection', function(socket) {
-    console.log('A user connected');
+let clients = {};
 
-    //Whenever someone disconnects this piece of code executed
-    socket.on('disconnect', function () {
-        console.log('A user disconnected');
+io.sockets.on('connection', (socket) => {
+    clients[socket.id] = true;
+    console.log("user " + socket.id + " connected");
+
+    socket.emit('message', {
+        type: 'connection',
+        id: socket.id
     });
+
+    socket.on('playerConnected', () => {
+
+        delete clients[socket.id];
+        console.log("user " + socket.id + " disconnected")
+
+    });
+
+    socket.on('disconnect', () => {
+
+        delete clients[socket.id];
+        console.log("user " + socket.id + " disconnected")
+
+    });
+
 });
 
-
-http.listen(3000, function() {
+server.listen(3000, () => {
     console.log('listening on *:3000');
 });

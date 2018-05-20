@@ -12,4 +12,4 @@
 	</head>
 	<body>
 	<div class="container">
-		<h1 class="text-center">{$langMain['title']}</h1>
+		<h1 class="text-center">{$lang['title']}</h1>

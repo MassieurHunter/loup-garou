@@ -8,6 +8,14 @@
 class Player extends MY_Controller
 {
 
+    public function __construct()
+    {
+        if(!is_cli()) {
+            // echo 'Not allowed';
+            die('no');
+        }
+        parent::__construct();
+    }
 
     public function index() {
 
