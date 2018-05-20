@@ -18,7 +18,8 @@ class Loup_model extends Role_model
      * @param Player_model $oPlayer
      * @return string
      */
-    public function action($gameUid, $oPlayer) {
+    public function action(int $gameUid, Player_model $oPlayer): string
+    {
 
         return $this->getOtherLoup($gameUid, $oPlayer);
 
@@ -29,7 +30,8 @@ class Loup_model extends Role_model
      * @param Player_model $oPlayer
      * @return String
      */
-    private function getOtherLoup($gameUid, $oPlayer) {
+    private function getOtherLoup(int $gameUid, Player_model $oPlayer): string
+    {
 
         $otherLoup = $this->db
             ->select($oPlayer->table . '.*')
@@ -53,7 +55,8 @@ class Loup_model extends Role_model
      * @param int $cardNumber
      * @return string
      */
-    public function secondAction($gameUid, $cardNumber) {
+    public function secondAction(int $gameUid, int $cardNumber): string
+    {
 
         return $this->getOneMiddleCard($gameUid, $cardNumber);
 
@@ -66,8 +69,9 @@ class Loup_model extends Role_model
      *
      * @return string
      */
-    private function getOneMiddleCard($gameUid, $cardNumber) {
-        
+    private function getOneMiddleCard(int $gameUid, int $cardNumber): string
+    {
+
         $this->load->model('player_model', 'middleCard');
         $this->middleCard->init($cardNumber);
 

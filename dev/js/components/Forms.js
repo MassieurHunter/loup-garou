@@ -35,8 +35,6 @@ class Forms {
       //fields
       let fields = form.serializeArray();
 
-      console.log(fields);
-
       Ajax.post(target, fields, (aResponse) => {
 
 

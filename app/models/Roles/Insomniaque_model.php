@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Class Insomniaque_model
  */
@@ -11,7 +12,8 @@ class Insomniaque_model extends Role_model
      * @param Player_model $oPlayer
      * @return string
      */
-    public function action($gameUid, $oPlayer) {
+    public function action(int $gameUid, Player_model $oPlayer): string
+    {
         return $this->getCurrentRole($gameUid, $oPlayer);
     }
 
@@ -20,7 +22,8 @@ class Insomniaque_model extends Role_model
      * @param Player_model $oPlayer
      * @return string
      */
-    private function getCurrentRole($gameUid, $oPlayer) {
+    private function getCurrentRole(int $gameUid, Player_model $oPlayer): string
+    {
 
         return $oPlayer->getCurrentRoleName($gameUid);
 

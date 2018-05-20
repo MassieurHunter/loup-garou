@@ -68,7 +68,11 @@ gulp.task('styles:development', function () {
         ts: (new Date).getTime()
     };
 
-    return gulp.src(['./node_modules/bootstrap/dist/css/bootstrap.css', _styleSource + '/style.less'])
+    return gulp.src([
+        './node_modules/bootstrap/dist/css/bootstrap.css',
+        './node_modules/noty/lib/noty.css',
+        './node_modules/noty/lib/themes/bootstrap-v4.css',
+        _styleSource + '/style.less'])
         .pipe(less(lessConfig))
         .on('error', gutil.log.bind(gutil, 'Less Error'))
         .pipe(gulp.dest(_stylePublic))
@@ -99,7 +103,7 @@ gulp.task('serve', ['styles:development'], function () {
         proxy: "http://loup-garou.local/"
     });
 
-    gulp.watch(['./node_modules/bootstrap/dist/css/bootstrap.css'], [_styleSource + "/**/*.less"], ['styles:development']);
+    gulp.watch([_styleSource + "/**/*.less"], ['styles:development']);
 
     webpackConfig.watch = true;
 
@@ -120,7 +124,11 @@ gulp.task('styles:production', function () {
         ts: (new Date).getTime()
     };
 
-    return gulp.src(_styleSource + '/style.less')
+    return gulp.src([
+        './node_modules/bootstrap/dist/css/bootstrap.css',
+        './node_modules/noty/lib/noty.css',
+        './node_modules/noty/lib/themes/bootstrap-v4.css',
+        _styleSource + '/style.less'])
         .pipe(less(lessConfig))
         .on('error', gutil.log.bind(gutil, 'Less Error'))
         .pipe(sourcemaps.init())

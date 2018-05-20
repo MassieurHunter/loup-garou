@@ -16,7 +16,8 @@ class Francmac_model extends Role_model
      * @param Player_model $oPlayer
      * @return string
      */
-    public function action($gameUid, $oPlayer) {
+    public function action(int $gameUid, Player_model $oPlayer): string
+    {
         return $this->getOtherFrancMac($gameUid, $oPlayer)->getName();
     }
 
@@ -25,7 +26,8 @@ class Francmac_model extends Role_model
      * @param Player_model $oPlayer
      * @return Player_model
      */
-    private function getOtherFrancMac($gameUid, $oPlayer) {
+    private function getOtherFrancMac(int $gameUid, Player_model $oPlayer): Player_model
+    {
         $otherFrancMac = $this->db
             ->select($oPlayer->table . '.*')
             ->join($oPlayer->player_roles_table, $oPlayer->primary_key)

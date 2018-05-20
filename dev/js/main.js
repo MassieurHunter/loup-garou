@@ -1,12 +1,20 @@
 import Ajax from './tools/Ajax';
 import Forms from './components/Forms';
+import Noty from 'noty';
+import GameModel from './models/GameModel';
+import PlayerModel from './models/PlayerModel';
+import $ from 'jquery';
 
 let loupGraou = {
 
     init() {
         this.bootstrap = require('bootstrap');
-        this.jquery = require('jquery');
         this.forms = new Forms();
+
+        Noty.overrideDefaults({
+            theme: 'bootstrap-v4',
+            layout: 'bottom'
+        });
 
         this.listenCreateGame();
         this.play();
@@ -24,11 +32,28 @@ let loupGraou = {
         if ($('#play-socket').val() === '1') {
             let getUrl = window.location;
             let baseUrl = getUrl.protocol + "//" + getUrl.host;
-            let socket = io.connect( baseUrl + ':3000');
+            let socket = io.connect(baseUrl + ':3000');
             socket.on('message', (message) => {
-                switch (message.type){
+                switch (message.type) {
                     case 'connection' :
-                        Ajax.post('socket/connection', {'socketUid': message.id});
+                        Ajax.post('socket/connection', [], (response) => {
+                            socket.emit('playerJoined', response.data);
+                        });
+                        break;
+                    case 'playerJoined' :
+                        new Noty({
+                            type: 'info',
+                            text: message.text
+                        }).show();
+
+                        $('.nb-players').html(message.nbPlayers);
+
+                        if (message.gameReady) {
+                            Ajax.post('game/start', [], (response) => {
+
+                            });
+                        }
+
                         break;
                 }
             })

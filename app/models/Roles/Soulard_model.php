@@ -12,7 +12,7 @@ class Soulard_model extends Role_model
      * @param Player_model $oPlayer
      * @param int $cardNumber
      */
-    public function action($gameUid, $oPlayer, $cardNumber) {
+    public function action(int $gameUid, Player_model $oPlayer, int $cardNumber) {
         $this->switchWithMiddle($gameUid, $oPlayer, $cardNumber);
     }
 
@@ -21,7 +21,7 @@ class Soulard_model extends Role_model
      * @param Player_model $oPlayer
      * @param int $cardNumber
      */
-    public function switchWithMiddle($gameUid, $oPlayer, $cardNumber){
+    public function switchWithMiddle(int $gameUid, Player_model $oPlayer, int $cardNumber){
 
         $this->load->model('player_model', 'middleCard');
         $this->middleCard->init($cardNumber);

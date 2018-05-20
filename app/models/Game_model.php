@@ -46,6 +46,11 @@ class Game_model extends MY_Model
     /**
      * @var boolean
      */
+    protected $started;
+
+    /**
+     * @var boolean
+     */
     protected $finished;
 
     /**
@@ -65,13 +70,27 @@ class Game_model extends MY_Model
         'code' => 'getCode',
         'maxPlayers' => 'getMaxPlayers',
         'nbPlayers' => 'getNbPlayers',
+        'started' => 'isStarted',
         'finished' => 'isFinished',
+    ];
+
+    /**
+     * @var array
+     */
+    public $advanced = [
+        'code' => 'getCode',
+        'maxPlayers' => 'getMaxPlayers',
+        'nbPlayers' => 'getNbPlayers',
+        'started' => 'isStarted',
+        'finished' => 'isFinished',
+        'players' => 'getPlayersWithBasicInfos',
     ];
 
     /**
      * @return string
      */
-    public function getCode(): string {
+    public function getCode(): string
+    {
         return $this->code;
     }
 
@@ -80,7 +99,8 @@ class Game_model extends MY_Model
      * @param string $code
      * @return Game_model
      */
-    public function setCode(string $code): Game_model {
+    public function setCode(string $code): Game_model
+    {
         $this->code = $code;
         return $this;
     }
@@ -88,7 +108,8 @@ class Game_model extends MY_Model
     /**
      * @return $this
      */
-    public function generateCode(): Game_model {
+    public function generateCode(): Game_model
+    {
         $newCode = random_string();
         $this->setCode($newCode);
         return $this;
@@ -97,7 +118,8 @@ class Game_model extends MY_Model
     /**
      * @param $code
      */
-    public function initByCode(string $code) {
+    public function initByCode(string $code)
+    {
         $infos = $this->db
             ->where('code', $code)
             ->get($this->table)
@@ -109,7 +131,8 @@ class Game_model extends MY_Model
     /**
      * @param Player_model $oPlayer
      */
-    public function addPlayer(Player_model $oPlayer) {
+    public function addPlayer(Player_model $oPlayer)
+    {
         if (empty($this->arrPlayers)) {
             $this->initPlayers();
         }
@@ -133,7 +156,8 @@ class Game_model extends MY_Model
     /**
      * @return int
      */
-    public function getGameUid(): int {
+    public function getGameUid(): int
+    {
         return (int)$this->gameUid;
     }
 
@@ -141,7 +165,8 @@ class Game_model extends MY_Model
      * @param int $gameUid
      * @return Game_model
      */
-    public function setGameUid(int $gameUid): Game_model {
+    public function setGameUid(int $gameUid): Game_model
+    {
         $this->gameUid = $gameUid;
         return $this;
     }
@@ -149,7 +174,8 @@ class Game_model extends MY_Model
     /**
      * @return int
      */
-    public function getMaxPlayers(): int {
+    public function getMaxPlayers(): int
+    {
         return $this->maxPlayers;
     }
 
@@ -157,7 +183,8 @@ class Game_model extends MY_Model
      * @param int $maxPlayers
      * @return Game_model
      */
-    public function setMaxPlayers(int $maxPlayers): Game_model {
+    public function setMaxPlayers(int $maxPlayers): Game_model
+    {
         $this->maxPlayers = $maxPlayers;
         return $this;
     }
@@ -165,7 +192,8 @@ class Game_model extends MY_Model
     /**
      * @return int
      */
-    public function getNbPlayers(): int {
+    public function getNbPlayers(): int
+    {
         return $this->nbPlayers;
     }
 
@@ -173,7 +201,8 @@ class Game_model extends MY_Model
      * @param int $nbPlayers
      * @return Game_model
      */
-    public function setNbPlayers(int $nbPlayers): Game_model {
+    public function setNbPlayers(int $nbPlayers): Game_model
+    {
         $this->nbPlayers = $nbPlayers;
         return $this;
     }
@@ -181,7 +210,27 @@ class Game_model extends MY_Model
     /**
      * @return bool
      */
-    public function isFinished(): bool {
+    public function isStarted(): bool
+    {
+        return $this->started;
+    }
+
+    /**
+     * @param bool $started
+     * @return Game_model
+     */
+    public function setStarted(bool $started): Game_model
+    {
+        $this->started = $started;
+        return $this;
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isFinished(): bool
+    {
         return $this->finished;
     }
 
@@ -189,16 +238,42 @@ class Game_model extends MY_Model
      * @param bool $finished
      * @return Game_model
      */
-    public function setFinished(bool $finished): Game_model {
+    public function setFinished(bool $finished): Game_model
+    {
         $this->finished = $finished;
         return $this;
     }
 
+    public function start()
+    {
+
+        $this
+            ->setStarted(true)
+            ->addMiddleCards()
+            ->giveRoleToPlayers();
+
+    }
+
+    /**
+     * @return Game_model
+     */
+    public function addMiddleCards(): Game_model
+    {
+        $this->load->model('player_model', '_playerModel');
+        for ($i = 1; $i < 4; $i++) {
+            $card = clone $this->_playerModel;
+            $card->init($i);
+            $this->addPlayer($card);
+        }
+
+        return $this;
+    }
 
     /**
      *
      */
-    public function giveRoleToPlayers() {
+    public function giveRoleToPlayers()
+    {
 
         $arrRoles = $this->getRolesForCasting();
         $arrPlayer = $this->getPlayers();
@@ -217,7 +292,8 @@ class Game_model extends MY_Model
     /**
      * @return Role_model[]
      */
-    public function getRolesForCasting(): array {
+    public function getRolesForCasting(): array
+    {
         $arrRoles = $this->getRoles();
         $arrPlayers = $this->getPlayers();
         $nbPlayers = count($arrPlayers);
@@ -244,7 +320,8 @@ class Game_model extends MY_Model
     /**
      * @return Role_model[]
      */
-    public function getRoles(): array {
+    public function getRoles(): array
+    {
 
         if (empty($this->arrRoles)) {
             $this->initRoles();
@@ -257,7 +334,8 @@ class Game_model extends MY_Model
     /**
      *
      */
-    public function initRoles() {
+    public function initRoles()
+    {
         $this->load->model('Roles/role_model', '_roleModel');
 
         $arrRoles = $this->db
@@ -280,7 +358,8 @@ class Game_model extends MY_Model
     /**
      * @return Player_model[]
      */
-    public function getPlayers(): array {
+    public function getPlayers(): array
+    {
 
         if (empty($this->arrPlayers)) {
             $this->initPlayers();
@@ -291,9 +370,24 @@ class Game_model extends MY_Model
     }
 
     /**
+     * @return array
+     */
+    public function getPlayersWithBasicInfos(): array
+    {
+        $arrPlayers = [];
+
+        foreach ($this->getPlayers() as $playerUid => $player) {
+            $arrPlayers[] = $player->getBasicInfos();
+        }
+
+        return $arrPlayers;
+    }
+
+    /**
      *
      */
-    public function initPlayers() {
+    public function initPlayers()
+    {
         $this->load->model('player_model', '_playerModel');
 
         $arrPlayers = $this->db
@@ -315,7 +409,8 @@ class Game_model extends MY_Model
     /**
      * @return Role_model[]
      */
-    public function getRolesForRunning(): array {
+    public function getRolesForRunning(): array
+    {
         $arrRoles = $this->getRolesForCasting();
 
         $arrSort = [];

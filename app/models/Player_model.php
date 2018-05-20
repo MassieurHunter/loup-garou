@@ -40,7 +40,6 @@ class Player_model extends MY_Model
      */
     protected $name;
 
-
     /**
      * @var string
      */
@@ -55,30 +54,26 @@ class Player_model extends MY_Model
      * @var array
      */
     public $basics = [
+        'playerUid' => 'getPlayerUid',
         'name' => 'getName',
     ];
 
     /**
-     * Generate and return a key to autolog on the website
-     *
-     * @return string
+     * @var array
      */
-    public function getAutoLoginHash(): string
-    {
-        return sha1(
-            $this->getPlayerUid()
-            . ' toi pas changer assiette pour fromage'
-            . $this->getName()
-            . 'la fleur en bouquet fanne... et jamais de renait !'
-        );
-    }
+    public $advanced = [
+        'playerUid' => 'getPlayerUid',
+        'name' => 'getName',
+        'originalRole' => 'getOriginalRoleWithBasicInfos',
+        'currentRole' => 'getCurrentRoleWithBasicInfos',
+    ];
 
     /**
      * @return int
      */
     public function getPlayerUid(): int
     {
-        return (int) $this->playerUid;
+        return (int)$this->playerUid;
     }
 
     /**
@@ -287,13 +282,14 @@ class Player_model extends MY_Model
     /**
      *
      */
-    public function createCookieAndSession() {
+    public function createCookieAndSession()
+    {
 
         $autoLogCookie = [
-            'name'   => 'autoLog',
-            'value'  => $this->getPlayerUid() . ':' . $this->getPassword(),
+            'name' => 'autoLog',
+            'value' => $this->getPlayerUid() . ':' . $this->getPassword(),
             'expire' => strtotime('+1 year'),
-            'path'   => '/',
+            'path' => '/',
         ];
 
         $this->session->set_userdata('autoLog', $this->getPlayerUid() . ':' . $this->getPassword());
@@ -349,20 +345,12 @@ class Player_model extends MY_Model
 
     }
 
-    public function setSocketUid(Game_model $game, string $socketUid)
-    {
-        $this->db
-            ->set('socketUid', $socketUid)
-            ->where('gameUid', $game->getGameUid())
-            ->where('playerUid', $this->getPlayerUid())
-            ->update($this->player_games_table);
-    }
-
     /**
      * @param int $gameUid
      * @param Role_model $newRole
      */
-    public function addNewRole(int $gameUid, Role_model $newRole) {
+    public function addNewRole(int $gameUid, Role_model $newRole)
+    {
 
         $arrRoleModels = $this->getArrRoleModel($gameUid);
 
@@ -398,7 +386,8 @@ class Player_model extends MY_Model
     /**
      * @param int $gameUid
      */
-    public function initRoles(int $gameUid) {
+    public function initRoles(int $gameUid)
+    {
 
         $this->arrRoleModel[$gameUid] = [];
         $this->load->model('Roles/role_model', '_roleModel');
@@ -436,6 +425,15 @@ class Player_model extends MY_Model
 
     /**
      * @param int $gameUid
+     * @return array
+     */
+    public function getCurrentRoleWithBasicInfos(int $gameUid): array
+    {
+        return $this->getCurrentRoleModel($gameUid)->getBasicInfos();
+    }
+
+    /**
+     * @param int $gameUid
      * @return string
      */
     public function getOriginalRoleName(int $gameUid): string
@@ -458,8 +456,18 @@ class Player_model extends MY_Model
 
     /**
      * @param int $gameUid
+     * @return array
      */
-    public function executeOriginalRoleAction(int $gameUid) {
+    public function getOriginalRoleWithBasicInfos(int $gameUid): array
+    {
+        return $this->getOriginalRoleModel($gameUid)->getBasicInfos();
+    }
+
+    /**
+     * @param int $gameUid
+     */
+    public function executeOriginalRoleAction(int $gameUid)
+    {
 
         $this->getOriginalRoleModel($gameUid)->action();
 
@@ -482,7 +490,8 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @param int $targetUid
      */
-    public function vote(int $gameUid, int $targetUid) {
+    public function vote(int $gameUid, int $targetUid)
+    {
 
         $this->load->model('vote_model', 'newVote');
         $this->newVote
@@ -494,9 +503,25 @@ class Player_model extends MY_Model
 
     /**
      * @param int $gameUid
+     * @return bool
+     */
+    public function hasPlayed(int $gameUid) : bool {
+        $queryResult = $this->db
+            ->select('played')
+            ->where($this->primary_key, $this->getPlayerUid())
+            ->where('gameUid', $gameUid)
+            ->get($this->player_games_table)
+            ->row();
+
+        return $queryResult->played === '1';
+    }
+
+    /**
+     * @param int $gameUid
      * @param mixed ...$arguments
      */
-    public function roleAction(int $gameUid, ...$arguments) {
+    public function roleAction(int $gameUid, ...$arguments)
+    {
         return $this->getOriginalRoleModel($gameUid)->action(...$arguments);
     }
 
@@ -505,7 +530,8 @@ class Player_model extends MY_Model
      * @param int $gameUid
      * @param mixed ...$arguments
      */
-    public function roleSecondAction(int $gameUid, ...$arguments) {
+    public function roleSecondAction(int $gameUid, ...$arguments)
+    {
         return $this->getOriginalRoleModel($gameUid)->secondAction(...$arguments);
     }
 

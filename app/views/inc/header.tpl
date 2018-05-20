@@ -7,6 +7,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Loup Garou</title>
 		<link rel="stylesheet" href="/css/bootstrap.css">
+		<link rel="stylesheet" href="/css/noty.css">
+		<link rel="stylesheet" href="/css/bootstrap-v4.css">
 		<link rel="stylesheet" href="/css/style.css">
 		<base href="{$baseUrl}">
 	</head>

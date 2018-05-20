@@ -34,8 +34,10 @@
     "babel-plugin-transform-es2015-modules-strip": "^0.1.1",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.1.1",
+    "child_process": "^1.0.2",
     "express": "^4.16.3",
     "jquery": "^3.3.1",
+    "noty": "^3.2.0-beta",
     "popper.js": "^1.14.3",
     "socket.io": "^2.1.1"
   }

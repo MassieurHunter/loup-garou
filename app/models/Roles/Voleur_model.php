@@ -2,7 +2,6 @@
 
 class Voleur_model extends Role_model
 {
-
     /**
      * @var Player_model
      */
@@ -11,10 +10,11 @@ class Voleur_model extends Role_model
     /**
      * @param int $gameUid
      * @param Player_model $oPlayer
-     * @param int $cardNumber
+     * @param int $playerUid
      */
-    public function action($gameUid, $oPlayer, $cardNumber) {
-        $this->switchWithPlayer($gameUid, $oPlayer, $cardNumber);
+    public function action(int $gameUid, Player_model $oPlayer, int $playerUid)
+    {
+        $this->switchWithPlayer($gameUid, $oPlayer, $playerUid);
     }
 
     /**
@@ -22,7 +22,8 @@ class Voleur_model extends Role_model
      * @param Player_model $oPlayer
      * @param int $playerUid
      */
-    public function switchWithPlayer($gameUid, $oPlayer, $playerUid){
+    private function switchWithPlayer(int $gameUid, Player_model $oPlayer, int $playerUid)
+    {
 
         $this->load->model('player_model', 'otherPlayer');
         $this->otherPlayer->init($playerUid);

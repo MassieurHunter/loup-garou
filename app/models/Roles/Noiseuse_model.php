@@ -18,7 +18,8 @@ class Noiseuse_model extends Role_model
      * @param int $firstPlayerUid
      * @param int $secondPlayerUid
      */
-    public function action($gameUid, $firstPlayerUid, $secondPlayerUid) {
+    public function action(int $gameUid, int $firstPlayerUid, int $secondPlayerUid)
+    {
 
         $this->switchPlayersRole($gameUid, $firstPlayerUid, $secondPlayerUid);
 
@@ -29,7 +30,8 @@ class Noiseuse_model extends Role_model
      * @param int $firstPlayerUid
      * @param int $secondPlayerUid
      */
-    private function switchPlayersRole($gameUid, $firstPlayerUid, $secondPlayerUid){
+    private function switchPlayersRole(int $gameUid, int $firstPlayerUid, int $secondPlayerUid)
+    {
         $this->load->model('player_model', 'player1');
         $this->load->model('player_model', 'player2');
 

@@ -2,7 +2,6 @@
 
 class Sorciere_model extends Role_model
 {
-
     /**
      * @var Player_model
      */
@@ -18,7 +17,8 @@ class Sorciere_model extends Role_model
      * @param int $cardNumber
      * @return string
      */
-    public function action($gameUid, $cardNumber) {
+    public function action(int $gameUid, int $cardNumber): string
+    {
 
         return $this->getOneMiddleCard($gameUid, $cardNumber);
 
@@ -31,7 +31,8 @@ class Sorciere_model extends Role_model
      *
      * @return string
      */
-    private function getOneMiddleCard($gameUid, $cardNumber) {
+    private function getOneMiddleCard(int $gameUid, int $cardNumber)
+    {
 
         $this->load->model('player_model', 'middleCard');
         $this->middleCard->init($cardNumber);
@@ -45,7 +46,8 @@ class Sorciere_model extends Role_model
      * @param int $cardNumber
      * @param int $playerUid
      */
-    public function secondAction($gameUid, $cardNumber, $playerUid) {
+    public function secondAction(int $gameUid, int $cardNumber, int $playerUid)
+    {
 
         $this->switchPlayersRole($gameUid, $cardNumber, $playerUid);
 
@@ -56,7 +58,8 @@ class Sorciere_model extends Role_model
      * @param int $cardNumber
      * @param int $playerUid
      */
-    private function switchPlayersRole($gameUid, $cardNumber, $playerUid) {
+    private function switchPlayersRole(int $gameUid, int $cardNumber, int $playerUid)
+    {
         $this->load->model('player_model', 'middleCard');
         $this->load->model('player_model', 'player');
 

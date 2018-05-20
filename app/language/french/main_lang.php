@@ -37,3 +37,4 @@ $lang['waiting_for_players'] = 'En attente des autres joueurs';
 $lang['action'] = 'Action';
 $lang['vote_for'] = 'Voter pour';
 $lang['vote'] = 'Voter';
+$lang['your_role'] = "Votre Rôle";

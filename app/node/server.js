@@ -1,11 +1,23 @@
 let http = require('http');
 let server = http.createServer();
 let io = require('socket.io').listen(server);
-
 let clients = {};
+let games = {};
+let lang = {};
+
+const { exec } = require('child_process');
+
+exec('php index.php lang', (err, stdout, stderr) => {
+    if (err) {
+        // node couldn't execute the command
+        return;
+    }
+
+    lang = JSON.parse(stdout);
+});
+
 
 io.sockets.on('connection', (socket) => {
-    clients[socket.id] = true;
     console.log("user " + socket.id + " connected");
 
     socket.emit('message', {
@@ -13,16 +25,27 @@ io.sockets.on('connection', (socket) => {
         id: socket.id
     });
 
-    socket.on('playerConnected', () => {
+    socket.on('playerJoined', (data) => {
 
-        delete clients[socket.id];
-        console.log("user " + socket.id + " disconnected")
+        let Player = data.player;
+        let Game = data.game;
+        let roomUid = 'game' + Game.gameUid;
+
+        console.log('player ' + Player.name + ' joined the game with code ' + Game.code);
+
+        socket.join(roomUid);
+
+        socket.broadcast.to(roomUid).emit('message', {
+            type: 'playerJoined',
+            text: lang.player_joined_game.replace('*playername*', Player.name),
+            nbPlayers: Game.nbPlayers,
+            gameReady: Game.nbPlayers === Game.maxPlayers,
+        });
 
     });
 
     socket.on('disconnect', () => {
 
-        delete clients[socket.id];
         console.log("user " + socket.id + " disconnected")
 
     });

@@ -11,7 +11,8 @@
 class Ajax extends MY_Controller
 {
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->load->library('ajaxResponse', NULL, 'ajax');
@@ -20,10 +21,12 @@ class Ajax extends MY_Controller
 
     }
 
-    public function index(){
+    public function index()
+    {
     }
 
-    private function executeMethod() {
+    private function executeMethod()
+    {
         $target = $this->input->get_post('target');
 
         $method = lcfirst(str_replace('/', '', ucwords($target, '/')));
@@ -48,7 +51,8 @@ class Ajax extends MY_Controller
         die;
     }
 
-    private function playerLogin() {
+    private function playerLogin(): array
+    {
 
         $name = $this->input->post_get('name');
         $password = $this->input->post_get('password');
@@ -70,7 +74,8 @@ class Ajax extends MY_Controller
 
     }
 
-    private function gameCreate() {
+    private function gameCreate(): array
+    {
 
         $this->load->model('game_model', 'game');
         $this->game
@@ -79,13 +84,13 @@ class Ajax extends MY_Controller
             ->create();
 
         $this->ajax->success($this->lang->line('game_created'));
-        $this->ajax->redirect('/game/join/' .$this->game->getCode(), 2000);
+        $this->ajax->redirect('/game/join/' . $this->game->getCode(), 2000);
 
         return $this->ajax->t([$this->game->getCode()]);
 
     }
 
-    private function gameJoin()
+    private function gameJoin(): array
     {
 
         $code = $this->input->post_get('game-code');
@@ -110,21 +115,27 @@ class Ajax extends MY_Controller
 
     }
 
-    private function socketConnection()
+    private function socketConnection(): array
     {
 
-        $socketUid = $this->input->post_get('socketUid');
-        $this->currentPlayer->setSocketUid($this->currentGame, $socketUid);
-
-        $socketClient = new SocketIO('localhost', 3000);
-
-        $socketClient->emit('playerConnected', [
-            'socketUid' => $socketUid,
-            'nbPlayers' => $this->currentGame->getNbPlayers(),
+        return $this->ajax->t([
+            'game' => $this->currentGame->getBasicInfos(),
+            'player' => $this->currentPlayer->getBasicInfos(),
         ]);
 
-        $this->ajax->t();
+    }
 
+    private function gameStart(): array
+    {
+
+        if (!$this->currentGame->isStarted()) {
+            $this->currentGame->start();
+        }
+
+        return $this->ajax->t([
+            'game' => $this->currentGame->getAdvancedInfos(),
+            'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
+        ]);
     }
 
 }
