@@ -15,7 +15,7 @@ export default class RoleModel extends BaseModel {
         return this.getInt('firstAction') === 1;
     }
 
-    getModel(){
+    getModel() {
         return this.get('model');
     }
 
@@ -63,15 +63,34 @@ export default class RoleModel extends BaseModel {
         return this.getInt('loup') === 1;
     }
 
-    isTanneur() {
-        return this.getInt('tanneur') === 1;
+    getBootstrapClass() {
+        return this.get('bootstrapClass');
     }
 
 
-    display(){
+    displayName() {
+        let alert = new ABuilder('div', {
+            'class': 'alert alert-' + this.getBootstrapClass(),
+            'role': 'alert'
+        }, this.getName());
 
+        let col = new ABuilder('div', {
+            'class': 'col-lg-8 offset-lg-2 col-md-8 offset-md-2 mt-1',
+        }, alert);
 
-        let html
+        let row = new ABuilder('div', {
+            'class': 'row started',
+        }, col);
+
+        $('.play-game').html(row);
+    }
+
+    displayFirstAction(){
+
+    }
+
+    displaySecondAction(){
+
     }
 
 

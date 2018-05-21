@@ -15,4 +15,8 @@ export default class PlayerModel extends BaseModel {
         return new RoleModel(this.get('role'));
     }
 
+    setRole(role){
+        this.set('role', role);
+    }
+
 }

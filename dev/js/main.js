@@ -5,11 +5,13 @@ import GameModel from './models/GameModel';
 import PlayerModel from './models/PlayerModel';
 import $ from 'jquery';
 
-let loupGraou = {
+let loupGarou = {
 
     init() {
         this.bootstrap = require('bootstrap');
         this.forms = new Forms();
+        this.game = new GameModel();
+        this.player = new PlayerModel();
 
         Noty.overrideDefaults({
             theme: 'bootstrap-v4',
@@ -37,6 +39,7 @@ let loupGraou = {
                 switch (message.type) {
                     case 'connection' :
                         Ajax.post('socket/connection', [], (response) => {
+                            this.player = new PlayerModel(response.player);
                             socket.emit('playerJoined', response.data);
                         });
                         break;
@@ -50,7 +53,8 @@ let loupGraou = {
 
                         if (message.gameReady) {
                             Ajax.post('game/start', [], (response) => {
-
+                                this.game = new GameModel(response.game);
+                                this.player.setRole(response.role);
                             });
                         }
 
@@ -63,4 +67,4 @@ let loupGraou = {
 
 }
 
-loupGraou.init();
+loupGarou.init();

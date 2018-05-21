@@ -125,6 +125,7 @@ class Role_model extends MY_Model
         'loup' => 'isLoup',
         'villageois' => 'isVillageois',
         'tanneur' => 'isTanneur',
+        'bootstrapClass' => 'getBootstrapClass'
     ];
 
     /**
@@ -251,6 +252,28 @@ class Role_model extends MY_Model
     {
         $this->villageois = $villageois;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBootstrapClass(): string
+    {
+        if ($this->isLoup()) {
+
+            $class = 'dark';
+
+        } elseif ($this->isTanneur()) {
+
+            $class = 'warning';
+
+        } else {
+
+            $class = 'info';
+
+        }
+
+        return $class;
     }
 
     /**
