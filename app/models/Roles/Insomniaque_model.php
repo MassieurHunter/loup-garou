@@ -8,24 +8,23 @@ class Insomniaque_model extends Role_model
 {
 
     /**
-     * @param int $gameUid
-     * @param Player_model $oPlayer
-     * @return string
+     * @param array $arguments
+     * @return array
      */
-    public function action(int $gameUid, Player_model $oPlayer): string
+    public function firstAction($arguments): array
     {
-        return $this->getCurrentRole($gameUid, $oPlayer);
+        return $this->getCurrentRole($arguments['gameUid'], $arguments['currentPlayer']);
     }
 
     /**
      * @param int $gameUid
      * @param Player_model $oPlayer
-     * @return string
+     * @return array
      */
-    private function getCurrentRole(int $gameUid, Player_model $oPlayer): string
+    private function getCurrentRole(int $gameUid, Player_model $oPlayer): array
     {
 
-        return $oPlayer->getCurrentRoleName($gameUid);
+        return $oPlayer->getCurrentRoleWithBasicInfos($gameUid);
 
     }
 

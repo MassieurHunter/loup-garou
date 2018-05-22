@@ -13,14 +13,13 @@ class Sorciere_model extends Role_model
     public $player;
 
     /**
-     * @param int $gameUid
-     * @param int $cardNumber
-     * @return string
+     * @param array $arguments
+     * @return array
      */
-    public function action(int $gameUid, int $cardNumber): string
+    public function firstAction($arguments): array
     {
 
-        return $this->getOneMiddleCard($gameUid, $cardNumber);
+        return $this->getOneMiddleCard($arguments['gameUid'], $arguments['card_1']);
 
     }
 
@@ -29,27 +28,26 @@ class Sorciere_model extends Role_model
      * @param int $gameUid
      * @param int $cardNumber
      *
-     * @return string
+     * @return array
      */
-    private function getOneMiddleCard(int $gameUid, int $cardNumber)
+    private function getOneMiddleCard(int $gameUid, int $cardNumber) : array
     {
 
         $this->load->model('player_model', 'middleCard');
         $this->middleCard->init($cardNumber);
 
-        return $this->middleCard->getCurrentRoleName($gameUid);
+        return $this->middleCard->getCurrentRoleWithBasicInfos($gameUid);
 
     }
 
     /**
-     * @param int $gameUid
-     * @param int $cardNumber
-     * @param int $playerUid
+     * @param array $arguments
+     * @return array
      */
-    public function secondAction(int $gameUid, int $cardNumber, int $playerUid)
+    public function secondAction($arguments) : array
     {
 
-        $this->switchPlayersRole($gameUid, $cardNumber, $playerUid);
+        return $this->switchPlayersRole($arguments['gameUid'], $arguments['card_1'], $arguments['player_1']);
 
     }
 
@@ -57,8 +55,9 @@ class Sorciere_model extends Role_model
      * @param int $gameUid
      * @param int $cardNumber
      * @param int $playerUid
+     * @return array
      */
-    private function switchPlayersRole(int $gameUid, int $cardNumber, int $playerUid)
+    private function switchPlayersRole(int $gameUid, int $cardNumber, int $playerUid) : array
     {
         $this->load->model('player_model', 'middleCard');
         $this->load->model('player_model', 'player');
@@ -71,6 +70,11 @@ class Sorciere_model extends Role_model
 
         $this->middleCard->addNewRole($gameUid, $player2RoleModel);
         $this->player->addNewRole($gameUid, $player1RoleModel);
+
+        return [
+            $this->middleCard->getBasicInfos(),
+            $this->player->getBasicInfos()
+        ];
     }
 
 }

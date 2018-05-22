@@ -3,7 +3,6 @@
 //require('time-require');
 
 var fs = require('fs');
-var less = require('gulp-less');
 var gutil = require('gulp-util');
 var gulp = require('gulp');
 
@@ -22,9 +21,6 @@ var _stylePublic = _publicDir + '/css';
 var _scriptSource = _sourceDir + '/js';
 var _scriptPublic = _publicDir + '/js';
 
-var lessConfig = {
-    ie8compat: false
-};
 
 // webpack
 var webpackConfig = require('./webpack.config.js');
@@ -64,17 +60,13 @@ gulp.task('default', ['serve']);
 
 gulp.task('styles:development', function () {
 
-    lessConfig.globalVars = {
-        ts: (new Date).getTime()
-    };
 
     return gulp.src([
-        './node_modules/bootstrap/dist/css/bootstrap.css',
+        './node_modules/bootstrap/dist/css/bootstrap.min.css',
+        './node_modules/bootswatch/dist/*/*.min.css',
         './node_modules/noty/lib/noty.css',
         './node_modules/noty/lib/themes/bootstrap-v4.css',
-        _styleSource + '/style.less'])
-        .pipe(less(lessConfig))
-        .on('error', gutil.log.bind(gutil, 'Less Error'))
+        _styleSource + '/style.css'])
         .pipe(gulp.dest(_stylePublic))
         .pipe(browserSync.stream());
 
@@ -103,7 +95,7 @@ gulp.task('serve', ['styles:development'], function () {
         proxy: "http://loup-garou.local/"
     });
 
-    gulp.watch([_styleSource + "/**/*.less"], ['styles:development']);
+    gulp.watch([_styleSource + "/**/*.css"], ['styles:development']);
 
     webpackConfig.watch = true;
 
@@ -120,17 +112,13 @@ gulp.task('serve', ['styles:development'], function () {
 
 gulp.task('styles:production', function () {
 
-    lessConfig.globalVars = {
-        ts: (new Date).getTime()
-    };
 
     return gulp.src([
-        './node_modules/bootstrap/dist/css/bootstrap.css',
+        './node_modules/bootstrap/dist/css/bootstrap.min.css',
+        './node_modules/bootswatch/dist/*/*.min.css',
         './node_modules/noty/lib/noty.css',
         './node_modules/noty/lib/themes/bootstrap-v4.css',
-        _styleSource + '/style.less'])
-        .pipe(less(lessConfig))
-        .on('error', gutil.log.bind(gutil, 'Less Error'))
+        _styleSource + '/style.css'])
         .pipe(sourcemaps.init())
         .pipe(cssnano())
         .pipe(sourcemaps.write('.'))

@@ -465,16 +465,6 @@ class Player_model extends MY_Model
 
     /**
      * @param int $gameUid
-     */
-    public function executeOriginalRoleAction(int $gameUid)
-    {
-
-        $this->getOriginalRoleModel($gameUid)->action();
-
-    }
-
-    /**
-     * @param int $gameUid
      * @return string
      */
     public function getCurrentRoleName(int $gameUid): string
@@ -517,22 +507,22 @@ class Player_model extends MY_Model
     }
 
     /**
-     * @param int $gameUid
-     * @param mixed ...$arguments
+     * @param array $arguments
+     * @return array
      */
-    public function roleAction(int $gameUid, ...$arguments)
+    public function roleFirstAction($arguments) : array
     {
-        return $this->getOriginalRoleModel($gameUid)->action(...$arguments);
+        return $this->getOriginalRoleModel($arguments['gameUid'])->firstAction($arguments);
     }
 
     /**
      *
-     * @param int $gameUid
-     * @param mixed ...$arguments
+     * @param array $arguments
+     * @return array
      */
-    public function roleSecondAction(int $gameUid, ...$arguments)
+    public function roleSecondAction($arguments) : array
     {
-        return $this->getOriginalRoleModel($gameUid)->secondAction(...$arguments);
+        return $this->getOriginalRoleModel($arguments['gameUid'])->secondAction($arguments);
     }
 
 

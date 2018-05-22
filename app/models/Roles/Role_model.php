@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Role_model
+ *
+ * @property Log_model $log
+ *
+ */
 class Role_model extends MY_Model
 {
     /**
@@ -367,7 +373,7 @@ class Role_model extends MY_Model
      */
     public function getFirstActionName(): string
     {
-        return $this->firstActionName;
+        return $this->lang->line($this->firstActionName);
     }
 
     /**
@@ -408,7 +414,7 @@ class Role_model extends MY_Model
      */
     public function getSecondActionName(): string
     {
-        return $this->secondActionName;
+        return $this->lang->line($this->secondActionName);
     }
 
     /**
@@ -429,19 +435,77 @@ class Role_model extends MY_Model
 
 
     /**
-     * @param mixed ...$arguments
+     * @param array $arguments
+     * @return array
      */
-    public function action(...$arguments)
+    public function firstAction($arguments): array
     {
-        $this->getSubmodel()->action(...$arguments);
+        $return = [];
+
+        if ($this->getSubmodel()->hasFirstAction()) {
+            $this->logFirstAction($arguments);
+            $return = $this->getSubmodel()->firstAction($arguments);
+        }
+
+        return $return;
     }
 
     /**
-     * @param mixed ...$arguments
+     * @param array $arguments
+     * @return array
      */
-    public function secondAction(...$arguments)
+    public function secondAction($arguments): array
     {
-        $this->getSubmodel()->secondAction(...$arguments);
+        $return = [];
+
+        if ($this->getSubmodel()->hasSecondAction()) {
+            $this->logSecondAction($arguments);
+            $return = $this->getSubmodel()->secondAction($arguments);
+        }
+
+        return $return;
+    }
+
+    /**
+     * @param array $action
+     */
+    protected function logFirstAction(array $action)
+    {
+        $this->logAction(1, $action);
+    }
+
+    /**
+     * @param array $action
+     */
+    protected function logSecondAction(array $action)
+    {
+        $this->logAction(2, $action);
+    }
+
+    /**
+     * @param int $actionNumber
+     * @param array $actionInfos
+     */
+    protected function logAction(int $actionNumber, array $actionInfos)
+    {
+        $target1 = $this->getFirstActionTargetType() === 'player' ? $actionInfos['player_1'] : ($this->getFirstActionTargetType() === 'card' ? $actionInfos['card_1'] : 0);
+        $target2 = $this->getSecondActionTargetType() === 'player' ? $actionInfos['player_2'] : ($this->getSecondActionTargetType() === 'card' ? $actionInfos['card_2'] : 0);
+        $gameUid = $actionInfos['gameUid'];
+        /** @var Player_model $currentPlayer */
+        $currentPlayer = $actionInfos['currentPlayer'];
+
+        $this->load->model('log_model', 'log');
+
+        $this->log
+            ->setGameUid($gameUid)
+            ->setPlayerUid($currentPlayer->getPlayerUid())
+            ->setRoleUid($this->getRoleUid())
+            ->setAction($this->getFirstActionName())
+            ->setTarget1($target1)
+            ->setTarget2($target2)
+            ->create()
+        ;
+
     }
 
 

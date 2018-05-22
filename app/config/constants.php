@@ -90,3 +90,4 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
  */
 defined('PUBLIC_PATH') OR define('PUBLIC_PATH', FCPATH . 'public/');
 defined('IMG_PATH') OR define('IMG_PATH', PUBLIC_PATH . 'img/');
+defined('CSS_PATH') OR define('CSS_PATH', PUBLIC_PATH . 'css/');

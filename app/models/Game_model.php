@@ -83,7 +83,7 @@ class Game_model extends MY_Model
         'nbPlayers' => 'getNbPlayers',
         'started' => 'isStarted',
         'finished' => 'isFinished',
-        'players' => 'getPlayersWithBasicInfos',
+        'players' => 'getRealPlayersWithBasicInfos',
     ];
 
     /**
@@ -372,12 +372,14 @@ class Game_model extends MY_Model
     /**
      * @return array
      */
-    public function getPlayersWithBasicInfos(): array
+    public function getRealPlayersWithBasicInfos(): array
     {
         $arrPlayers = [];
 
         foreach ($this->getPlayers() as $playerUid => $player) {
-            $arrPlayers[] = $player->getBasicInfos();
+            if ($playerUid > 3) {
+                $arrPlayers[] = $player->getBasicInfos();
+            }
         }
 
         return $arrPlayers;

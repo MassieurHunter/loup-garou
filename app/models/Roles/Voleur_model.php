@@ -8,30 +8,32 @@ class Voleur_model extends Role_model
     public $otherPlayer;
 
     /**
-     * @param int $gameUid
-     * @param Player_model $oPlayer
-     * @param int $playerUid
+     * @param array $arguments
+     * @return array
      */
-    public function action(int $gameUid, Player_model $oPlayer, int $playerUid)
+    public function firstAction($arguments) : array
     {
-        $this->switchWithPlayer($gameUid, $oPlayer, $playerUid);
+        return $this->switchWithPlayer($arguments['gameUid'], $arguments['currentPlayer'], $arguments['player_1']);
     }
 
     /**
      * @param int $gameUid
      * @param Player_model $oPlayer
      * @param int $playerUid
+     * @return array
      */
-    private function switchWithPlayer(int $gameUid, Player_model $oPlayer, int $playerUid)
+    private function switchWithPlayer(int $gameUid, Player_model $oPlayer, int $playerUid) : array
     {
 
         $this->load->model('player_model', 'otherPlayer');
         $this->otherPlayer->init($playerUid);
-        $otherPlayerCardRole = $this->otherPlayer->getCurrentRoleModel($gameUid);
+        $otherPlayerRole = $this->otherPlayer->getCurrentRoleModel($gameUid);
         $playerRole = $oPlayer->getCurrentRoleModel($gameUid);
 
-        $oPlayer->addNewRole($gameUid, $otherPlayerCardRole);
+        $oPlayer->addNewRole($gameUid, $otherPlayerRole);
         $this->otherPlayer->addNewRole($gameUid, $playerRole);
+
+        return $otherPlayerRole->getBasicInfos();
 
     }
 

@@ -1,4 +1,4 @@
-DROP TABLE `games`;
+DROP TABLE IF EXISTS `games`;
 CREATE TABLE `games` (
   `gameUid`    int(11) NOT NULL AUTO_INCREMENT,
   `code`       varchar(10)      DEFAULT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE `games` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-DROP TABLE `games_players`;
+DROP TABLE IF EXISTS `games_players`;
 CREATE TABLE `games_players` (
   `gamePlayerUid` int(11)    NOT NULL AUTO_INCREMENT,
   `gameUid`       int(11)    NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE `games_players` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-DROP TABLE `players`;
+DROP TABLE IF EXISTS `players`;
 CREATE TABLE `players` (
   `playerUid` int(11) NOT NULL AUTO_INCREMENT,
   `name`      varchar(45)      DEFAULT NULL,
@@ -38,7 +38,7 @@ INSERT INTO `players` VALUES
   (2, 'Carte 2', 'XXXXX'),
   (3, 'Carte 3', 'XXXXX');
 
-DROP TABLE `players_game_roles`;
+DROP TABLE IF EXISTS `players_game_roles`;
 CREATE TABLE `players_game_roles` (
   `playersRoleUid` int(11) NOT NULL AUTO_INCREMENT,
   `playerUid`      int(11)          DEFAULT NULL,
@@ -50,7 +50,22 @@ CREATE TABLE `players_game_roles` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-DROP TABLE `roles`;
+DROP TABLE IF EXISTS `games_logs`;
+CREATE TABLE `games_logs` (
+  `gameLogUid` int(11) NOT NULL AUTO_INCREMENT,
+  `gameUid`    int(11)          DEFAULT NULL,
+  `playerUid`  int(11)          DEFAULT NULL,
+  `roleUid`    int(11)          DEFAULT NULL,
+  `action`     varchar(50)      DEFAULT NULL,
+  `target1`    int(11)          DEFAULT NULL,
+  `target2`    int(11)          DEFAULT NULL,
+  `date`       DATETIME         DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gameLogUid`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `roleUid`                int(11) NOT NULL AUTO_INCREMENT,
   `name`                   varchar(50)      DEFAULT NULL,
@@ -85,14 +100,14 @@ INSERT INTO `roles` VALUES
   (3, 'Noiseuse', 'Pendant la nuit, elle va pouvoir désigner deux personnes (elle peut se choisir elle-même) qui vont échanger de rôle. Elle ne prend pas connaissance des rôles échangés.', 'noiseuse', 1, 0, 0, 1, 1, 'switch_players', 'player', 2, 0, 0, '', '', 0, 0, 20, 60),
   (4, 'Tanneur', 'Il ne fait pas partie de l’équipe des villageois et ne gagne que s’il meurt lors du vote.', 'tanneur', 1, 0, 1, 0, 0, '', '', 0, 0, 0, '', '', 0, 0, 30, 999),
   (5, 'Soulard', 'Pendant la nuit, il va échanger son rôle avec l’un des rôles centraux sans en prendre connaissance.', 'soulard', 1, 0, 0, 1, 1, 'switch_with_card', 'card', 1, 0, 0, '', '', 0, 0, 40, 70),
-  (6, 'Insomniaque', 'A la fin de la nuit, il va prendre connaissance de son rôle final.', 'insomniaque', 1, 0, 0, 1, 1, 'see_your_card', 'player', 1, 1, 0, '', '', 0, 0, 50, 80),
-  (7, 'Voyante', 'Pendant la nuit, elle va pouvoir soit regarder le rôle d’un joueur, soit regarder 2 des 3 rôles centraux.', 'voyante', 1, 0, 0, 1, 1, 'see_player', 'player', 1, 0, 0, '', '', 0, 0, 50, 40),
+  (6, 'Insomniaque', 'A la fin de la nuit, il va prendre connaissance de son rôle final.', 'insomniaque', 1, 0, 0, 1, 1, 'see_your_role', 'player', 1, 1, 0, '', '', 0, 0, 50, 80),
+  (7, 'Voyante', 'Pendant la nuit, elle va pouvoir soit regarder le rôle d’un joueur, soit regarder 2 des 3 rôles centraux.', 'voyante', 1, 0, 0, 1, 1, 'choose_action', 'ajax', 1, 1, 1, '', '', 0, 0, 50, 40),
   (8, 'Doppelganger', 'Pendant la nuit, elle va copier le rôle et rejoindre l’équipe d’un autre joueur.', 'doppelganger', 1, 0, 0, 1, 1, 'copy_player_role', 'player', 1, 1, 1, 'new_role_action', 'role', 1, 0, 60, 0),
   (9, 'Sbire', 'Pendant la nuit, l’identité des loups lui est révélé. S’il meurt lors du vote et qu’aucun loup n’est tué, lui et les loups gagnent la partie. Si les loups ne sont pas joués, il ne gagne que si un autre joueur est tué.', 'sbire', 1, 1, 0, 0, 1, 'know_loups', 'player', 0, 1, 0, '', '', 0, 0, 70, 20),
   (10, 'Chasseur', 'S’il meurt lors du vote, la personne contre qui il a voté meurt aussi.', 'chasseur', 1, 0, 0, 1, 1, 'kill_someone', 'player', 1, 0, 0, '', '', 0, 0, 90, 999),
   (11, 'Franc Maçon', 'Pendant la nuit, il va prendre connaissance de l’identité de son semblable.', 'francmac', 2, 0, 0, 1, 1, 'know_other_francmac', 'player', 0, 1, 0, '', '', 0, 0, 100, 30);
 
-DROP TABLE `votes`;
+DROP TABLE IF EXISTS `votes`;
 CREATE TABLE `votes` (
   `voteUid`   int(11) NOT NULL AUTO_INCREMENT,
   `gameUid`   int(11)          DEFAULT NULL,

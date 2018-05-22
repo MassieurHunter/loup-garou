@@ -5,6 +5,7 @@
  *
  * @author Massieur Hunter
  * @property \Template $template Template engine
+ * @property \Themes $themes
  * @property \CI_Input $input
  * @property \Game_model $currentGame
  * @property \Player_model $currentPlayer
@@ -72,6 +73,7 @@ class MY_Controller extends CI_Controller
         $this->microtime = microtime(true);
         parent::__construct();
         $this->load->library('template');
+        $this->load->library('themes');
         $this->load->library('session');
         $this->load->helper(
             [
@@ -85,7 +87,9 @@ class MY_Controller extends CI_Controller
             ]
         );
 
-        $this->template->setVar('baseUrl', substr($this->config->item('base_url'), 0, -1));
+        $this->template
+            ->setVar('baseUrl', substr($this->config->item('base_url'), 0, -1))
+            ->setVar('themes', $this->themes->getThemes());
         $this->initCurrentPlayer();
         $this->initCurrentGame();
 

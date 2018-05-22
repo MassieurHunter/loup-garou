@@ -1,5 +1,7 @@
 <?php
 $lang['title'] = "Loup Garou";
+$lang['change_theme'] = "Thème";
+$lang['theme_default'] = "Défaut";
 
 /*
  * welcome page
@@ -38,3 +40,8 @@ $lang['action'] = 'Action';
 $lang['vote_for'] = 'Voter pour';
 $lang['vote'] = 'Voter';
 $lang['your_role'] = "Votre Rôle";
+$lang['player_1'] = 'Joueur 1';
+$lang['player_2'] = 'Joueur 2';
+$lang['card_1'] = 'Carte 1';
+$lang['card_2'] = 'Carte 2';
+$lang['do_nothing'] = 'Ne rien faire';

@@ -13,13 +13,13 @@ class Sbire_model extends Role_model
     public $loup2;
 
     /**
-     * @param int $gameUid
+     * @param array $arguments
      * @return array
      */
-    public function action(int $gameUid) : array
+    public function firstAction($arguments) : array
     {
 
-        return $this->getLoups($gameUid);
+        return $this->getLoups($arguments['gameUid']);
 
     }
 

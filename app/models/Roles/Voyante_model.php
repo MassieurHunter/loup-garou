@@ -22,9 +22,10 @@ class Voyante_model extends Role_model
     public $card2;
 
     /**
+     * @param array $arguments
      * @return array
      */
-    public function action()
+    public function firstAction($arguments): array
     {
         return $this->getActionChoices();
     }
@@ -52,17 +53,14 @@ class Voyante_model extends Role_model
     }
 
     /**
-     * @param string $mode
-     * @param int $gameUid
-     * @param int $firstCard
-     * @param int $secondCard
+     * @param array $arguments
      * @return array
      */
-    public function secondAction(string $mode, int $gameUid, int $firstCard, int $secondCard = 0): array
+    public function secondAction($arguments): array
     {
-        return $mode == 'onePlayerRole'
-            ? $this->getOnePlayerRole($gameUid, $firstCard)
-            : $this->getTwoMiddleCard($gameUid, $firstCard, $secondCard);
+        return $arguments['mode'] == 'onePlayerRole'
+            ? $this->getOnePlayerRole($arguments['gameUid'], $arguments['player_1'])
+            : $this->getTwoMiddleCard($arguments['gameUid'], $arguments['card_1'], $arguments['card_2']);
     }
 
     /**
@@ -76,9 +74,7 @@ class Voyante_model extends Role_model
         $this->load->model('player_model', 'player');
         $this->player->init($playerUid);
 
-        return [
-            $this->player->getCurrentRoleName($gameUid)
-        ];
+        $this->player->getCurrentRoleWithBasicInfos($gameUid);
     }
 
     /**
@@ -99,8 +95,8 @@ class Voyante_model extends Role_model
         $this->card2->init($secondCard);
 
         return [
-            $this->card1->getCurrentRoleModel($gameUid),
-            $this->card2->getCurrentRoleModel($gameUid),
+            $this->card1->getCurrentRoleWithBasicInfos($gameUid),
+            $this->card2->getCurrentRoleWithBasicInfos($gameUid),
         ];
 
 

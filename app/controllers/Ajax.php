@@ -136,6 +136,37 @@ class Ajax extends MY_Controller
             'game' => $this->currentGame->getAdvancedInfos(),
             'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
         ]);
+
+    }
+
+    private function playerActionFirst(): array
+    {
+
+        $arguments = $this->input->post();
+        $arguments['currentPlayer'] = $this->currentPlayer;
+        $arguments['gameUid'] = $this->currentGame->getGameUid();
+
+        $actionResponse = $this->currentPlayer->roleFirstAction($arguments);
+
+        return $actionResponse
+            ? $this->ajax->t($actionResponse)
+            : $this->ajax->f([]);
+
+    }
+
+    private function playerActionSecond(): array
+    {
+
+        $arguments = $this->input->post();
+        $arguments['currentPlayer'] = $this->currentPlayer;
+        $arguments['gameUid'] = $this->currentGame->getGameUid();
+
+        $actionResponse = $this->currentPlayer->roleSecondAction($arguments);
+
+        return $actionResponse
+            ? $this->ajax->t($actionResponse)
+            : $this->ajax->f([]);
+
     }
 
 }

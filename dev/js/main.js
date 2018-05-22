@@ -1,7 +1,6 @@
 import Ajax from './tools/Ajax';
 import Forms from './components/Forms';
 import Noty from 'noty';
-import GameModel from './models/GameModel';
 import PlayerModel from './models/PlayerModel';
 import $ from 'jquery';
 
@@ -10,7 +9,6 @@ let loupGarou = {
     init() {
         this.bootstrap = require('bootstrap');
         this.forms = new Forms();
-        this.game = new GameModel();
         this.player = new PlayerModel();
 
         Noty.overrideDefaults({
@@ -19,15 +17,34 @@ let loupGarou = {
         });
 
         this.listenCreateGame();
+        this.listenThemeChange();
         this.play();
 
     },
 
     listenCreateGame() {
-        $('.max-players-range').on('input', (event) => {
-            let range = $(event.target);
+        let range = $('.max-players-range');
+
+        range.on('input', (event) => {
             $('.nb-max-players').html(range.val());
         }).trigger('input')
+    },
+
+    listenThemeChange() {
+
+        let themeSelector = $('.themes-selector');
+
+        themeSelector.on('change', (event) => {
+
+            let themeStyle = $('link[data-type="theme"]');
+            themeStyle.attr('href', '');
+
+            if (themeSelector.val() !== '') {
+                themeStyle.attr('href', 'css/' + themeSelector.val() + '/bootstrap.min.css');
+            }
+
+        });
+
     },
 
     play() {
@@ -53,7 +70,7 @@ let loupGarou = {
 
                         if (message.gameReady) {
                             Ajax.post('game/start', [], (response) => {
-                                this.game = new GameModel(response.game);
+                                this.player.setGame(response.game);
                                 this.player.setRole(response.role);
                             });
                         }

@@ -22,6 +22,7 @@ io.sockets.on('connection', (socket) => {
 
     socket.emit('message', {
         type: 'connection',
+        lang: lang,
         id: socket.id
     });
 

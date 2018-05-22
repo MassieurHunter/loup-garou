@@ -85,13 +85,5 @@ export default class RoleModel extends BaseModel {
         $('.play-game').html(row);
     }
 
-    displayFirstAction(){
-
-    }
-
-    displaySecondAction(){
-
-    }
-
 
 }
