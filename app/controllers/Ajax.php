@@ -37,8 +37,10 @@ class Ajax extends MY_Controller
             $data = $this->{$method}();
 
         } else {
+
             $messageTranslation = $this->lang->line('unknown_method');
             $data = $this->ajax->f($messageTranslation);
+
         }
 
 
@@ -55,7 +57,7 @@ class Ajax extends MY_Controller
     {
 
         $name = $this->input->post_get('name');
-        $password = $this->input->post_get('password');
+        $password = $this->input->post('password');
 
         $loginResult = $this->currentPlayer->login($name, $password);
 
@@ -80,7 +82,7 @@ class Ajax extends MY_Controller
         $this->load->model('game_model', 'game');
         $this->game
             ->generateCode()
-            ->setMaxPlayers($this->input->post_get('max-players'))
+            ->setMaxPlayers($this->input->post('max-players'))
             ->create();
 
         $this->ajax->success($this->lang->line('game_created'));
@@ -93,7 +95,7 @@ class Ajax extends MY_Controller
     private function gameJoin(): array
     {
 
-        $code = $this->input->post_get('game-code');
+        $code = $this->input->post('game-code');
         $this->load->model('game_model', 'game');
 
         $this->game->initByCode($code);
@@ -119,6 +121,7 @@ class Ajax extends MY_Controller
     {
 
         return $this->ajax->t([
+            'lang' => $this->lang->language,
             'game' => $this->currentGame->getBasicInfos(),
             'player' => $this->currentPlayer->getBasicInfos(),
         ]);
@@ -135,6 +138,7 @@ class Ajax extends MY_Controller
         return $this->ajax->t([
             'game' => $this->currentGame->getAdvancedInfos(),
             'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
+            'firstRole' => $this->currentGame->getFirstRole(),
         ]);
 
     }
@@ -147,6 +151,12 @@ class Ajax extends MY_Controller
         $arguments['gameUid'] = $this->currentGame->getGameUid();
 
         $actionResponse = $this->currentPlayer->roleFirstAction($arguments);
+
+        $this->ajax->socketMessage('playerPlayedFirstAction', [
+            'game' => $this->currentGame->getBasicInfos(),
+            'player' => $this->currentPlayer->getBasicInfos(),
+            'role' => $this->currentPlayer->getOriginalRoleModel($this->currentGame->getGameUid()),
+        ]);
 
         return $actionResponse
             ? $this->ajax->t($actionResponse)
@@ -162,10 +172,44 @@ class Ajax extends MY_Controller
         $arguments['gameUid'] = $this->currentGame->getGameUid();
 
         $actionResponse = $this->currentPlayer->roleSecondAction($arguments);
+        $originalRoleModel = $this->currentPlayer->getOriginalRoleModel($this->currentGame->getGameUid());
+
+        $this->ajax->socketMessage('playerFinishedTurn', [
+            'game' => $this->currentGame->getBasicInfos(),
+            'player' => $this->currentPlayer->getBasicInfos(),
+            'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
+            'nextRole' => $this->currentGame->getNextRole($originalRoleModel->getModel())
+        ]);
 
         return $actionResponse
             ? $this->ajax->t($actionResponse)
             : $this->ajax->f([]);
+
+    }
+
+    private function gameNextRole(): array
+    {
+        $originalRoleModel = $this->currentPlayer->getOriginalRoleModel($this->currentGame->getGameUid());
+
+        return $this->ajax->t(
+            $this->currentGame->getNextRole($originalRoleModel->getModel())
+        );
+
+    }
+
+    private function playerVote(): array
+    {
+        $this->load->model('player_model', 'player');
+        $gameUid = $this->currentGame->getGameUid();
+        $targetUid = $this->input->post('targetUid');
+        $this->player->init($targetUid);
+        $this->currentPlayer->vote($gameUid, $targetUid);
+
+        return $this->ajax->t(
+            [
+                $this->player->getBasicInfos()
+            ]
+        );
 
     }
 

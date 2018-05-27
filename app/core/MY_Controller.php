@@ -88,6 +88,7 @@ class MY_Controller extends CI_Controller
         );
 
         $this->template
+            ->setVar('timestamp', time())
             ->setVar('baseUrl', substr($this->config->item('base_url'), 0, -1))
             ->setVar('themes', $this->themes->getThemes());
         $this->initCurrentPlayer();

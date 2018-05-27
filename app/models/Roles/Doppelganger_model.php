@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Class Doppelganger_model
+ *
+ * @property Player_model $otherPlayer
+ */
 class Doppelganger_model extends Role_model
 {
 
@@ -7,7 +12,7 @@ class Doppelganger_model extends Role_model
      * @param array $arguments
      * @return array
      */
-    public function firstAction($arguments) : array
+    public function firstAction($arguments): array
     {
         return $this->copyPlayerRole($arguments['gameUid'], $arguments['currentPlayer'], $arguments['player_1']);
     }
@@ -18,7 +23,7 @@ class Doppelganger_model extends Role_model
      * @param int $playerUid
      * @return array
      */
-    private function copyPlayerRole(int $gameUid, Player_model $oPlayer, int $playerUid) : array
+    private function copyPlayerRole(int $gameUid, Player_model $oPlayer, int $playerUid): array
     {
 
         $this->load->model('player_model', 'otherPlayer');
@@ -28,7 +33,12 @@ class Doppelganger_model extends Role_model
 
         $oPlayer->addNewRole($gameUid, $otherPlayerCardRole);
 
-        return $otherPlayerCardRole->getBasicInfos();
+        return [
+            'type' => 'playerAndRole',
+            'number' => 1,
+            'player_1' => $this->otherPlayer->getBasicInfos(),
+            'role_1' => $otherPlayerCardRole->getBasicInfos(),
+        ];
 
     }
 

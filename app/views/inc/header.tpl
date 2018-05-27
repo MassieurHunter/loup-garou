@@ -7,10 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Loup Garou</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" data-type="theme" href="">
     <link rel="stylesheet" href="/css/noty.css">
     <link rel="stylesheet" href="/css/bootstrap-v4.css">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" data-type="theme" href="">
+    <link rel="stylesheet" href="/css/style.css?v={$timestamp}">
     <base href="{$baseUrl}">
 </head>
 <body>

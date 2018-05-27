@@ -1,17 +1,13 @@
 <?php
 
+/**
+ * Class Loup_model
+ *
+ * @property Player_model $otherLoup
+ * @property Player_model $middleCard
+ */
 class Loup_model extends Role_model
 {
-
-    /**
-     * @var Player_model
-     */
-    public $otherLoup;
-
-    /**
-     * @var Player_model
-     */
-    public $middleCard;
 
     /**
      * @param array $arguments
@@ -45,7 +41,11 @@ class Loup_model extends Role_model
         $this->load->model('player_model', 'otherLoup');
         $this->otherLoup->init(false, $otherLoup);
 
-        return $this->otherLoup->getBasicInfos();
+        return [
+            'type' => 'player',
+            'number' => 1,
+            'player_1' => $this->otherLoup->getBasicInfos(),
+        ];
 
     }
 
@@ -73,8 +73,12 @@ class Loup_model extends Role_model
         $this->load->model('player_model', 'middleCard');
         $this->middleCard->init($cardNumber);
 
-        return $this->middleCard->getCurrentRoleWithBasicInfos($gameUid);
-
+        return [
+            'type' => 'cardRole',
+            'number' => 1,
+            'card_1' => $this->middleCard->getBasicInfos(),
+            'role_1' => $this->middleCard->getCurrentRoleWithBasicInfos($gameUid),
+        ];
     }
 
 

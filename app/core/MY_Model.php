@@ -30,9 +30,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class MY_Model extends CI_Model
 {
 
-    const TABLE_FIELD_SEPARATOR  = '_-_';
+    const TABLE_FIELD_SEPARATOR = '_-_';
     const GROUP_CONCAT_SEPARATOR = '|---|';
-    const CONCAT_SEPARATOR       = '|-|';
+    const CONCAT_SEPARATOR = '|-|';
     /** @var null
      * Sets table name
      */
@@ -45,7 +45,7 @@ class MY_Model extends CI_Model
      * Sets PRIMARY KEY
      */
     public $primary_key = 'id';
-    public $lang        = '';
+    public $lang = '';
     /**
      * 1:1 relationship
      * example :
@@ -92,16 +92,16 @@ class MY_Model extends CI_Model
      * @var array
      */
     public $has_many_pivot = [];
-    public $apis           = [];
-    public $apiInfos       = [];
-    public $veryBasics     = [];
+    public $apis = [];
+    public $apiInfos = [];
+    public $veryBasics = [];
     public $veryBasicInfos = [];
-    public $basics         = [];
-    public $basicInfos     = [];
-    public $advanced       = [];
-    public $advancedInfos  = [];
-    public $arrFields      = [];
-    public $uniqueID       = '';
+    public $basics = [];
+    public $basicInfos = [];
+    public $advanced = [];
+    public $advancedInfos = [];
+    public $arrFields = [];
+    public $uniqueID = '';
     /**
      *
      * @var float
@@ -120,7 +120,8 @@ class MY_Model extends CI_Model
      */
     protected $requiredFields = [];
 
-    public function __construct($arrParams = []) {
+    public function __construct($arrParams = [])
+    {
         $this->microtime = microtime(true);
         parent::__construct();
         $this->load->library('session');
@@ -149,7 +150,8 @@ class MY_Model extends CI_Model
     /**
      *
      */
-    protected function initArrFields() {
+    protected function initArrFields()
+    {
         if ($this->table) {
             $this->arrFields = $this->db->list_fields($this->table);
         }
@@ -162,7 +164,8 @@ class MY_Model extends CI_Model
      * @param array|object $arrParams array of parama if you don't provide the primary key (faster if you already have the datas from a SQL query )
      * @return self
      */
-    public function init($pkValue = false, $arrParams = []) {
+    public function init($pkValue = false, $arrParams = [])
+    {
         /*
          * If we give the value of the primary key we execute the SQL query to get all the datas
          */
@@ -408,11 +411,12 @@ class MY_Model extends CI_Model
      * @param string $name
      * @param mixed $arguments
      */
-    public function __call($name, $arguments) {
+    public function __call($name, $arguments)
+    {
         if (method_exists($this, $name)) {
             $this->$name($arguments);
         } else {
-            echo "\n***** METHOD " . get_class($this) . '::' . $name . " does not exist! *****\n";
+            echo "\n***** METHOD " . get_class($this) . '::' . $name . " does not exist! *****\nStack: " . debug_print_backtrace();
         }
     }
 
@@ -423,7 +427,8 @@ class MY_Model extends CI_Model
      * @param string $alias
      * @return array
      */
-    public function getArrFieldsWithAlias($alias) {
+    public function getArrFieldsWithAlias($alias)
+    {
         $arrFields = $this->getArrFields();
         foreach ($arrFields as $key => $field) {
             $arrFields[$key] = $alias . '.' . $field;
@@ -437,7 +442,8 @@ class MY_Model extends CI_Model
      *
      * @return array
      */
-    public function getArrFields() {
+    public function getArrFields()
+    {
         if (empty($this->arrFields)) {
             $this->initArrFields();
         }
@@ -451,7 +457,8 @@ class MY_Model extends CI_Model
      * @param string $tableAlias
      * @return string
      */
-    public function getFieldsForSql($tableAlias = null) {
+    public function getFieldsForSql($tableAlias = null)
+    {
         $arrFields = $this->getArrFields();
 
         $sqlFields = '';
@@ -475,7 +482,8 @@ class MY_Model extends CI_Model
      * @param string $tableAlias
      * @return string
      */
-    public function getFieldsForSqlWithPrefix($prefix, $tableAlias = null) {
+    public function getFieldsForSqlWithPrefix($prefix, $tableAlias = null)
+    {
         $arrFields = $this->getArrFields();
         $arrFieldsPrefix = $this->getArrFieldsWithPrefix($prefix);
 
@@ -498,7 +506,8 @@ class MY_Model extends CI_Model
      * @param string $prefix
      * @return array
      */
-    public function getArrFieldsWithPrefix($prefix) {
+    public function getArrFieldsWithPrefix($prefix)
+    {
         $arrFields = $this->getArrFields();
         foreach ($arrFields as $key => $field) {
             $arrFields[$key] = $prefix . self::TABLE_FIELD_SEPARATOR . $field;
@@ -514,7 +523,8 @@ class MY_Model extends CI_Model
      * @param boolean $useGroupSeparator
      * @return string
      */
-    public function getGroupConcat($tableAlias = null, $distinct = false, $useGroupSeparator = false) {
+    public function getGroupConcat($tableAlias = null, $distinct = false, $useGroupSeparator = false)
+    {
         $arrFields = $this->getArrFields();
 
         $groupConcat = $distinct ? 'GROUP_CONCAT(DISTINCT(CONCAT(' : 'GROUP_CONCAT(CONCAT(';
@@ -536,7 +546,8 @@ class MY_Model extends CI_Model
      * @param string $tableAlias
      * @return string
      */
-    public function getConcat($tableAlias = false) {
+    public function getConcat($tableAlias = false)
+    {
         $arrFields = $this->getArrFields();
 
         $concat = 'CONCAT(';
@@ -557,7 +568,8 @@ class MY_Model extends CI_Model
      * @param boolean $distinct
      * @return string
      */
-    public function groupConcatColumns($arrColumns, $distinct = false, $useGroupSeparator = false) {
+    public function groupConcatColumns($arrColumns, $distinct = false, $useGroupSeparator = false)
+    {
         $groupConcat = $distinct ? 'GROUP_CONCAT(DISTINCT(CONCAT(' : 'GROUP_CONCAT(CONCAT(';
 
         foreach ($arrColumns as $key => $field) {
@@ -575,7 +587,8 @@ class MY_Model extends CI_Model
      *
      * @return int
      */
-    public function getID() {
+    public function getID()
+    {
         return $this->getPrimaryKeyValue();
     }
 
@@ -584,7 +597,8 @@ class MY_Model extends CI_Model
      *
      * @return int
      */
-    public function getPrimaryKeyValue() {
+    public function getPrimaryKeyValue()
+    {
         return $this->{$this->primary_key};
     }
 
@@ -592,7 +606,8 @@ class MY_Model extends CI_Model
      * If the primary key is taken we do an update
      * if not we create a new line
      */
-    public function saveOrCreate() {
+    public function saveOrCreate()
+    {
         $checkExists = $this->db
             ->select($this->primary_key)
             ->from($this->table)
@@ -611,7 +626,8 @@ class MY_Model extends CI_Model
      * Save the modification of the object in the database
      * @return boolean TRUE on success, FALSE on failure
      */
-    public function saveModifications() {
+    public function saveModifications()
+    {
         $arrCurrentDatas = $this->db
             ->where($this->primary_key, $this->getPrimaryKeyValue())
             ->get($this->table)
@@ -640,7 +656,8 @@ class MY_Model extends CI_Model
     /**
      * Create an entry in the database
      */
-    public function create() {
+    public function create()
+    {
         $arrfields = $this->getArrFields();
 
         $insert = false;
@@ -668,7 +685,8 @@ class MY_Model extends CI_Model
      *
      * @return array
      */
-    public function getInfos($advanced = false) {
+    public function getInfos($advanced = false)
+    {
         return $advanced ? $this->getAdvanceInfos() : $this->getBasicInfos();
     }
 
@@ -677,7 +695,8 @@ class MY_Model extends CI_Model
      *
      * @return array
      */
-    public function getBasicInfos() {
+    public function getBasicInfos()
+    {
         /*
          * Checks if the primarykey property exist (not badly written)
          * And if the basicInfos variable exists (not implemented in older models)
@@ -696,7 +715,8 @@ class MY_Model extends CI_Model
     /**
      *
      */
-    public function initBasicInfo() {
+    public function initBasicInfo()
+    {
         foreach ($this->basics as $attribute => $getter) {
             $this->basicInfos[$attribute] = $this->$getter();
         }
@@ -707,7 +727,8 @@ class MY_Model extends CI_Model
      *
      * @return array
      */
-    public function getApiInfos() {
+    public function getApiInfos()
+    {
         /*
          * Checks if the primarykey property exist (not badly written)
          * And if the apiInfos variable exists (not implemented in older models)
@@ -726,7 +747,8 @@ class MY_Model extends CI_Model
     /**
      *
      */
-    public function initApiInfo() {
+    public function initApiInfo()
+    {
         foreach ($this->apis as $attribute => $getter) {
             $this->apiInfos[$attribute] = $this->$getter();
         }
@@ -737,7 +759,8 @@ class MY_Model extends CI_Model
      *
      * @return array
      */
-    public function getVeryBasicInfos() {
+    public function getVeryBasicInfos()
+    {
         /*
          * Checks if the primarykey property exist (not badly written)
          * And if the veryBasicInfos variable exists (not implemented in older models)
@@ -756,7 +779,8 @@ class MY_Model extends CI_Model
     /**
      *
      */
-    public function initVeryBasicInfo() {
+    public function initVeryBasicInfo()
+    {
         foreach ($this->veryBasics as $attribute => $getter) {
             $this->veryBasicInfos[$attribute] = $this->$getter();
         }
@@ -767,7 +791,8 @@ class MY_Model extends CI_Model
      *
      * @return array
      */
-    public function getAdvancedInfos() {
+    public function getAdvancedInfos()
+    {
         /*
          * Checks if the primarykey property exist (not badly written)
          * And if the basicInfos variable exists (not implemented in older models)
@@ -786,7 +811,8 @@ class MY_Model extends CI_Model
     /**
      *
      */
-    public function initAdvancedInfo() {
+    public function initAdvancedInfo()
+    {
         foreach ($this->advanced as $attribute => $getter) {
             $this->advancedInfos[$attribute] = $this->$getter();
         }
@@ -796,7 +822,8 @@ class MY_Model extends CI_Model
      *
      * @return string
      */
-    public function getUniqueID() {
+    public function getUniqueID()
+    {
         return $this->uniqueID;
     }
 
@@ -805,7 +832,8 @@ class MY_Model extends CI_Model
      * @param string $uniqueID
      * @return \MY_Model
      */
-    public function setUniqueID($uniqueID) {
+    public function setUniqueID($uniqueID)
+    {
         $this->uniqueID = $uniqueID;
         return $this;
     }
@@ -815,7 +843,8 @@ class MY_Model extends CI_Model
      * @param boolean $default
      * @return array
      */
-    public function getSqlInfos($default = false) {
+    public function getSqlInfos($default = false)
+    {
         $arrfields = $this->getArrFields();
 
         $arrInfos = [];
@@ -832,7 +861,8 @@ class MY_Model extends CI_Model
      * Generic delete method
      * Delete the line in the database
      */
-    public function delete() {
+    public function delete()
+    {
         $this->db
             ->where($this->primary_key, $this->getPrimaryKeyValue())
             ->delete($this->table);
@@ -844,7 +874,8 @@ class MY_Model extends CI_Model
      * @param boolean $last (get interval from the last time this method was called)
      * @return string
      */
-    public function microtimePassed($last = false) {
+    public function microtimePassed($last = false)
+    {
         $microtimeTest = $last ? $this->lastMicrotime : $this->microtime;
         $microtimePassed = microtime(true) - $microtimeTest;
         $this->lastMicrotime = microtime(true);

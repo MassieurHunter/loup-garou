@@ -1,20 +1,17 @@
 <?php
 
+/**
+ * Class Noiseuse_model
+ *
+ *  @property Player_model $player1
+ *  @property Player_model $player2
+ */
 class Noiseuse_model extends Role_model
 {
 
     /**
-     * @var Player_model
-     */
-    public $player1;
-
-    /**
-     * @var Player_model
-     */
-    public $player2;
-
-    /**
      * @param array $arguments
+     * @return array
      */
     public function firstAction($arguments): array
     {
@@ -45,8 +42,10 @@ class Noiseuse_model extends Role_model
         $this->player2->addNewRole($gameUid, $player1RoleModel);
 
         return [
-            $this->player1->getBasicInfos(),
-            $this->player2->getBasicInfos(),
+            'type' => 'player',
+            'number' => 2,
+            'player_1' => $this->player1->getBasicInfos(),
+            'player_2' => $this->player2->getBasicInfos(),
         ];
     }
 

@@ -148,8 +148,21 @@ class Game_model extends MY_Model
 
         $this->arrPlayers[$oPlayer->getPlayerUid()] = $oPlayer;
 
+        $nbRealPlayers = 0;
+
+        foreach ($this->arrPlayers as $player){
+
+            if($player->getPlayerUid() > 3){
+
+                $nbRealPlayers++;
+
+            }
+
+        }
+
+
         $this
-            ->setNbPlayers(count($this->arrPlayers))
+            ->setNbPlayers($nbRealPlayers)
             ->saveModifications();
     }
 
@@ -339,7 +352,7 @@ class Game_model extends MY_Model
         $this->load->model('Roles/role_model', '_roleModel');
 
         $arrRoles = $this->db
-            ->get($this->_role->table)
+            ->get($this->_roleModel->table)
             ->result();
 
         foreach ($arrRoles as $role) {
@@ -427,6 +440,47 @@ class Game_model extends MY_Model
 
 
         return $arrRoles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFirstRole(): array{
+        $arrRolesForRunning = $this->getRolesForRunning();
+        return $arrRolesForRunning[0]->getBasicInfos();
+    }
+
+    /**
+     * @param string $role
+     * @return array
+     */
+    public function getNextRole(string $role): array
+    {
+        $arrRolesForRunning = $this->getRolesForRunning();
+        $nextRole = [];
+
+        foreach ($arrRolesForRunning as $key => $roleModel) {
+
+            if ($roleModel->getModel() === $role && $key < ($this->getNbPlayers() - 1)) {
+
+                $key2 = $key + 1;
+                $nextRoleModel = $arrRolesForRunning[$key2];
+                if ($nextRoleModel->getModel() !== $role) {
+                    $nextRole = $nextRoleModel->getBasicInfos();
+                    break;
+                } elseif ($key2 < ($this->getNbPlayers() - 1)) {
+                    $key3 = $key2 + 1;
+                    $nextRoleModel = $arrRolesForRunning[$key3];
+                    $nextRole = $nextRoleModel->getBasicInfos();
+                    break;
+                }
+
+            }
+
+        }
+
+        return $nextRole;
+
     }
 
 

@@ -33,6 +33,7 @@ $lang['password'] = "Mot de passe";
 /*
  * Play game
  */
+$lang['submit'] = 'Valider';
 $lang['play_game'] = 'Jouer';
 $lang['nb_players'] = 'Nombre de joueurs';
 $lang['waiting_for_players'] = 'En attente des autres joueurs';

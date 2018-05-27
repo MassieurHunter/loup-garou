@@ -21,14 +21,16 @@ class AjaxResponse
     /**
      * @return null
      */
-    public function getFormTarget() {
+    public function getFormTarget()
+    {
         return $this->formTarget;
     }
 
     /**
      * @param $aFormTarget
      */
-    public function setFormTarget($aFormTarget) {
+    public function setFormTarget($aFormTarget)
+    {
         $this->formTarget = $aFormTarget;
     }
 
@@ -38,7 +40,8 @@ class AjaxResponse
      *
      * @return array
      */
-    public function t($aData = [], $aCode = 200) {
+    public function t($aData = [], $aCode = 200)
+    {
         return $this->result(["result" => true, "data" => $aData], $aCode);
     }
 
@@ -48,7 +51,8 @@ class AjaxResponse
      *
      * @return array
      */
-    private function result($aDataArray, $aCode = 200) {
+    private function result($aDataArray, $aCode = 200)
+    {
 
         if ($this->hasActions()) {
             $aDataArray['actions'] = $this->getActions();
@@ -64,14 +68,16 @@ class AjaxResponse
     /**
      * @return bool
      */
-    public function hasActions() {
+    public function hasActions()
+    {
         return $this->getActionsCount() > 0;
     }
 
     /**
      * @return int
      */
-    public function getActionsCount() {
+    public function getActionsCount()
+    {
         return count($this->actions);
     }
 
@@ -80,7 +86,8 @@ class AjaxResponse
      *
      * @return array
      */
-    public function getActions() {
+    public function getActions()
+    {
         return $this->actions;
     }
 
@@ -90,21 +97,24 @@ class AjaxResponse
      *
      * @return array
      */
-    public function f($aError, $aCode = 400) {
+    public function f($aError, $aCode = 400)
+    {
         return $this->result(["result" => false, "error" => $aError, "code" => $aCode,], $aCode);
     }
 
     /**
      * Reload page
      */
-    public function reload() {
+    public function reload()
+    {
         $this->addAction(["method" => "reload"]);
     }
 
     /**
      * @param $aAction
      */
-    public function addAction($aAction) {
+    public function addAction($aAction)
+    {
         array_push($this->actions, $aAction);
     }
 
@@ -112,7 +122,8 @@ class AjaxResponse
      * @param $aURL
      * @param $timeout
      */
-    public function redirect($aURL, $timeout = 0) {
+    public function redirect($aURL, $timeout = 0)
+    {
         $this->load($aURL, $timeout);
     }
 
@@ -120,25 +131,36 @@ class AjaxResponse
      * Goto given url
      *
      * @param string $aURL
-     * @param string $timeout
+     * @param int $timeout
      */
-    public function load($aURL, $timeout = 0) {
+    public function load($aURL, $timeout = 0)
+    {
         $this->addAction(["method" => "load", "location" => (substr($aURL, 0, 1) === '/' ? '' : '/') . $aURL, 'timeout' => $timeout]);
-		}
+    }
 
     /**
      * @param $aURL
      * @param array $aParams
      */
-    public function postRedirect($aURL, $aParams = []) {
+    public function postRedirect($aURL, $aParams = [])
+    {
         $this->addAction(["method" => "postRedirect", "location" => (substr($aURL, 0, 1) === '/' ? '' : '/') . $aURL, 'params' => $aParams]);
+    }
+
+    /**
+     * @param string $aMessage
+     * @param array $aParams
+     */
+    public function socketMessage($aMessage, $aParams = []){
+        $this->addAction(["method" => "socketMessage", "message" => $aMessage, 'params' => $aParams]);
     }
 
     /**
      * @param $aSelector
      * @param array $aParams
      */
-    public function linkUpdateParams($aSelector, $aParams = []) {
+    public function linkUpdateParams($aSelector, $aParams = [])
+    {
         $this->addAction(["method" => "linkUpdateParams", "selector" => $aSelector, 'params' => $aParams]);
     }
 
@@ -147,7 +169,8 @@ class AjaxResponse
      *
      * @param string $aSelector
      */
-    public function delete($aSelector) {
+    public function delete($aSelector)
+    {
         $this->addAction(["method" => "delete", "selector" => $aSelector]);
     }
 
@@ -157,7 +180,8 @@ class AjaxResponse
      *
      * @param $aSelector
      */
-    public function show($aSelector) {
+    public function show($aSelector)
+    {
         $this->addAction(["method" => "show", "selector" => $aSelector]);
     }
 
@@ -166,7 +190,8 @@ class AjaxResponse
      *
      * @param $aSelector
      */
-    public function hide($aSelector) {
+    public function hide($aSelector)
+    {
         $this->addAction(["method" => "hide", "selector" => $aSelector]);
     }
 
@@ -176,7 +201,8 @@ class AjaxResponse
      *
      * @param $aSelector
      */
-    public function showCollapse($aSelector) {
+    public function showCollapse($aSelector)
+    {
         $this->addAction(["method" => "showCollapse", "selector" => $aSelector]);
     }
 
@@ -185,31 +211,38 @@ class AjaxResponse
      *
      * @param $aSelector
      */
-    public function hideCollaspe($aSelector) {
+    public function hideCollaspe($aSelector)
+    {
         $this->addAction(["method" => "hideCollapse", "selector" => $aSelector]);
     }
 
-    public function enableButton($aSelector) {
+    public function enableButton($aSelector)
+    {
         $this->addAction(["method" => "enableButton", "selector" => $aSelector]);
     }
 
-    public function disableButton($aSelector) {
+    public function disableButton($aSelector)
+    {
         $this->addAction(["method" => "disableButton", "selector" => $aSelector]);
     }
 
-    public function attr($aSelector, $aAttr, $aValue) {
+    public function attr($aSelector, $aAttr, $aValue)
+    {
         $this->addAction(["method" => "attr", "selector" => $aSelector, "attr" => $aAttr, "value" => $aValue]);
     }
 
-    public function removeAttr($aSelector, $aAttr) {
+    public function removeAttr($aSelector, $aAttr)
+    {
         $this->addAction(["method" => "removeAttr", "selector" => $aSelector, "attr" => $aAttr]);
     }
 
-    public function addClass($aSelector, $aClass) {
+    public function addClass($aSelector, $aClass)
+    {
         $this->addAction(["method" => "class", "type" => "add", "selector" => $aSelector, "class" => $aClass]);
     }
 
-    public function removeClass($aSelector, $aClass) {
+    public function removeClass($aSelector, $aClass)
+    {
         $this->addAction(["method" => "class", "type" => "remove", "selector" => $aSelector, "class" => $aClass]);
     }
 
@@ -219,7 +252,8 @@ class AjaxResponse
      * @param string $aSelector
      * @param string $aContent
      */
-    public function insert($aSelector, $aContent) {
+    public function insert($aSelector, $aContent)
+    {
         $this->addAction(["method" => "insert", "selector" => $aSelector, "content" => $aContent]);
     }
 
@@ -229,7 +263,8 @@ class AjaxResponse
      * @param string $aSelector
      * @param string $aContent
      */
-    public function append($aSelector, $aContent) {
+    public function append($aSelector, $aContent)
+    {
         $this->addAction(["method" => "append", "selector" => $aSelector, "content" => $aContent]);
     }
 
@@ -239,22 +274,26 @@ class AjaxResponse
      * @param $aSelector
      * @param $aValue
      */
-    public function val($aSelector, $aValue) {
+    public function val($aSelector, $aValue)
+    {
         $this->addAction(["method" => "val", "selector" => $aSelector, "value" => $aValue]);
     }
 
-    public function trigger($aSelector, $aType) {
+    public function trigger($aSelector, $aType)
+    {
         $this->addAction(["method" => "trigger", "selector" => $aSelector, "type" => $aType]);
     }
 
-    public function toggleClass($aSelector, $aClass) {
+    public function toggleClass($aSelector, $aClass)
+    {
         $this->addAction(["method" => "class", "type" => "toggle", "selector" => $aSelector, "class" => $aClass]);
     }
 
     /**
      * @param $aInformation
      */
-    public function error($aInformation) {
+    public function error($aInformation)
+    {
         $this->errors++;
         $this->addAction(["method" => "error", "information" => $aInformation]);
     }
@@ -262,25 +301,29 @@ class AjaxResponse
     /**
      * @param $aInformation
      */
-    public function success($aInformation) {
+    public function success($aInformation)
+    {
         $this->addAction(["method" => "success", "information" => $aInformation]);
     }
 
-    public function hasErrors() {
+    public function hasErrors()
+    {
         return $this->errors > 0;
     }
 
     /**
      * @param $aInformation
      */
-    public function alert($aInformation) {
+    public function alert($aInformation)
+    {
         $this->addAction(["method" => "alert", "information" => $aInformation]);
     }
 
     /**
      * @param $aFunction - Name of the javascript function to call
      */
-    public function call($aFunction) {
+    public function call($aFunction)
+    {
 
         $action = ["method" => "call", "name" => $aFunction];
 

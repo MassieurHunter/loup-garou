@@ -19,6 +19,10 @@ export default class RoleModel extends BaseModel {
         return this.get('model');
     }
 
+    hasFirstAction() {
+        return this.get('firstAction');
+    }
+
     getFirstActionName() {
         return this.get('firstActionName');
     }
@@ -32,35 +36,63 @@ export default class RoleModel extends BaseModel {
     }
 
     isFirstActionPassive() {
-        return this.getInt('firstActionPassive') === 1;
+        return this.get('firstActionPassive');
     }
 
     hasSecondAction() {
-        return this.getInt('secondAction') === 1;
+        return this.get('secondAction');
     }
 
     getSecondActionName() {
-        return this.get('secondActionNAme');
+        return this.get('secondActionName');
+    }
+
+    setSecondActionName(secondActionName){
+        this.set('secondActionName', secondActionName);
     }
 
     isSecondActionPassive() {
-        return this.getInt('secondActionPassive') === 1;
+        return this.get('secondActionPassive');
+    }
+
+    setSecondActionPassive(isPassive) {
+        return this.set('secondActionPassive', isPassive);
     }
 
     getSecondActionNbTargets() {
         return this.getInt('secondActionNbTargets');
     }
 
+    setSecondActionNbTargets(nbTargets) {
+        return this.set('secondActionNbTargets', nbTargets);
+    }
+
     getSecondActionTargetType() {
         return this.get('secondActionTargetType');
     }
 
+    setSecondActionTargetType(targetType) {
+        return this.set('secondActionTargetType', targetType);
+    }
+
+    getType(){
+        this.get('type');
+    }
+
+    setType(type){
+        this.set('type', type);
+    }
+
     isVillageois() {
-        return this.getInt('villageois') === 1;
+        return this.get('villageois');
     }
 
     isLoup() {
-        return this.getInt('loup') === 1;
+        return this.get('loup');
+    }
+
+    isTanneur() {
+        return this.get('tanneur');
     }
 
     getBootstrapClass() {

@@ -1,17 +1,19 @@
 <?php
 
+/**
+ * Class Soulard_model
+ *
+ * @property Player_model $middleCard
+ */
 class Soulard_model extends Role_model
 {
-    /**
-     * @var Player_model
-     */
-    public $midleCard;
 
     /**
      * @param array $arguments
      * @return array
      */
-    public function firstAction($arguments) : array {
+    public function firstAction($arguments): array
+    {
         return $this->switchWithMiddle($arguments['gameUid'], $arguments['currentPlayer'], $arguments['card_1']);
     }
 
@@ -21,7 +23,8 @@ class Soulard_model extends Role_model
      * @param int $cardNumber
      * @return array
      */
-    public function switchWithMiddle(int $gameUid, Player_model $oPlayer, int $cardNumber) : array{
+    public function switchWithMiddle(int $gameUid, Player_model $oPlayer, int $cardNumber): array
+    {
 
         $this->load->model('player_model', 'middleCard');
         $this->middleCard->init($cardNumber);
@@ -31,7 +34,12 @@ class Soulard_model extends Role_model
         $oPlayer->addNewRole($gameUid, $middleCardRole);
         $this->middleCard->addNewRole($gameUid, $playerRole);
 
-        return $oPlayer->getBasicInfos();
+        return [
+            'type' => 'playerAndCard',
+            'number' => 1,
+            'player_1' => $oPlayer->getBasicInfos(),
+            'card_1' => $this->middleCard->getBasicInfos(),
+        ];
 
     }
 

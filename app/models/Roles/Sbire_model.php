@@ -1,22 +1,20 @@
 <?php
 
+/**
+ * Class Sbire_model
+ *
+ * @property Player_model $loup1
+ * @property Player_model $loup2
+ *
+ */
 class Sbire_model extends Role_model
 {
-    /**
-     * @var Player_model
-     */
-    public $loup1;
-
-    /**
-     * @var Player_model
-     */
-    public $loup2;
 
     /**
      * @param array $arguments
      * @return array
      */
-    public function firstAction($arguments) : array
+    public function firstAction($arguments): array
     {
 
         return $this->getLoups($arguments['gameUid']);
@@ -27,10 +25,13 @@ class Sbire_model extends Role_model
      * @param int $gameUid
      * @return array
      */
-    private function getLoups(int $gameUid) : array
+    private function getLoups(int $gameUid): array
     {
 
-        $arrReturn = [];
+        $arrReturn = [
+            'type' => 'player',
+            'number' => 0,
+        ];
         $this->load->model('player_model', 'loup1');
         $this->load->model('player_model', 'loup2');
 
@@ -47,9 +48,11 @@ class Sbire_model extends Role_model
         foreach ($arrLoups as $key => $loup) {
 
             $this->{'loup' . $key}->init(false, $loup);
-            $arrReturn[] = $this->{'loup' . $key}->getName();
+            $arrReturn['player_' . ($key + 1)] = $this->{'loup' . $key}->getBasicInfos();
+            $arrReturn['number']++;
 
         }
+
 
         return $arrReturn;
 

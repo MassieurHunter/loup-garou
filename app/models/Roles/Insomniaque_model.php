@@ -24,7 +24,11 @@ class Insomniaque_model extends Role_model
     private function getCurrentRole(int $gameUid, Player_model $oPlayer): array
     {
 
-        return $oPlayer->getCurrentRoleWithBasicInfos($gameUid);
+        return [
+            'type' => 'role',
+            'number' => 1,
+            'role_1' => $oPlayer->getCurrentRoleWithBasicInfos($gameUid)
+        ];
 
     }
 

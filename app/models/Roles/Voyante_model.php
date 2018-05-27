@@ -3,23 +3,13 @@
 /**
  * Class Voyante_model
  *
+ * @property Player_model $player
+ * @property Player_model $card1
+ * @property Player_model $card2
+ *
  */
 class Voyante_model extends Role_model
 {
-    /**
-     * @var Player_model
-     */
-    public $player;
-
-    /**
-     * @var Player_model
-     */
-    public $card1;
-
-    /**
-     * @var Player_model
-     */
-    public $card2;
 
     /**
      * @param array $arguments
@@ -40,13 +30,13 @@ class Voyante_model extends Role_model
             [
                 'type' => 'onePlayerRole',
                 'name' => $this->lang->line('get_one_player_role'),
-                'nbTarget' => 1,
+                'nbTargets' => 1,
                 'targetType' => 'player',
             ],
             [
                 'type' => 'oneTwoCardsRole',
                 'name' => $this->lang->line('get_two_cards_role'),
-                'nbTarget' => 2,
+                'nbTargets' => 2,
                 'targetType' => 'card',
             ],
         ];
@@ -58,7 +48,7 @@ class Voyante_model extends Role_model
      */
     public function secondAction($arguments): array
     {
-        return $arguments['mode'] == 'onePlayerRole'
+        return $arguments['type'] == 'onePlayerRole'
             ? $this->getOnePlayerRole($arguments['gameUid'], $arguments['player_1'])
             : $this->getTwoMiddleCard($arguments['gameUid'], $arguments['card_1'], $arguments['card_2']);
     }
@@ -74,7 +64,13 @@ class Voyante_model extends Role_model
         $this->load->model('player_model', 'player');
         $this->player->init($playerUid);
 
-        $this->player->getCurrentRoleWithBasicInfos($gameUid);
+        return [
+            'type' => 'playerAndRole',
+            'number' => 1,
+            'player_1' => $this->player->getBasicInfos(),
+            'role_1' => $this->player->getCurrentRoleWithBasicInfos($gameUid),
+        ];
+
     }
 
     /**
@@ -95,8 +91,13 @@ class Voyante_model extends Role_model
         $this->card2->init($secondCard);
 
         return [
-            $this->card1->getCurrentRoleWithBasicInfos($gameUid),
-            $this->card2->getCurrentRoleWithBasicInfos($gameUid),
+            'type' => 'cardAndRole',
+            'action' => 'cardAndRole',
+            'number' => 2,
+            'card_1' => $this->card1->getBasicInfos(),
+            'card_2' => $this->card2->getBasicInfos(),
+            'role_1' => $this->card1->getCurrentRoleWithBasicInfos($gameUid),
+            'role_2' => $this->card2->getCurrentRoleWithBasicInfos($gameUid),
         ];
 
 

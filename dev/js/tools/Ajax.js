@@ -173,8 +173,14 @@ class Ajax {
 				case "trigger":
 					$(action.selector).trigger(action.type);
 					break;
-				case"linkUpdateParams":
+				case "linkUpdateParams":
 					this.linkUpdateParams(action.selector, action.params);
+					break;
+				case "socketMessage":
+                    let getUrl = window.location;
+                    let baseUrl = getUrl.protocol + "//" + getUrl.host;
+                    let socket = io.connect(baseUrl + ':3000');
+                    socket.emit(action.message, action.params);
 					break;
 				case "call":
 

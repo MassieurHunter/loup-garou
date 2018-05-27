@@ -19,6 +19,8 @@
     </div>
 </div>
 
+<form class="play-and-vote-form ajax-form"></form>
+
 
 <input type="hidden" id="play-socket" value="1"/>
 {$footer}

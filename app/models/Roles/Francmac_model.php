@@ -2,14 +2,11 @@
 
 /**
  * Class Francmac_model
+ *
+ * @property Player_model $otherFrancMac
  */
 class Francmac_model extends Role_model
 {
-
-    /**
-     * @var Player_model
-     */
-    public $otherFrancMac;
 
     /**
      * @param array $arguments
@@ -39,7 +36,11 @@ class Francmac_model extends Role_model
         $this->load->model('player_model', 'otherFrancMac');
         $this->otherFrancMac->init(false, $otherFrancMac);
 
-        return $this->otherFrancMac->getBasicInfos();
+        return [
+            'type' => 'player',
+            'number' => 1,
+            'player_1' => $this->otherFrancMac->getBasicInfos(),
+        ];
 
     }
 

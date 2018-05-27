@@ -28,7 +28,7 @@ class Player_model extends MY_Model
     /**
      * @var string
      */
-    public $player_roles_table = 'players_game_role';
+    public $player_roles_table = 'players_game_roles';
 
     /**
      * @var int
@@ -407,7 +407,7 @@ class Player_model extends MY_Model
         }
 
         if (empty($this->arrRoleModel[$gameUid])) {
-            $this->arrRoleModel[$gameUid] = $this->_roleModel;
+            $this->arrRoleModel[$gameUid][] = $this->_roleModel;
         }
 
     }

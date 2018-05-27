@@ -2,6 +2,6 @@
                 By Massieur Hunter, 2018
             </footer>
         </div>
-        <script src="/js/main.js" type="text/javascript"></script>
+        <script src="/js/main.js?v={$timestamp}" type="text/javascript"></script>
     </body>
 </html>

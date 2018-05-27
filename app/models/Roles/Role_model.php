@@ -4,6 +4,7 @@
  * Class Role_model
  *
  * @property Log_model $log
+ * @property Role_model $subModel
  *
  */
 class Role_model extends MY_Model
@@ -16,10 +17,6 @@ class Role_model extends MY_Model
      * @var string
      */
     public $primary_key = 'roleUid';
-    /**
-     * @var Role_model
-     */
-    public $subModel;
     /**
      * @var int
      */
@@ -117,7 +114,7 @@ class Role_model extends MY_Model
     public $basics = [
         'name' => 'getName',
         'description' => 'getDescription',
-        'model' => 'model',
+        'model' => 'getModel',
         'firstAction' => 'hasFirstAction',
         'firstActionName' => 'getFirstActionName',
         'firstActionPassive' => 'isFirstActionPassive',
@@ -139,7 +136,7 @@ class Role_model extends MY_Model
      */
     public function getRoleUid(): int
     {
-        return $this->roleUid;
+        return (int) $this->roleUid;
     }
 
     /**
@@ -157,7 +154,7 @@ class Role_model extends MY_Model
      */
     public function getName(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 
     /**
@@ -175,7 +172,7 @@ class Role_model extends MY_Model
      */
     public function getDescription(): string
     {
-        return $this->description;
+        return (string) $this->description;
     }
 
     /**
@@ -193,7 +190,7 @@ class Role_model extends MY_Model
      */
     public function getNb(): int
     {
-        return $this->nb;
+        return (int) $this->nb;
     }
 
     /**
@@ -211,7 +208,7 @@ class Role_model extends MY_Model
      */
     public function isLoup(): bool
     {
-        return $this->loup;
+        return $this->loup == true;
     }
 
     /**
@@ -229,7 +226,7 @@ class Role_model extends MY_Model
      */
     public function isTanneur(): bool
     {
-        return $this->tanneur;
+        return $this->tanneur == true;
     }
 
     /**
@@ -247,7 +244,7 @@ class Role_model extends MY_Model
      */
     public function isVillageois(): bool
     {
-        return $this->villageois;
+        return $this->villageois == true;
     }
 
     /**
@@ -287,7 +284,7 @@ class Role_model extends MY_Model
      */
     public function getCastingOrder(): int
     {
-        return $this->castingOrder;
+        return (int) $this->castingOrder;
     }
 
     /**
@@ -305,7 +302,7 @@ class Role_model extends MY_Model
      */
     public function getRunningOrder(): int
     {
-        return $this->runningOrder;
+        return (int) $this->runningOrder;
     }
 
     /**
@@ -326,7 +323,7 @@ class Role_model extends MY_Model
 
         if (empty($this->subModel)) {
 
-            $this->load->model('Roles/' . $this->getModel() . '_model', 'subModel');
+            $this->load->model('Roles/' . ucfirst($this->getModel()) . '_model', 'subModel');
 
         }
 
@@ -339,7 +336,7 @@ class Role_model extends MY_Model
      */
     public function getModel(): string
     {
-        return $this->model;
+        return (string) $this->model;
     }
 
     /**
@@ -357,7 +354,7 @@ class Role_model extends MY_Model
      */
     public function hasFirstAction(): bool
     {
-        return $this->firstAction;
+        return $this->firstAction == true;
     }
 
     /**
@@ -365,7 +362,7 @@ class Role_model extends MY_Model
      */
     public function isFirstActionPassive(): bool
     {
-        return $this->firstActionPassive;
+        return $this->firstActionPassive == true;
     }
 
     /**
@@ -373,7 +370,7 @@ class Role_model extends MY_Model
      */
     public function getFirstActionName(): string
     {
-        return $this->lang->line($this->firstActionName);
+        return (string) $this->firstActionName;
     }
 
     /**
@@ -381,7 +378,7 @@ class Role_model extends MY_Model
      */
     public function getFirstActionNbTargets(): int
     {
-        return $this->firstActionNbTargets;
+        return (int) $this->firstActionNbTargets;
     }
 
     /**
@@ -389,7 +386,7 @@ class Role_model extends MY_Model
      */
     public function getFirstActionTargetType(): string
     {
-        return $this->firstActionTargetType;
+        return (string) $this->firstActionTargetType;
     }
 
 
@@ -398,7 +395,7 @@ class Role_model extends MY_Model
      */
     public function hasSecondAction(): bool
     {
-        return $this->secondAction;
+        return $this->secondAction == true;
     }
 
     /**
@@ -406,7 +403,7 @@ class Role_model extends MY_Model
      */
     public function isSecondActionPassive(): bool
     {
-        return $this->secondActionPassive;
+        return $this->secondActionPassive == true;
     }
 
     /**
@@ -414,7 +411,7 @@ class Role_model extends MY_Model
      */
     public function getSecondActionName(): string
     {
-        return $this->lang->line($this->secondActionName);
+        return (string) $this->secondActionName;
     }
 
     /**
@@ -422,7 +419,7 @@ class Role_model extends MY_Model
      */
     public function getSecondActionNbTargets(): int
     {
-        return $this->secondActionNbTargets;
+        return (int) $this->secondActionNbTargets;
     }
 
     /**
@@ -430,7 +427,7 @@ class Role_model extends MY_Model
      */
     public function getSecondActionTargetType(): string
     {
-        return $this->secondActionTargetType;
+        return (string) $this->secondActionTargetType;
     }
 
 
@@ -500,7 +497,7 @@ class Role_model extends MY_Model
             ->setGameUid($gameUid)
             ->setPlayerUid($currentPlayer->getPlayerUid())
             ->setRoleUid($this->getRoleUid())
-            ->setAction($this->getFirstActionName())
+            ->setAction($actionNumber === 1 ? $this->getFirstActionName() : $this->getSecondActionName())
             ->setTarget1($target1)
             ->setTarget2($target2)
             ->create()

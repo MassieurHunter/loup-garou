@@ -2,54 +2,53 @@
 // Tools
 
 import Ajax from '../tools/Ajax';
-import Constants from '../tools/Constants';
 
 class Forms {
 
-  constructor() {
+    constructor() {
 
-    this.forms = $('FORM.ajax-form');
+        this.forms = $('FORM.ajax-form');
 
-    this.forms.each((index, element) => {
+        this.forms.each((index, element) => {
 
-      let form = $(element);
+            let form = $(element);
 
-      this.onSubmit(form);
+            this.onSubmit(form);
 
-    })
+        })
 
-  }
+    }
 
-  onSubmit(form) {
+    onSubmit(form) {
 
-    let target = form.data('target');
+        let target = form.data('target');
 
-    form.on('submit', (event) => {
+        form
+            .off('submit')
+            .on('submit', (event) => {
 
-      // prevent real submit
-      event.stopPropagation();
-      event.preventDefault();
+                // prevent real submit
+                event.stopPropagation();
+                event.preventDefault();
 
-      this.clearMessages(form);
+                this.clearMessages(form);
 
-      //fields
-      let fields = form.serializeArray();
+                //fields
+                let fields = form.serializeArray();
 
-      Ajax.post(target, fields, (aResponse) => {
-
-
-
-      });
+                Ajax.post(target, fields, (aResponse) => {
 
 
+                });
 
-    })
 
-  }
+            })
 
-  clearMessages(form) {
-    form.find('.form-message').html('').addClass('d-none')
-  }
+    }
+
+    clearMessages(form) {
+        form.find('.form-message').html('').addClass('d-none')
+    }
 
 }
 
