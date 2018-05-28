@@ -138,7 +138,6 @@ class Ajax extends MY_Controller
         return $this->ajax->t([
             'game' => $this->currentGame->getAdvancedInfos(),
             'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
-            'firstRole' => $this->currentGame->getFirstRole(),
         ]);
 
     }
@@ -153,7 +152,7 @@ class Ajax extends MY_Controller
         $actionResponse = $this->currentPlayer->roleFirstAction($arguments);
 
         $this->ajax->socketMessage('playerPlayedFirstAction', [
-            'game' => $this->currentGame->getBasicInfos(),
+            'game' => $this->currentGame->getAdvancedInfos(),
             'player' => $this->currentPlayer->getBasicInfos(),
             'role' => $this->currentPlayer->getOriginalRoleModel($this->currentGame->getGameUid()),
         ]);
@@ -172,13 +171,11 @@ class Ajax extends MY_Controller
         $arguments['gameUid'] = $this->currentGame->getGameUid();
 
         $actionResponse = $this->currentPlayer->roleSecondAction($arguments);
-        $originalRoleModel = $this->currentPlayer->getOriginalRoleModel($this->currentGame->getGameUid());
 
         $this->ajax->socketMessage('playerFinishedTurn', [
-            'game' => $this->currentGame->getBasicInfos(),
+            'game' => $this->currentGame->getAdvancedInfos(),
             'player' => $this->currentPlayer->getBasicInfos(),
             'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
-            'nextRole' => $this->currentGame->getNextRole($originalRoleModel->getModel())
         ]);
 
         return $actionResponse
@@ -187,15 +184,6 @@ class Ajax extends MY_Controller
 
     }
 
-    private function gameNextRole(): array
-    {
-        $originalRoleModel = $this->currentPlayer->getOriginalRoleModel($this->currentGame->getGameUid());
-
-        return $this->ajax->t(
-            $this->currentGame->getNextRole($originalRoleModel->getModel())
-        );
-
-    }
 
     private function playerVote(): array
     {
