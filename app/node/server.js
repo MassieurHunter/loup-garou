@@ -6,6 +6,7 @@ import http from 'http';
 let server = http.createServer();
 let io = require('socket.io').listen(server);
 let gamesPlayers = {};
+let gamesSockets = {};
 
 const {exec} = require('child_process');
 
@@ -23,6 +24,12 @@ io.sockets.on('connection', (socket) => {
     let roomUid = 'game' + Game.getCode();
 
     console.log('player ' + Player.getName() + ' joined the game with code ' + Game.getCode());
+
+    if (!gamesSockets.hasOwnProperty(roomUid)) {
+      gamesSockets[roomUid] = [];
+    }
+
+    gamesSockets[roomUid][Player.getPlayerUid()] = socket;
 
     socket.join(roomUid);
 
@@ -68,8 +75,6 @@ io.sockets.on('connection', (socket) => {
       io.in(roomUid).emit('message', {
         type: 'gameStart',
         game: Game.toJSON(),
-        rolesforCasting: rolesforCasting,
-        rolesForRunning: rolesforRunning,
       });
 
 
@@ -83,14 +88,18 @@ io.sockets.on('connection', (socket) => {
     let Player = new PlayerModel(data.player);
     let Game = new GameModel(data.game);
     let Role = new RoleModel(data.role);
+    let Newrole = data.newRole ? new RoleModel(data.newRole) : new RoleModel();
+    let doppel = data.doppel;
     let roomUid = 'game' + Game.getCode();
 
     console.log('player ' + Player.getName() + ' finished first role action (' + Role.getName() + ')');
 
-    io.in(roomUid).emit('message', {
+    gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
       type: 'playerPlayedFirstAction',
       game: Game.toJSON(),
-      role: Role.toJSON()
+      role: Role.toJSON(),
+      newRole: Newrole.toJSON(),
+      doppel: doppel,
     });
 
   });
@@ -98,9 +107,10 @@ io.sockets.on('connection', (socket) => {
   socket.on('playerFinishedTurn', (data) => {
     let Player = new PlayerModel(data.player);
     let Game = new GameModel(data.game);
+    let Role = new RoleModel(data.role);
     let roomUid = 'game' + Game.getCode();
 
-    console.log('player ' + Player.getName() + ' finished his turn (' + Player.getRoleModel().getName() + ')');
+    console.log('player ' + Player.getName() + ' finished his turn (' + Role.getName() + ')');
 
     sendNextRoleMessage(Game, gamesPlayers[roomUid], Player.getRoleModel());
 
@@ -116,82 +126,90 @@ io.sockets.on('connection', (socket) => {
 
 function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 
-  console.log('entering send next role message');
+  let randomMicroTime = (Math.floor(Math.random() * 15) + 15) * 1000;
+  console.log('Entering send next role message');
+  console.log("Waiting " + (randomMicroTime / 1000) + 's')
 
-  let roomUid = 'game' + Game.getCode();
-  let NextRole = new RoleModel();
-  let nextRoleFound = false;
+  setTimeout(() => {
 
-  for (let Role of Game.getRolesModelForRunning()) {
+    let roomUid = 'game' + Game.getCode();
+    let NextRole = new RoleModel();
+    let nextRoleFound = false;
+    let total = Game.getRolesModelForRunning().length;
+    let progress = 0;
 
-    if (lastRole !== null) {
+    for (let Role of Game.getRolesModelForRunning()) {
+      progress++;
 
-      if (nextRoleFound) {
+      if (lastRole !== null) {
+
+        if (nextRoleFound) {
+
+          NextRole = Role;
+          break;
+
+        } else if (lastRole.getModel() === Role.getModel()) {
+
+          nextRoleFound = true;
+
+        }
+
+      } else {
 
         NextRole = Role;
         break;
 
-      } else if (lastRole.getModel() === Role.getModel()) {
+      }
 
-        nextRoleFound = true;
+    }
+
+    console.log('Next Role', NextRole.getModel());
+
+    if (NextRole.getModel() !== null) {
+
+      let roleHasPlayer = false;
+
+      for (let Player of PlayersWithRole) {
+
+        console.log('Player Role', Player.getRoleModel().getModel());
+        console.log(Player.getRoleModel().getModel() === NextRole.getModel());
+
+        if (Player.getRoleModel().getModel() === NextRole.getModel()) {
+
+          roleHasPlayer = true;
+          break;
+
+        }
+
+      }
+
+      io.in(roomUid).emit('message', {
+        type: 'roleTurn',
+        role: NextRole.toJSON(),
+        percent: Math.ceil(progress / total * 100),
+      });
+
+      console.log('message sent');
+
+      if (!roleHasPlayer) {
+
+        console.log(NextRole.getName() + " is in the middle");
+
+        sendNextRoleMessage(Game, PlayersWithRole, NextRole)
 
       }
 
     } else {
 
-      NextRole = Role;
-      break;
+      console.log("no more roles, let's finish the game");
+
+      io.in(roomUid).emit('message', {
+        type: 'actionsFinished'
+      });
 
     }
 
-  }
-
-  if (NextRole.getModel() !== null) {
-
-    let roleHasPlayer = false;
-
-    for (let Player of PlayersWithRole) {
-
-      if (Player.getRoleModel().getModel() === NextRole.getModel()) {
-
-        roleHasPlayer = true;
-        break;
-
-      }
-
-    }
-
-    io.in(roomUid).emit('message', {
-      type: 'roleTurn',
-      role: NextRole.toJSON(),
-    });
-
-    console.log('message sent');
-
-    if (!roleHasPlayer) {
-
-      let randomMicroTime = (Math.floor(Math.random() * 30) + 30) * 1000;
-
-      console.log(NextRole.getName() + " is in the middle, we'll wait " + (randomMicroTime/1000) + 's');
-
-
-      setTimeout(() => {
-
-        sendNextRoleMessage(Game, PlayersWithRole, NextRole)
-
-      }, randomMicroTime);
-
-    }
-
-  } else {
-
-    console.log("no more roles, let's finish the game");
-
-    io.in(roomUid).emit('message', {
-      type: 'actionsFinished'
-    });
-
-  }
+  }, randomMicroTime);
 
 }
 

@@ -118,7 +118,7 @@ export default class RoleModel extends BaseModel {
             'class': 'row started',
         }, col);
 
-        $('.play-game').html(row);
+        $('.play-game').append(row);
     }
 
 

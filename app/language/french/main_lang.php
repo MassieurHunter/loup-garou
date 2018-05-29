@@ -46,3 +46,5 @@ $lang['player_2'] = 'Joueur 2';
 $lang['card_1'] = 'Carte 1';
 $lang['card_2'] = 'Carte 2';
 $lang['do_nothing'] = 'Ne rien faire';
+$lang['casted_roles'] = 'Roles distribués: ';
+$lang['roles_running_order'] = 'Ordre de passage: ';

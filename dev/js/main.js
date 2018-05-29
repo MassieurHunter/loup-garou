@@ -66,6 +66,7 @@ let loupGarou = {
               this.game = new GameModel(response.data.game);
               this.lang = new LangModel(response.data.lang);
               this.socket.emit('playerJoined', response.data);
+
             });
             break;
 
@@ -87,6 +88,11 @@ let loupGarou = {
                 this.game = new GameModel(response.data.game);
                 this.player.setGame(response.data.game);
                 this.player.setRole(response.data.role);
+                this.game.setLang(this.lang.toJSON());
+                this.player.setLang(this.lang.toJSON());
+
+                this.game.displayRoles();
+                this.player.displayRoleName();
 
                 this.socket.emit('gameStart', {
                   game: this.game.toJSON(),
@@ -125,12 +131,19 @@ let loupGarou = {
           case 'playerPlayedFirstAction' :
 
             let Role = new RoleModel(message.role);
+            let NewRole = new RoleModel(message.newRole);
+            let doppel = message.doppel;
 
             if (this.player.getRoleModel().getModel() === Role.getModel()) {
 
               if (this.player.getRoleModel().hasSecondAction()) {
 
                 this.player.displayAction('second');
+
+              } else if (doppel && this.player.getRoleModel().getModel() === 'doppelganger') {
+
+                this.player.setNewRole(NewRole.toJSON());
+                this.player.displayAction('first', true);
 
               } else {
 

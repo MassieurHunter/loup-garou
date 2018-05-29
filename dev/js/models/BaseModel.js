@@ -2,49 +2,49 @@ import AData from '../tools/AData.js';
 
 export default class BaseModel {
 
-    constructor(aData = {}) {
-        this._data = new AData(aData);
+  constructor(aData = {}) {
+    this._data = new AData(aData);
+  }
+
+  toString() {
+    return JSON.stringify(this.toJSON());
+  }
+
+  toJSON() {
+    return this._data.getData();
+  }
+
+  get(aKey, aReturnValueIfNull = null) {
+
+    if (!this.has(aKey)) {
+      return aReturnValueIfNull;
     }
 
-    toString() {
-        return JSON.stringify(this.toJSON());
-    }
+    return this._data.get(aKey);
+  }
 
-    toJSON() {
-        return this._data.getData();
-    }
+  getInt(aKey) {
+    return parseInt(this.get(aKey, 0), 10);
+  }
 
-    get(aKey, aReturnValueIfNull = null) {
+  getFloat(aKey) {
+    return parseFloat(this.get(aKey, 0));
+  }
 
-        if (!this.has(aKey)) {
-            return aReturnValueIfNull;
-        }
+  getObject(aKey) {
+    return this._data.getObject(aKey);
+  }
 
-        return this._data.get(aKey);
-    }
+  has(aKey) {
+    return this._data.has(aKey);
+  }
 
-    getInt(aKey) {
-        return parseInt(this.get(aKey, 0), 10);
-    }
+  hasValue(aKey) {
+    return this._data.has(aKey) && this.get(aKey) !== '' && this.get(aKey) !== null;
+  }
 
-    getFloat(aKey) {
-        return parseFloat(this.get(aKey, 0));
-    }
-
-    getObject(aKey) {
-        return this._data.getObject(aKey);
-    }
-
-    has(aKey) {
-        return this._data.has(aKey);
-    }
-
-    hasValue(aKey) {
-        return this._data.has(aKey) && this.get(aKey) !== '' && this.get(aKey) !== null;
-    }
-
-    set(aKey, aValue) {
-        this._data.set(aKey, aValue);
-    }
+  set(aKey, aValue) {
+    this._data.set(aKey, aValue);
+  }
 
 }

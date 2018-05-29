@@ -1,81 +1,162 @@
 import BaseModel from './BaseModel';
 import PlayerModel from "./PlayerModel";
 import RoleModel from "./RoleModel";
+import ABuilder from '../tools/ABuilder';
+import LangModel from "./LangModel";
 
 export default class GameModel extends BaseModel {
 
-    getGameUid(){
-        return this.getInt('gameUid');
+  setLang(lang) {
+    this.set('lang', lang);
+  }
+
+  getLangModel() {
+    return new LangModel(this.get('lang', {}));
+  }
+
+  getGameUid() {
+    return this.getInt('gameUid');
+  }
+
+  getCode() {
+    return this.get('code');
+  }
+
+  getNbPlayers() {
+    return this.getInt('nbPlayers');
+  }
+
+  getMaxPlayers() {
+    return this.getInt('maxPlayers');
+  }
+
+  isReadyToStart() {
+    return this.getNbPlayers() === this.getMaxPlayers();
+  }
+
+  getRolesForCasting() {
+
+    return this.get('rolesForCasting');
+
+  }
+
+  getRolesForRunning() {
+
+    return this.get('rolesForRunning');
+
+  }
+
+  getRolesModelForCasting() {
+
+    let roles = this.getRolesForCasting();
+    let rolesModel = [];
+
+    for (let role of roles) {
+      rolesModel.push(new RoleModel(role))
     }
 
-    getCode(){
-        return this.get('code');
+    return rolesModel;
+
+  }
+
+  getRolesModelForRunning() {
+
+    let roles = this.getRolesForRunning();
+    let rolesModel = [];
+
+    for (let role of roles) {
+      rolesModel.push(new RoleModel(role))
     }
 
-    getNbPlayers(){
-        return this.getInt('nbPlayers');
+    return rolesModel;
+
+  }
+
+  getPlayers() {
+    return this.get('players')
+  }
+
+  getPlayersModel() {
+    let players = this.getPlayers();
+    let playersModel = [];
+
+    for (let player of players) {
+      playersModel.push(new PlayerModel(player))
     }
 
-    getMaxPlayers(){
-        return this.getInt('maxPlayers');
-    }
+    return playersModel;
 
-    isReadyToStart(){
-        return this.getNbPlayers() === this.getMaxPlayers();
-    }
+  }
 
-    getRolesForCasting(){
+  displayRoles() {
 
-      return this.get('rolesForCasting');
+    let Lang = this.getLangModel();
+    let rolesForCasting = this.getRolesModelForCasting();
+    let rolesForRunning = this.getRolesModelForRunning();
 
-    }
+    let rolesListForCasting = '';
+    let rolesListForRunning = '';
 
-    getRolesForRunning(){
+    for (let Role of rolesForCasting) {
 
-      return this.get('rolesForRunning');
-
-    }
-
-    getRolesModelForCasting(){
-
-      let roles = this.getRolesForCasting();
-      let rolesModel = [];
-
-      for(let role of roles){
-        rolesModel.push(new RoleModel(role))
-      }
-
-      return rolesModel;
-
-    }
-
-    getRolesModelForRunning(){
-
-      let roles = this.getRolesForRunning();
-      let rolesModel = [];
-
-      for(let role of roles){
-        rolesModel.push(new RoleModel(role))
-      }
-
-      return rolesModel;
+      rolesListForCasting += Role.getName() + ',';
 
     }
 
-    getPlayers(){
-        return this.get('players')
-    }
+    for (let Role of rolesForRunning) {
 
-    getPlayersModel(){
-        let players = this.getPlayers();
-        let playersModel = [];
-
-        for(let player of players){
-            playersModel.push(new PlayerModel(player))
-        }
-
-        return playersModel;
+      rolesListForRunning += Role.getName() + ',';
 
     }
+
+    rolesListForCasting.substring(0, -1);
+    rolesListForRunning.substring(0, -1);
+
+    let rolesForCastingBlock = new ABuilder(
+      'div',
+      {
+        'class': ''
+      },
+      Lang.getLine('casted_roles') + rolesListForCasting
+    );
+
+    let rolesForRunningBlock = new ABuilder(
+      'div',
+      {
+        'class': ''
+      },
+      Lang.getLine('roles_running_order') + rolesListForRunning
+    );
+
+    let RoleAlertBlock = new ABuilder(
+      'div',
+      {
+        'class': 'alert alert-primary'
+      },
+      [
+        rolesForCastingBlock,
+        rolesForRunningBlock
+      ]
+    );
+
+
+    let rolesBlock = new ABuilder(
+      'div',
+      {
+        'class': 'row roles-block',
+      },
+      new ABuilder(
+        'div',
+        {
+          'class': 'col-lg-8 offset-lg-2 col-md-8 offset-md-2 mt-1',
+        },
+        RoleAlertBlock
+      )
+    );
+
+    $('.waiting-for-start').remove();
+    $('.play-game').append(rolesBlock);
+
+  }
 
 }

@@ -510,7 +510,7 @@ class Player_model extends MY_Model
      * @param array $arguments
      * @return array
      */
-    public function roleFirstAction($arguments) : array
+    public function originalRoleFirstAction($arguments) : array
     {
         return $this->getOriginalRoleModel($arguments['gameUid'])->firstAction($arguments);
     }
@@ -520,9 +520,28 @@ class Player_model extends MY_Model
      * @param array $arguments
      * @return array
      */
-    public function roleSecondAction($arguments) : array
+    public function originalRoleSecondAction($arguments) : array
     {
         return $this->getOriginalRoleModel($arguments['gameUid'])->secondAction($arguments);
+    }
+
+    /**
+     * @param array $arguments
+     * @return array
+     */
+    public function currentRoleFirstAction($arguments) : array
+    {
+        return $this->getCurrentRoleModel($arguments['gameUid'])->firstAction($arguments);
+    }
+
+    /**
+     *
+     * @param array $arguments
+     * @return array
+     */
+    public function currentRoleSecondAction($arguments) : array
+    {
+        return $this->getCurrentRoleModel($arguments['gameUid'])->secondAction($arguments);
     }
 
 

@@ -43,6 +43,7 @@ class Loup_model extends Role_model
 
         return [
             'type' => 'player',
+            'success' => $this->otherLoup->getPlayerUid() > 0,
             'number' => 1,
             'player_1' => $this->otherLoup->getBasicInfos(),
         ];

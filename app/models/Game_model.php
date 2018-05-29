@@ -168,6 +168,9 @@ class Game_model extends MY_Model
 
         $this
             ->setStarted(true)
+            ->saveModifications();
+
+        $this
             ->addMiddleCards()
             ->giveRoleToPlayers();
 
@@ -185,8 +188,10 @@ class Game_model extends MY_Model
         shuffle($arrPlayer);
 
         foreach ($arrPlayer as $key => $playerModel) {
+
             $roleModel = $arrRoles[$key];
             $playerModel->addNewRole($this->getGameUid(), $roleModel);
+
         }
 
 
