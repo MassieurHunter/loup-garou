@@ -100,7 +100,6 @@ let loupGarou = {
 
           case 'gameStart':
 
-
             console.log('gameStart');
 
             break;
@@ -108,7 +107,6 @@ let loupGarou = {
           case 'roleTurn' :
 
             console.log('roleTurn');
-            console.log(message);
 
             let CurrentRole = new RoleModel(message.role);
 
@@ -137,6 +135,7 @@ let loupGarou = {
               } else {
 
                 this.socket.emit('playerFinishedTurn', {
+
 
                   player: this.player.toJSON(),
                   game: this.game.toJSON(),

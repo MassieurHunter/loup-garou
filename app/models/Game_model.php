@@ -403,15 +403,28 @@ class Game_model extends MY_Model
         $arrRoles = $this->getRolesForCasting();
 
         $arrSort = [];
+        $previousRole = null;
 
-        foreach ($arrRoles as $roleModel) {
+        foreach ($arrRoles as $key =>  $roleModel) {
+
+            if($previousRole){
+
+                if($previousRole->getModel() === $roleModel->getModel()){
+
+                    unset($arrRoles[$key]);
+                    continue;
+
+                }
+
+            }
 
             $arrSort[] = $roleModel->getRunningOrder();
 
+            $previousRole = clone $roleModel;
         }
 
-        array_multisort($arrSort, SORT_ASC, $arrRoles);
 
+        array_multisort($arrSort, SORT_ASC, $arrRoles);
 
         return $arrRoles;
     }

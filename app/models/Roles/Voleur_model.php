@@ -9,11 +9,6 @@
 class Voleur_model extends Role_model
 {
     /**
-     * @var Player_model
-     */
-    public $otherPlayer;
-
-    /**
      * @param array $arguments
      * @return array
      */

@@ -43,6 +43,10 @@ export default class RoleModel extends BaseModel {
         return this.get('secondAction');
     }
 
+    isSecondActionNeedFailedFirst() {
+        return this.get('secondActionNeedFailedFirst');
+    }
+
     getSecondActionName() {
         return this.get('secondActionName');
     }

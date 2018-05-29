@@ -154,7 +154,7 @@ class Ajax extends MY_Controller
         $this->ajax->socketMessage('playerPlayedFirstAction', [
             'game' => $this->currentGame->getAdvancedInfos(),
             'player' => $this->currentPlayer->getBasicInfos(),
-            'role' => $this->currentPlayer->getOriginalRoleModel($this->currentGame->getGameUid()),
+            'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
         ]);
 
         return $actionResponse

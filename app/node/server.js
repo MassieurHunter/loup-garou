@@ -122,7 +122,6 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
   let NextRole = new RoleModel();
   let nextRoleFound = false;
 
-
   for (let Role of Game.getRolesModelForRunning()) {
 
     if (lastRole !== null) {
@@ -144,7 +143,6 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
       break;
 
     }
-
 
   }
 
@@ -171,6 +169,7 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
     console.log('message sent');
 
     if (!roleHasPlayer) {
+
       let randomMicroTime = (Math.floor(Math.random() * 30) + 30) * 1000;
 
       console.log(NextRole.getName() + " is in the middle, we'll wait " + (randomMicroTime/1000) + 's');

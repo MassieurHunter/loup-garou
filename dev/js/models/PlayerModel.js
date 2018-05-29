@@ -193,7 +193,7 @@ export default class PlayerModel extends BaseModel {
                             .append(
                                 playersSelect
                                     .attr('id', firstOrSecond + 'ActionPlayer' + j)
-                                    .attr('name', 'player' + j)
+                                    .attr('name', 'player_' + j)
                             )
                             .find('label').html(Lang.getLine('player_' + j));
 
@@ -204,7 +204,7 @@ export default class PlayerModel extends BaseModel {
                             .append(
                                 cardsSelect
                                     .attr('id', firstOrSecond + 'ActionCard' + j)
-                                    .attr('name', 'card' + j)
+                                    .attr('name', 'card_' + j)
                             )
                             .find('label').html(Lang.getLine('card_' + j));
 
