@@ -180,7 +180,6 @@ class Game_model extends MY_Model
      *
      */
     public function giveRoleToPlayers() {
-
         $arrRoles = $this->getRolesForCasting();
         $arrPlayer = $this->getPlayers();
 
@@ -222,22 +221,6 @@ class Game_model extends MY_Model
 
         return array_splice($arrRoles, 0, $nbPlayers);
 
-    }
-
-    /**
-     * @return array
-     */
-    public function getRolesForCastingWithBasicInfos(): array {
-
-        $arrRolesforCasting = [];
-
-        foreach ($this->getRolesForCasting() as $role) {
-
-            $arrRolesforCasting[] = $role->getBasicInfos();
-
-        }
-
-        return $arrRolesforCasting;
     }
 
     /**
@@ -287,6 +270,44 @@ class Game_model extends MY_Model
 
         return $this->arrPlayers;
 
+    }
+
+    /**
+     *
+     */
+    public function initPlayers() {
+        $this->load->model('player_model', '_playerModel');
+
+        $arrPlayers = $this->db
+            ->select($this->_playerModel->table . '.*')
+            ->where($this->primary_key, $this->getGameUid())
+            ->join($this->player_games_table, $this->_playerModel->primary_key)
+            ->get($this->_playerModel->table)
+            ->result();
+
+        foreach ($arrPlayers as $player) {
+            $playerModel = clone $this->_playerModel;
+            $playerModel->init(false, $player);
+
+            $this->arrPlayers[$playerModel->getPlayerUid()] = $playerModel;
+        }
+
+    }
+
+    /**
+     * @return int
+     */
+    public function getGameUid(): int {
+        return (int)$this->gameUid;
+    }
+
+    /**
+     * @param int $gameUid
+     * @return Game_model
+     */
+    public function setGameUid(int $gameUid): Game_model {
+        $this->gameUid = $gameUid;
+        return $this;
     }
 
     /**
@@ -341,41 +362,19 @@ class Game_model extends MY_Model
     }
 
     /**
-     *
+     * @return array
      */
-    public function initPlayers() {
-        $this->load->model('player_model', '_playerModel');
+    public function getRolesForCastingWithBasicInfos(): array {
 
-        $arrPlayers = $this->db
-            ->select($this->_playerModel->table . '.*')
-            ->where($this->primary_key, $this->getGameUid())
-            ->join($this->player_games_table, $this->_playerModel->primary_key)
-            ->get($this->_playerModel->table)
-            ->result();
+        $arrRolesforCasting = [];
 
-        foreach ($arrPlayers as $player) {
-            $playerModel = clone $this->_playerModel;
-            $playerModel->init(false, $player);
+        foreach ($this->getRolesForCasting() as $role) {
 
-            $this->arrPlayers[$playerModel->getPlayerUid()] = $playerModel;
+            $arrRolesforCasting[] = $role->getBasicInfos();
+
         }
 
-    }
-
-    /**
-     * @return int
-     */
-    public function getGameUid(): int {
-        return (int)$this->gameUid;
-    }
-
-    /**
-     * @param int $gameUid
-     * @return Game_model
-     */
-    public function setGameUid(int $gameUid): Game_model {
-        $this->gameUid = $gameUid;
-        return $this;
+        return $arrRolesforCasting;
     }
 
     /**
@@ -410,11 +409,11 @@ class Game_model extends MY_Model
         $arrSort = [];
         $previousRole = null;
 
-        foreach ($arrRoles as $key =>  $roleModel) {
+        foreach ($arrRoles as $key => $roleModel) {
 
-            if($previousRole){
+            if ($previousRole) {
 
-                if($previousRole->getModel() === $roleModel->getModel()){
+                if ($previousRole->getModel() === $roleModel->getModel()) {
 
                     unset($arrRoles[$key]);
                     continue;

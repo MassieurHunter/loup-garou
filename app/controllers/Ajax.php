@@ -136,15 +136,20 @@ class Ajax extends MY_Controller
 
     }
 
+    private function gameStart(){
+        $this->currentGame->start();
+
+        return $this->ajax->t([
+            'game' => $this->currentGame->getBasicInfos(),
+        ]);
+
+    }
+
 
     /**
      * @return array
      */
-    private function gameStart(): array {
-
-        if (!$this->currentGame->isStarted()) {
-            $this->currentGame->start();
-        }
+    private function rolesInfos(): array {
 
         return $this->ajax->t([
             'game' => $this->currentGame->getAdvancedInfos(),

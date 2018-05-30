@@ -356,7 +356,6 @@ class Player_model extends MY_Model
 
         $newRoleOrder = $this->getCurrentRoleModel($gameUid)->getRoleUid() ? count($arrRoleModels) : 0;
 
-        $this->arrRoleModel = [];
         $this->load->model('Roles/role_model', '_roleModel');
 
         $this->db

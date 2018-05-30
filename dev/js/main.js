@@ -84,20 +84,9 @@ let loupGarou = {
 
             if (this.game.isReadyToStart()) {
 
-              Ajax.post('game/start', [], (response) => {
-                this.game = new GameModel(response.data.game);
-                this.player.setGame(response.data.game);
-                this.player.setRole(response.data.role);
-                this.game.setLang(this.lang.toJSON());
-                this.player.setLang(this.lang.toJSON());
-
-                this.game.displayRoles();
-                this.player.displayRoleName();
-
-                this.socket.emit('gameStart', {
-                  game: this.game.toJSON(),
-                  player: this.player.toJSON()
-                });
+              this.socket.emit('gameStart', {
+                game: this.game.toJSON(),
+                player: this.player.toJSON()
               });
 
             }
@@ -106,13 +95,39 @@ let loupGarou = {
 
           case 'gameStart':
 
-            console.log('gameStart');
+            Ajax.post('game/start', [], () => {
+
+              this.socket.emit('rolesInfos', {
+                game: this.game.toJSON(),
+              });
+            });
+
+
+            break;
+
+          case 'rolesInfos' :
+
+            Ajax.post('roles/infos', [], (response) => {
+
+              this.game = new GameModel(response.data.game);
+              this.player.setGame(response.data.game);
+              this.player.setRole(response.data.role);
+              this.game.setLang(this.lang.toJSON());
+              this.player.setLang(this.lang.toJSON());
+
+              this.game.displayRoles();
+              this.player.displayRoleName();
+
+              this.socket.emit('roleTurn', {
+                game: this.game.toJSON(),
+                player: this.player.toJSON(),
+              });
+
+            });
 
             break;
 
           case 'roleTurn' :
-
-            console.log('roleTurn');
 
             let CurrentRole = new RoleModel(message.role);
 

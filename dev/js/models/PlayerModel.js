@@ -59,9 +59,11 @@ export default class PlayerModel extends BaseModel {
     let Game = this.getGameModel();
     let Lang = this.getLangModel();
     let gamePlayers = Game.getPlayersModel();
-    let actionName = firstOrSecond === 'first'
-      ? Role.getFirstActionName()
-      : Role.getSecondActionName();
+    let actionName = Lang.getLine(
+      firstOrSecond === 'first'
+        ? Role.getFirstActionName()
+        : Role.getSecondActionName()
+    );
     let actionNbTargets = firstOrSecond === 'first'
       ? Role.getFirstActionNbTargets()
       : Role.getSecondActionNbTargets();
@@ -78,6 +80,15 @@ export default class PlayerModel extends BaseModel {
       'input',
       {
         'class': 'btn btn-primary',
+        'type': 'submit',
+      },
+      this.getLangModel().getLine('submit')
+    );
+
+    let doNothingButton = new ABuilder(
+      'input',
+      {
+        'class': 'btn btn-secondary',
         'type': 'submit',
       },
       this.getLangModel().getLine('submit')
@@ -193,6 +204,7 @@ export default class PlayerModel extends BaseModel {
             emptyInputGroup
               .append(
                 playersSelect
+                  .clone()
                   .attr('id', firstOrSecond + 'ActionPlayer' + j)
                   .attr('name', 'player_' + j)
               )
@@ -204,6 +216,7 @@ export default class PlayerModel extends BaseModel {
             emptyInputGroup
               .append(
                 cardsSelect
+                  .clone()
                   .attr('id', firstOrSecond + 'ActionCard' + j)
                   .attr('name', 'card_' + j)
               )
@@ -245,6 +258,26 @@ export default class PlayerModel extends BaseModel {
       ]
     );
 
+    let doNothingForm = new ABuilder(
+      'form',
+      {
+        'class': 'ajax-form do-nothing-form',
+        'data-target': 'player/action/' + firstOrSecond
+      },
+      [
+        new ABuilder(
+          'input',
+          {
+            'type': 'hidden',
+            'name': 'nothing',
+            'value': '1'
+          },
+          ''
+        ),
+        doNothingButton
+      ]
+    );
+
 
     let actionContent = new ABuilder(
       'div',
@@ -258,7 +291,8 @@ export default class PlayerModel extends BaseModel {
         },
         [
           actionTitle,
-          actionForm
+          actionForm,
+          firstOrSecond === 'first' ? doNothingForm : null
         ]
       )
     );
