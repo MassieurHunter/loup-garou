@@ -304,7 +304,7 @@ class Role_model extends MY_Model
      */
     public function getFirstActionNbTargets(): int
     {
-        return (int)$this->firstActionNbTargets;
+        return (int) $this->firstActionNbTargets;
     }
 
     /**
@@ -312,7 +312,7 @@ class Role_model extends MY_Model
      */
     public function isSecondActionNeedFailedFirst(): bool
     {
-        return $this->secondActionNeedFailedFirst;
+        return $this->secondActionNeedFailedFirst == true;
     }
 
     /**
@@ -338,7 +338,7 @@ class Role_model extends MY_Model
      */
     public function getSecondActionNbTargets(): int
     {
-        return (int)$this->secondActionNbTargets;
+        return (int) $this->secondActionNbTargets;
     }
 
     /**

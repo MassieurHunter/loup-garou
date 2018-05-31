@@ -118,7 +118,7 @@ export default class GameModel extends BaseModel {
       {
         'class': ''
       },
-      Lang.getLine('casted_roles') + rolesListForCasting.substring(0, -1)
+      Lang.getLine('casted_roles') + rolesListForCasting.substr(0, rolesListForCasting.length -1)
     );
 
     let rolesForRunningBlock = new ABuilder(
@@ -126,7 +126,7 @@ export default class GameModel extends BaseModel {
       {
         'class': ''
       },
-      Lang.getLine('roles_running_order') + rolesListForRunning.substring(0, -1)
+      Lang.getLine('roles_running_order') + rolesListForRunning.substr(0, rolesListForRunning.length -1)
     );
 
     let RoleAlertBlock = new ABuilder(

@@ -5,7 +5,7 @@ import http from 'http';
 
 let server = http.createServer();
 let io = require('socket.io').listen(server);
-let gamesPlayersUid = {};
+let gamesPlayersForStarting = {};
 let gamesPlayersWithRoles = {};
 let gamesSockets = {};
 
@@ -49,15 +49,20 @@ io.sockets.on('connection', (socket) => {
     let roomUid = 'game' + Game.getCode();
 
 
-    if (!gamesPlayersUid.hasOwnProperty(roomUid)) {
-      gamesPlayersUid[roomUid] = [];
+    if (!gamesPlayersForStarting.hasOwnProperty(roomUid)) {
+      gamesPlayersForStarting[roomUid] = [];
     }
 
-    gamesPlayersUid[roomUid].push(Player.getPlayerUid());
+    gamesPlayersForStarting[roomUid].push(Player);
 
-    if (gamesPlayersUid[roomUid].length === Game.getMaxPlayers()) {
+    if (gamesPlayersForStarting[roomUid].length === Game.getMaxPlayers()) {
 
-      let randomPlayerUid = gamesPlayersUid[roomUid][Math.floor(Math.random() * gamesPlayersUid[roomUid].length)];
+      console.log('Starting game ' + Game.getCode());
+
+      let randomPlayer = gamesPlayersForStarting[roomUid][Math.floor(Math.random() * gamesPlayersForStarting[roomUid].length)];
+      let randomPlayerUid = randomPlayer.getPlayerUid();
+
+      console.log(randomPlayer.getName() + ' has been chosen');
 
       gamesSockets[roomUid][randomPlayerUid].emit('message', {
         type: 'gameStart',
@@ -73,7 +78,7 @@ io.sockets.on('connection', (socket) => {
     let roomUid = 'game' + Game.getCode();
 
     io.in(roomUid).emit('message', {
-      type: 'playerJoined',
+      type: 'rolesInfos',
       game: Game.toJSON()
     });
 
@@ -159,9 +164,14 @@ io.sockets.on('connection', (socket) => {
 
 function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 
-  let randomMicroTime = (Math.floor(Math.random() * 15) + 15) * 1000;
+  let randomMicroTime = lastRole !== null ? (Math.floor(Math.random() * 15) + 15) * 1000 : 0;
   console.log('Entering send next role message');
-  console.log("Waiting " + (randomMicroTime / 1000) + 's')
+
+  if(randomMicroTime){
+
+    console.log("Waiting " + (randomMicroTime / 1000) + 's')
+
+  }
 
   setTimeout(() => {
 
@@ -203,9 +213,6 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
       let roleHasPlayer = false;
 
       for (let Player of PlayersWithRole) {
-
-        console.log('Player Role', Player.getRoleModel().getModel());
-        console.log(Player.getRoleModel().getModel() === NextRole.getModel());
 
         if (Player.getRoleModel().getModel() === NextRole.getModel()) {
 
