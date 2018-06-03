@@ -140,23 +140,8 @@ export default class GameModel extends BaseModel {
       ]
     );
 
-
-    let rolesBlock = new ABuilder(
-      'div',
-      {
-        'class': 'row roles-block',
-      },
-      new ABuilder(
-        'div',
-        {
-          'class': 'col-lg-8 offset-lg-2 col-md-8 offset-md-2 mt-1',
-        },
-        RoleAlertBlock
-      )
-    );
-
     $('.waiting-for-start').remove();
-    $('.play-game').append(rolesBlock);
+    $('.roles-block > div').append(RoleAlertBlock);
 
   }
 

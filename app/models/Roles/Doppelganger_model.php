@@ -8,38 +8,37 @@
 class Doppelganger_model extends Role_model
 {
 
-    /**
-     * @param array $arguments
-     * @return array
-     */
-    public function firstAction($arguments): array
-    {
-        return $this->copyPlayerRole($arguments['gameUid'], $arguments['currentPlayer'], $arguments['player_1']);
-    }
+	/**
+	 * @param array $arguments
+	 * @return array
+	 */
+	public function firstAction($arguments): array
+	{
+		return $this->copyPlayerRole($arguments['gameUid'], $arguments['currentPlayer'], $arguments['player_1']);
+	}
 
-    /**
-     * @param int $gameUid
-     * @param Player_model $oPlayer
-     * @param int $playerUid
-     * @return array
-     */
-    private function copyPlayerRole(int $gameUid, Player_model $oPlayer, int $playerUid): array
-    {
+	/**
+	 * @param int $gameUid
+	 * @param Player_model $oPlayer
+	 * @param int $playerUid
+	 * @return array
+	 */
+	private function copyPlayerRole(int $gameUid, Player_model $oPlayer, int $playerUid): array
+	{
 
-        $this->load->model('player_model', 'otherPlayer');
-        $this->otherPlayer->init($playerUid);
-        /** @var $otherPlayerCardRole Role_model */
-        $otherPlayerCardRole = $this->otherPlayer->getCurrentRoleModel($gameUid);
+		$this->load->model('player_model', 'otherPlayer');
+		$this->otherPlayer->init($playerUid);
+		/** @var $otherPlayerCardRole Role_model */
+		$otherPlayerCardRole = $this->otherPlayer->getCurrentRoleModel($gameUid);
 
-        $oPlayer->addNewRole($gameUid, $otherPlayerCardRole);
+		$oPlayer->addNewRole($gameUid, $otherPlayerCardRole);
 
-        return [
-            'type' => 'playerAndRole',
-            'number' => 1,
-            'player_1' => $this->otherPlayer->getBasicInfos(),
-            'role_1' => $otherPlayerCardRole->getBasicInfos(),
-        ];
+		return [
+			'result' => 1,
+			'player_1' => $this->otherPlayer->getBasicInfos(),
+			'role_1' => $otherPlayerCardRole->getBasicInfos(),
+		];
 
-    }
+	}
 
 }

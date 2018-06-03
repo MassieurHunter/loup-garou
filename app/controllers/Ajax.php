@@ -11,264 +11,283 @@
 class Ajax extends MY_Controller
 {
 
-    public function __construct() {
-        parent::__construct();
+	public function __construct()
+	{
+		parent::__construct();
 
-        $this->load->library('ajaxResponse', NULL, 'ajax');
+		$this->load->library('ajaxResponse', NULL, 'ajax');
 
-        $this->executeMethod();
+		$this->executeMethod();
 
-    }
+	}
 
-    private function executeMethod() {
-        $target = $this->input->get_post('target');
+	private function executeMethod()
+	{
+		$target = $this->input->get_post('target');
 
-        $method = lcfirst(str_replace('/', '', ucwords($target, '/')));
+		$method = lcfirst(str_replace('/', '', ucwords($target, '/')));
 
-        if (method_exists($this, $method) && is_callable([$this, $method])) {
+		if (method_exists($this, $method) && is_callable([$this, $method])) {
 
-            $this->ajax->setFormTarget($target);
-            $data = $this->{$method}();
+			$this->ajax->setFormTarget($target);
+			$data = $this->{$method}();
 
-        } else {
+		} else {
 
-            $messageTranslation = $this->lang->line('unknown_method');
-            $data = $this->ajax->f($messageTranslation);
+			$messageTranslation = $this->lang->line('unknown_method');
+			$data = $this->ajax->f($messageTranslation);
 
-        }
+		}
 
 
-        header('Content-Type: application/json');
-        // override HTTP status code
-        http_response_code($data['code']);
+		header('Content-Type: application/json');
+		// override HTTP status code
+		http_response_code($data['code']);
 
-        // encode our data array
-        echo json_encode($data['body'], JSON_BIGINT_AS_STRING);
-        die;
-    }
+		// encode our data array
+		echo json_encode($data['body'], JSON_BIGINT_AS_STRING);
+		die;
+	}
 
-    public function index() {
-    }
+	public function index()
+	{
+	}
 
 
-    /**
-     * @return array
-     */
-    private function playerLogin(): array {
+	/**
+	 * @return array
+	 */
+	private function playerLogin(): array
+	{
 
-        $name = $this->input->post_get('name');
-        $password = $this->input->post('password');
+		$name = $this->input->post_get('name');
+		$password = $this->input->post('password');
 
-        $loginResult = $this->currentPlayer->login($name, $password);
+		$loginResult = $this->currentPlayer->login($name, $password);
 
-        $messageTranslation = $this->lang->line($loginResult['message']);
+		$messageTranslation = $this->lang->line($loginResult['message']);
 
-        if ($loginResult['success']) {
-            $this->ajax->success($messageTranslation);
-            $this->ajax->redirect('/', 1500);
-        } else {
-            $this->ajax->error($messageTranslation);
-        }
+		if ($loginResult['success']) {
+			$this->ajax->success($messageTranslation);
+			$this->ajax->redirect('/', 1500);
+		} else {
+			$this->ajax->error($messageTranslation);
+		}
 
-        return $loginResult['success']
-            ? $this->ajax->t()
-            : $this->ajax->f($loginResult['message']);
+		return $loginResult['success']
+			? $this->ajax->t()
+			: $this->ajax->f($loginResult['message']);
 
-    }
+	}
 
 
-    /**
-     * @return array
-     */
-    private function gameCreate(): array {
+	/**
+	 * @return array
+	 */
+	private function gameCreate(): array
+	{
 
-        $this->load->model('game_model', 'game');
-        $this->game
-            ->generateCode()
-            ->setMaxPlayers($this->input->post('max-players'))
-            ->create();
+		$this->load->model('game_model', 'game');
+		$this->game
+			->generateCode()
+			->setMaxPlayers($this->input->post('max-players'))
+			->create();
 
-        $this->ajax->success($this->lang->line('game_created'));
-        $this->ajax->redirect('/game/join/' . $this->game->getCode(), 2000);
+		$this->ajax->success($this->lang->line('game_created'));
+		$this->ajax->redirect('/game/join/' . $this->game->getCode(), 2000);
 
-        return $this->ajax->t([$this->game->getCode()]);
+		return $this->ajax->t([$this->game->getCode()]);
 
-    }
+	}
 
-    /**
-     * @return array
-     */
-    private function gameJoin(): array {
+	/**
+	 * @return array
+	 */
+	private function gameJoin(): array
+	{
 
-        $code = $this->input->post('game-code');
-        $this->load->model('game_model', 'game');
+		$code = $this->input->post('game-code');
+		$this->load->model('game_model', 'game');
 
-        $this->game->initByCode($code);
+		$this->game->initByCode($code);
 
-        $joinResult = $this->currentPlayer->joinGame($this->game);
-        $messageTranslation = $this->lang->line($joinResult['message']);
+		$joinResult = $this->currentPlayer->joinGame($this->game);
+		$messageTranslation = $this->lang->line($joinResult['message']);
 
-        if ($joinResult['success']) {
-            $this->session->set_userdata('gameCode', $code);
-            $this->ajax->success($messageTranslation);
-            $this->ajax->redirect('/game/play/', 1500);
-        } else {
-            $this->ajax->error($messageTranslation);
-        }
+		if ($joinResult['success']) {
+			$this->session->set_userdata('gameCode', $code);
+			$this->ajax->success($messageTranslation);
+			$this->ajax->redirect('/game/play/', 1500);
+		} else {
+			$this->ajax->error($messageTranslation);
+		}
 
-        return $joinResult['success']
-            ? $this->ajax->t()
-            : $this->ajax->f($joinResult['message']);
+		return $joinResult['success']
+			? $this->ajax->t()
+			: $this->ajax->f($joinResult['message']);
 
-    }
+	}
 
 
-    /**
-     * @return array
-     */
-    private function socketConnection(): array {
+	/**
+	 * @return array
+	 */
+	private function socketConnection(): array
+	{
 
-        return $this->ajax->t([
-            'lang'   => $this->lang->language,
-            'game'   => $this->currentGame->getBasicInfos(),
-            'player' => $this->currentPlayer->getBasicInfos(),
-        ]);
+		return $this->ajax->t([
+			'lang' => $this->lang->language,
+			'game' => $this->currentGame->getBasicInfos(),
+			'player' => $this->currentPlayer->getBasicInfos(),
+		]);
 
-    }
+	}
 
-    private function gameStart(){
-        $this->currentGame->start();
+	private function gameStart()
+	{
+		$this->currentGame->start();
 
-        return $this->ajax->t([
-            'game' => $this->currentGame->getBasicInfos(),
-        ]);
+		return $this->ajax->t([
+			'game' => $this->currentGame->getBasicInfos(),
+		]);
 
-    }
+	}
 
 
-    /**
-     * @return array
-     */
-    private function rolesInfos(): array {
+	/**
+	 * @return array
+	 */
+	private function rolesInfos(): array
+	{
 
-        return $this->ajax->t([
-            'game' => $this->currentGame->getAdvancedInfos(),
-            'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
-        ]);
+		return $this->ajax->t([
+			'game' => $this->currentGame->getAdvancedInfos(),
+			'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
+		]);
 
-    }
+	}
 
 
-    /**
-     * @return array
-     */
-    private function playerActionFirst(): array {
+	/**
+	 * @return array
+	 */
+	private function playerActionFirst(): array
+	{
 
-        $arguments = $this->input->post();
-        $arguments['currentPlayer'] = $this->currentPlayer;
-        $gameUid = $this->currentGame->getGameUid();
-        $arguments['gameUid'] = $gameUid;
-        $isDoppelFirstAction = $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger'
-            && $this->currentPlayer->getCurrentRoleModel($gameUid)->getModel() === 'doppelganger';
-        $isDoppelCopiedRoleFirstAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger';
+		$arguments = $this->input->post();
+		$arguments['currentPlayer'] = $this->currentPlayer;
+		$gameUid = $this->currentGame->getGameUid();
+		$arguments['gameUid'] = $gameUid;
+		$isDoppelFirstAction = $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger'
+			&& $this->currentPlayer->getCurrentRoleModel($gameUid)->getModel() === 'doppelganger';
+		$isDoppelCopiedRoleFirstAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger';
 
-        if ($isDoppelCopiedRoleFirstAction) {
+		if ($isDoppelCopiedRoleFirstAction) {
 
-            $roleModel = $this->currentPlayer->getCurrentRoleModel($gameUid);
+			$roleModel = $this->currentPlayer->getCurrentRoleModel($gameUid);
 
-        } else {
+		} else {
 
-            $roleModel = $this->currentPlayer->getOriginalRoleModel($gameUid);
+			$roleModel = $this->currentPlayer->getOriginalRoleModel($gameUid);
 
-        }
+		}
 
 
-        $actionResponse = $roleModel->firstAction($arguments);
+		$actionResponse = $roleModel->firstAction($arguments);
+		$actionMessage = $roleModel->buildActionMessage(1, $actionResponse);
 
 
-        if ($roleModel->hasSecondAction()) {
+		if ($roleModel->hasSecondAction()) {
 
-            if ($roleModel->isSecondActionNeedFailedFirst()) {
+			if ($roleModel->isSecondActionNeedFailedFirst()) {
 
-                $socketMessage = $actionResponse['success'] ? 'playerFinishedTurn' : 'playerPlayedFirstAction';
+				$socketMessage = $actionResponse['result'] ? 'playerFinishedTurn' : 'playerPlayedFirstAction';
 
 
-            } else {
+			} else {
 
-                $socketMessage = 'playerPlayedFirstAction';
+				$socketMessage = 'playerPlayedFirstAction';
 
-            }
+			}
 
-        } else {
+		} else {
 
-            $socketMessage = 'playerFinishedTurn';
+			$socketMessage = 'playerFinishedTurn';
 
-        }
+		}
 
-        $this->ajax->socketMessage($socketMessage, [
-            'game'    => $this->currentGame->getAdvancedInfos(),
-            'player'  => $this->currentPlayer->getBasicInfos(),
-            'role'    => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
-            'newRole' => $isDoppelFirstAction ? $this->currentPlayer->getCurrentRoleWithBasicInfos($gameUid) : null,
-            'doppel'  => $isDoppelFirstAction,
-        ]);
 
-        return $actionResponse
-            ? $this->ajax->t($actionResponse)
-            : $this->ajax->f([]);
+		if ($roleModel->getFirstActionTargetType() !== 'ajax') {
 
-    }
+			$this->ajax->socketMessage($socketMessage, [
+				'game' => $this->currentGame->getAdvancedInfos(),
+				'player' => $this->currentPlayer->getBasicInfos(),
+				'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
+				'newRole' => $isDoppelFirstAction ? $this->currentPlayer->getCurrentRoleWithBasicInfos($gameUid) : [],
+				'doppel' => $isDoppelFirstAction,
+			]);
 
-    /**
-     * @return array
-     */
-    private function playerActionSecond(): array {
+		}
+		$this->ajax->roleActionResultMessage($actionMessage);
 
-        $arguments = $this->input->post();
-        $arguments['currentPlayer'] = $this->currentPlayer;
-        $gameUid = $this->currentGame->getGameUid();
-        $arguments['gameUid'] = $gameUid;
-        $isDoppelCopiedRoleSecondAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger';
+		return $this->ajax->t(
+			$roleModel->getFirstActionTargetType() === 'ajax' ? $actionResponse : []
+		);
 
-        if ($isDoppelCopiedRoleSecondAction) {
+	}
 
-            $roleModel = $this->currentPlayer->getCurrentRoleModel($gameUid);
+	/**
+	 * @return array
+	 */
+	private function playerActionSecond(): array
+	{
 
-        } else {
+		$arguments = $this->input->post();
+		$arguments['currentPlayer'] = $this->currentPlayer;
+		$gameUid = $this->currentGame->getGameUid();
+		$arguments['gameUid'] = $gameUid;
+		$isDoppelCopiedRoleSecondAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger';
 
-            $roleModel = $this->currentPlayer->getOriginalRoleModel($gameUid);
+		if ($isDoppelCopiedRoleSecondAction) {
 
-        }
+			$roleModel = $this->currentPlayer->getCurrentRoleModel($gameUid);
 
+		} else {
 
-        $actionResponse = $roleModel->secondAction($arguments);
+			$roleModel = $this->currentPlayer->getOriginalRoleModel($gameUid);
 
-        $this->ajax->socketMessage('playerFinishedTurn', [
-            'game'   => $this->currentGame->getAdvancedInfos(),
-            'player' => $this->currentPlayer->getBasicInfos(),
-            'role'   => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
-        ]);
+		}
 
-        return $actionResponse
-            ? $this->ajax->t($actionResponse)
-            : $this->ajax->f([]);
+		$actionResponse = $roleModel->secondAction($arguments);
+		$actionMessage = $roleModel->buildActionMessage(2, $actionResponse);
 
-    }
+		$this->ajax->socketMessage('playerFinishedTurn', [
+			'game' => $this->currentGame->getAdvancedInfos(),
+			'player' => $this->currentPlayer->getBasicInfos(),
+			'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
+		]);
 
+		$this->ajax->roleActionResultMessage($actionMessage);
 
-    private function playerVote(): array {
-        $this->load->model('player_model', 'player');
-        $gameUid = $this->currentGame->getGameUid();
-        $targetUid = $this->input->post('targetUid');
-        $this->player->init($targetUid);
-        $this->currentPlayer->vote($gameUid, $targetUid);
+		return $this->ajax->t();
 
-        return $this->ajax->t(
-            [
-                $this->player->getBasicInfos(),
-            ]
-        );
+	}
 
-    }
+
+	private function playerVote(): array
+	{
+		$this->load->model('player_model', 'player');
+		$gameUid = $this->currentGame->getGameUid();
+		$targetUid = $this->input->post('targetUid');
+		$this->player->init($targetUid);
+		$this->currentPlayer->vote($gameUid, $targetUid);
+
+		return $this->ajax->t(
+			[
+				$this->player->getBasicInfos(),
+			]
+		);
+
+	}
 
 }

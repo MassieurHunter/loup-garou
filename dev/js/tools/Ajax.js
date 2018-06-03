@@ -36,13 +36,13 @@ class Ajax {
 
 	post(aTarget, aData, aCallback) {
 
-    let url = '/ajax';
-    let data = aData || [];
+		let url = '/ajax';
+		let data = aData || [];
 
-    data.push({
-      name: 'target',
-      value: aTarget
-    });
+		data.push({
+			name: 'target',
+			value: aTarget
+		});
 
 		$.post(url, data, (transport) => {
 			// --
@@ -90,14 +90,14 @@ class Ajax {
 			switch (action.method) {
 
 				case "error":
-					
+
 					if (form) {
 
-						if(action.information){
+						if (action.information) {
 
 							let errorMessage = form.find('.form-message-error');
 
-							if(errorMessage){
+							if (errorMessage) {
 								errorMessage.html(action.information);
 								errorMessage.removeClass('d-none');
 							}
@@ -111,20 +111,20 @@ class Ajax {
 
 				case "success":
 
-          if (form) {
+					if (form) {
 
-            if(action.information){
+						if (action.information) {
 
-              let errorMessage = form.find('.form-message-success');
+							let errorMessage = form.find('.form-message-success');
 
-              if(errorMessage){
-                errorMessage.html(action.information);
-                errorMessage.removeClass('d-none');
-              }
+							if (errorMessage) {
+								errorMessage.html(action.information);
+								errorMessage.removeClass('d-none');
+							}
 
-            }
+						}
 
-          }
+					}
 
 					break;
 
@@ -177,11 +177,21 @@ class Ajax {
 					this.linkUpdateParams(action.selector, action.params);
 					break;
 				case "socketMessage":
-                    let getUrl = window.location;
-                    let baseUrl = getUrl.protocol + "//" + getUrl.host;
-                    let socket = io.connect(baseUrl + ':3000');
-                    socket.emit(action.message, action.params);
+					let getUrl = window.location;
+					let baseUrl = getUrl.protocol + "//" + getUrl.host;
+					let socket = io.connect(baseUrl + ':3000');
+					socket.emit(action.message, action.params);
 					break;
+
+				case "roleActionResult" :
+					$('.action-results > div').append(
+						new ABuilder('div', {
+							'class': 'alert alert-primary',
+							'role': 'alert'
+						}, action.message)
+					);
+					break;
+
 				case "call":
 
 					let callFunction = eval(action.name);
@@ -211,13 +221,13 @@ class Ajax {
 					if (element) {
 
 						switch (action.type) {
-							case"toggle":
+							case "toggle":
 								element.toggleClass(action.class);
 								break;
-							case"add":
+							case "add":
 								element.addClass(action.class);
 								break;
-							case"remove":
+							case "remove":
 								element.removeClass(action.class);
 								break;
 						}

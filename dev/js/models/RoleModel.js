@@ -110,15 +110,7 @@ export default class RoleModel extends BaseModel {
             'role': 'alert'
         }, this.getName());
 
-        let col = new ABuilder('div', {
-            'class': 'col-lg-8 offset-lg-2 col-md-8 offset-md-2 mt-1',
-        }, alert);
-
-        let row = new ABuilder('div', {
-            'class': 'row started',
-        }, col);
-
-        $('.play-game').append(row);
+        $('.role-infos > div').append(alert);
     }
 
 

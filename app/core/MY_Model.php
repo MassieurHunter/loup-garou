@@ -45,7 +45,7 @@ class MY_Model extends CI_Model
      * Sets PRIMARY KEY
      */
     public $primary_key = 'id';
-    public $lang = '';
+
     /**
      * 1:1 relationship
      * example :
@@ -414,7 +414,7 @@ class MY_Model extends CI_Model
     public function __call($name, $arguments)
     {
         if (method_exists($this, $name)) {
-            $this->$name($arguments);
+            $this->$name(...$arguments);
         } else {
             echo "\n***** METHOD " . get_class($this) . '::' . $name . " does not exist! *****\nStack: " . debug_print_backtrace();
         }

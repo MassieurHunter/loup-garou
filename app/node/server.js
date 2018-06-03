@@ -13,246 +13,343 @@ const {exec} = require('child_process');
 
 io.sockets.on('connection', (socket) => {
 
-  socket.emit('message', {
-    type: 'connection',
-    id: socket.id
-  });
+	socket.emit('message', {
+		type: 'connection',
+		id: socket.id
+	});
 
-  socket.on('playerJoined', (data) => {
+	socket.on('playerJoined', (data) => {
 
-    let Player = new PlayerModel(data.player);
-    let Game = new GameModel(data.game);
-    let roomUid = 'game' + Game.getCode();
+		let Player = new PlayerModel(data.player);
+		let Game = new GameModel(data.game);
+		let roomUid = 'game' + Game.getCode();
 
-    console.log('player ' + Player.getName() + ' joined the game with code ' + Game.getCode());
+		console.log('player ' + Player.getName() + ' joined the game with code ' + Game.getCode());
 
-    if (!gamesSockets.hasOwnProperty(roomUid)) {
-      gamesSockets[roomUid] = [];
-    }
+		if (!gamesSockets.hasOwnProperty(roomUid)) {
+			gamesSockets[roomUid] = [];
+		}
 
-    gamesSockets[roomUid][Player.getPlayerUid()] = socket;
+		gamesSockets[roomUid][Player.getPlayerUid()] = socket;
 
-    socket.join(roomUid);
+		socket.join(roomUid);
 
-    io.in(roomUid).emit('message', {
-      type: 'playerJoined',
-      player: Player.toJSON(),
-      game: Game.toJSON()
-    });
+		io.in(roomUid).emit('message', {
+			type: 'playerJoined',
+			player: Player.toJSON(),
+			game: Game.toJSON()
+		});
 
-  });
+	});
 
-  socket.on('gameStart', (data) => {
+	socket.on('gameStart', (data) => {
 
-    let Player = new PlayerModel(data.player);
-    let Game = new GameModel(data.game);
-    let roomUid = 'game' + Game.getCode();
+		let Player = new PlayerModel(data.player);
+		let Game = new GameModel(data.game);
+		let roomUid = 'game' + Game.getCode();
 
-
-    if (!gamesPlayersForStarting.hasOwnProperty(roomUid)) {
-      gamesPlayersForStarting[roomUid] = [];
-    }
-
-    gamesPlayersForStarting[roomUid].push(Player);
-
-    if (gamesPlayersForStarting[roomUid].length === Game.getMaxPlayers()) {
-
-      console.log('Starting game ' + Game.getCode());
-
-      let randomPlayer = gamesPlayersForStarting[roomUid][Math.floor(Math.random() * gamesPlayersForStarting[roomUid].length)];
-      let randomPlayerUid = randomPlayer.getPlayerUid();
-
-      console.log(randomPlayer.getName() + ' has been chosen');
-
-      gamesSockets[roomUid][randomPlayerUid].emit('message', {
-        type: 'gameStart',
-      });
-
-    }
-
-  });
-
-  socket.on('rolesInfos', (data) => {
-
-    let Game = new GameModel(data.game);
-    let roomUid = 'game' + Game.getCode();
-
-    io.in(roomUid).emit('message', {
-      type: 'rolesInfos',
-      game: Game.toJSON()
-    });
-
-  });
+		console.log('game start message recieved');
 
 
-  socket.on('roleTurn', (data) => {
+		if (!gamesPlayersForStarting.hasOwnProperty(roomUid)) {
+			gamesPlayersForStarting[roomUid] = [];
+		}
 
-    let Game = new GameModel(data.game);
-    let Player = new PlayerModel(data.player);
-    let roomUid = 'game' + Game.getCode();
+		let playerPresent = false;
 
-    if (!gamesPlayersWithRoles.hasOwnProperty(roomUid)) {
-      gamesPlayersWithRoles[roomUid] = [];
-    }
+		for (let player of gamesPlayersForStarting[roomUid]) {
 
-    gamesPlayersWithRoles[roomUid].push(Player);
+			if (player.getPlayerUid() === Player.getPlayerUid()) {
 
-    if (gamesPlayersWithRoles[roomUid].length === Game.getNbPlayers()) {
+				playerPresent = true;
 
-      let rolesforCasting = [];
-      let rolesforRunning = [];
+			}
 
-      for (let Role of Game.getRolesModelForCasting()) {
+		}
 
-        rolesforCasting.push(Role.getName());
+		if (!playerPresent) {
 
-      }
+			gamesPlayersForStarting[roomUid].push(Player);
 
-      for (let Role of Game.getRolesModelForRunning()) {
+			if (gamesPlayersForStarting[roomUid].length === Game.getMaxPlayers()) {
 
-        rolesforRunning.push(Role.getName());
+				console.log('Starting game ' + Game.getCode());
 
-      }
+				let randomPlayer = gamesPlayersForStarting[roomUid][Math.floor(Math.random() * gamesPlayersForStarting[roomUid].length)];
+				let randomPlayerUid = randomPlayer.getPlayerUid();
 
-      console.log('the game with code ' + Game.getCode() + ' has started');
+				console.log(randomPlayer.getName() + ' has been chosen to start the game');
+
+				gamesSockets[roomUid][randomPlayerUid].emit('message', {
+					type: 'gameStart',
+				});
+
+			}
+
+		}
+
+	});
+
+	socket.on('rolesInfos', (data) => {
+
+		let Game = new GameModel(data.game);
+		let roomUid = 'game' + Game.getCode();
+
+		io.in(roomUid).emit('message', {
+			type: 'rolesInfos',
+			game: Game.toJSON()
+		});
+
+	});
 
 
-      sendNextRoleMessage(Game, gamesPlayersWithRoles[roomUid]);
+	socket.on('roleTurn', (data) => {
 
-    }
-  });
+		let Game = new GameModel(data.game);
+		let Player = new PlayerModel(data.player);
+		let roomUid = 'game' + Game.getCode();
 
-  socket.on('playerPlayedFirstAction', (data) => {
-    let Player = new PlayerModel(data.player);
-    let Game = new GameModel(data.game);
-    let Role = new RoleModel(data.role);
-    let Newrole = data.newRole ? new RoleModel(data.newRole) : new RoleModel();
-    let doppel = data.doppel;
-    let roomUid = 'game' + Game.getCode();
+		if (!gamesPlayersWithRoles.hasOwnProperty(roomUid)) {
+			gamesPlayersWithRoles[roomUid] = [];
+		}
 
-    console.log('player ' + Player.getName() + ' finished first role action (' + Role.getName() + ')');
+		gamesPlayersWithRoles[roomUid].push(Player);
 
-    gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
-      type: 'playerPlayedFirstAction',
-      game: Game.toJSON(),
-      role: Role.toJSON(),
-      newRole: Newrole.toJSON(),
-      doppel: doppel,
-    });
+		if (gamesPlayersWithRoles[roomUid].length === Game.getNbPlayers()) {
 
-  });
+			let rolesforCasting = [];
+			let rolesforRunning = [];
+			let playerRoles = [];
 
-  socket.on('playerFinishedTurn', (data) => {
-    let Player = new PlayerModel(data.player);
-    let Game = new GameModel(data.game);
-    let Role = new RoleModel(data.role);
-    let roomUid = 'game' + Game.getCode();
+			for (let Role of Game.getRolesModelForCasting()) {
 
-    console.log('player ' + Player.getName() + ' finished his turn (' + Role.getName() + ')');
+				rolesforCasting.push(Role.getName());
 
-    sendNextRoleMessage(Game, gamesPlayersWithRoles[roomUid], Player.getRoleModel());
+			}
 
-  });
+			for (let Role of Game.getRolesModelForRunning()) {
 
-  socket.on('disconnect', () => {
+				rolesforRunning.push(Role.getName());
 
-    console.log("user " + socket.id + " disconnected")
+			}
 
-  });
+			for (let Player of gamesPlayersWithRoles[roomUid]) {
+
+				playerRoles.push(Player.getName() + " ===> " + Player.getRoleModel().getName());
+
+			}
+
+			console.log('the game with code ' + Game.getCode() + ' has started');
+
+			sendNextRoleMessage(Game, gamesPlayersWithRoles[roomUid]);
+
+		}
+	});
+
+	socket.on('playerPlayedFirstAction', (data) => {
+		let Player = new PlayerModel(data.player);
+		let Game = new GameModel(data.game);
+		let Role = new RoleModel(data.role);
+		let Newrole = data.newRole ? new RoleModel(data.newRole) : new RoleModel();
+		let doppel = data.doppel;
+		let roomUid = 'game' + Game.getCode();
+
+		console.log('player ' + Player.getName() + ' finished first role action (' + Role.getName() + ')');
+
+		gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+			type: 'playerPlayedFirstAction',
+			game: Game.toJSON(),
+			role: Role.toJSON(),
+			newRole: Newrole.toJSON(),
+			doppel: doppel,
+		});
+
+	});
+
+	socket.on('playerFinishedTurn', (data) => {
+
+		let Player = new PlayerModel(data.player);
+		let Game = new GameModel(data.game);
+		let Role = new RoleModel(data.role);
+		let roomUid = 'game' + Game.getCode();
+
+		console.log('player ' + Player.getName() + ' finished his turn (' + Role.getName() + ')');
+
+		gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+			type: 'playerFinishedTurn',
+		});
+
+		let sendMessage = true;
+		let nbLoups = 0;
+		let nbFrancMacs = 0;
+		let firstLoupUid = 0;
+		let firstFrancMacUid = 0;
+
+		if (Role.getModel() === 'loup') {
+
+			for (let player of gamesPlayersWithRoles[roomUid]) {
+
+				if (player.getRoleModel().getModel() === 'loup') {
+					
+					if (nbLoups === 0) {
+						
+						firstLoupUid = player.getPlayerUid();
+						
+					}
+					
+					nbLoups++;
+				}
+
+			}
+
+			if (nbLoups === 2) {
+				
+				if (Player.getPlayerUid() !== firstLoupUid) {
+					
+					sendMessage = false;
+					
+				}
+				
+			}
+
+		}
+
+		if (Role.getModel() === 'francmac') {
+
+			for (let player of gamesPlayersWithRoles[roomUid]) {
+
+				if (player.getRoleModel().getModel() === 'francmac') {
+
+					if (nbFrancMacs === 0) {
+
+						firstFrancMacUid = player.getPlayerUid();
+
+					}
+					
+					nbFrancMacs++;
+				}
+
+			}
+
+			if (nbFrancMacs === 2) {
+
+				if (Player.getPlayerUid() !== firstFrancMacUid) {
+
+					sendMessage = false;
+
+				}
+
+			}
+
+		}
+
+		if (sendMessage) {
+
+			sendNextRoleMessage(Game, gamesPlayersWithRoles[roomUid], Role);
+
+		}
+
+	});
+
+	socket.on('disconnect', () => {
+
+		console.log("user " + socket.id + " disconnected")
+
+	});
 
 });
 
 function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 
-  let randomMicroTime = lastRole !== null ? (Math.floor(Math.random() * 15) + 15) * 1000 : 0;
-  console.log('Entering send next role message');
+	let randomMicroTime = lastRole !== null ? (Math.floor(Math.random() * 10) + 10) * 1000 : 0;
+	console.log('Entering send next role message');
 
-  if(randomMicroTime){
+	if (randomMicroTime) {
 
-    console.log("Waiting " + (randomMicroTime / 1000) + 's')
+		console.log("Waiting " + (randomMicroTime / 1000) + 's')
 
-  }
+	}
 
-  setTimeout(() => {
+	setTimeout(() => {
 
-    let roomUid = 'game' + Game.getCode();
-    let NextRole = new RoleModel();
-    let nextRoleFound = false;
-    let total = Game.getRolesModelForRunning().length;
-    let progress = 0;
+		let roomUid = 'game' + Game.getCode();
+		let NextRole = new RoleModel();
+		let nextRoleFound = false;
+		let total = Game.getRolesModelForRunning().length;
+		let progress = 0;
 
-    for (let Role of Game.getRolesModelForRunning()) {
-      progress++;
+		for (let Role of Game.getRolesModelForRunning()) {
+			progress++;
 
-      if (lastRole !== null) {
+			if (lastRole !== null) {
 
-        if (nextRoleFound) {
+				if (nextRoleFound) {
 
-          NextRole = Role;
-          break;
+					NextRole = Role;
+					break;
 
-        } else if (lastRole.getModel() === Role.getModel()) {
+				} else if (lastRole.getModel() === Role.getModel()) {
 
-          nextRoleFound = true;
+					nextRoleFound = true;
 
-        }
+				}
 
-      } else {
+			} else {
 
-        NextRole = Role;
-        break;
+				NextRole = Role;
+				break;
 
-      }
+			}
 
-    }
+		}
 
-    console.log('Next Role', NextRole.getModel());
+		console.log('Next Role', NextRole.getModel());
 
-    if (NextRole.getModel() !== null) {
+		if (NextRole.getModel() !== null) {
 
-      let roleHasPlayer = false;
+			let roleHasPlayer = false;
 
-      for (let Player of PlayersWithRole) {
+			for (let Player of PlayersWithRole) {
 
-        if (Player.getRoleModel().getModel() === NextRole.getModel()) {
+				if (Player.getRoleModel().getModel() === NextRole.getModel()) {
 
-          roleHasPlayer = true;
-          break;
+					roleHasPlayer = true;
+					break;
 
-        }
+				}
 
-      }
+			}
 
-      io.in(roomUid).emit('message', {
-        type: 'roleTurn',
-        role: NextRole.toJSON(),
-        percent: Math.ceil(progress / total * 100),
-      });
+			io.in(roomUid).emit('message', {
+				type: 'roleTurn',
+				role: NextRole.toJSON(),
+				percent: Math.ceil(progress / total * 100),
+			});
 
-      console.log('message sent');
+			console.log('message sent');
 
-      if (!roleHasPlayer) {
+			if (!roleHasPlayer) {
 
-        console.log(NextRole.getName() + " is in the middle");
+				console.log(NextRole.getName() + " is in the middle");
 
-        sendNextRoleMessage(Game, PlayersWithRole, NextRole)
+				sendNextRoleMessage(Game, PlayersWithRole, NextRole)
 
-      }
+			}
 
-    } else {
+		} else {
 
-      console.log("no more roles, let's finish the game");
+			console.log("no more roles, let's finish the game");
 
-      io.in(roomUid).emit('message', {
-        type: 'actionsFinished'
-      });
+			io.in(roomUid).emit('message', {
+				type: 'actionsFinished'
+			});
 
-    }
+		}
 
-  }, randomMicroTime);
+	}, randomMicroTime);
 
 }
 
 server.listen(3000, () => {
-  console.log('listening on *:3000');
+	console.log('listening on *:3000');
 });
