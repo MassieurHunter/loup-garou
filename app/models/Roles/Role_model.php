@@ -492,6 +492,18 @@ class Role_model extends MY_Model
 	}
 
 	/**
+	 * @param string $secondActionName
+	 * @return Role_model
+	 */
+	public function setSecondActionName(string $secondActionName): Role_model
+	{
+		
+		$this->secondActionName = $secondActionName;
+		return $this;
+			
+	}
+
+	/**
 	 * @param array $arguments
 	 * @return array
 	 */

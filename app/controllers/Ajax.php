@@ -278,9 +278,9 @@ class Ajax extends MY_Controller
 	{
 		$this->load->model('player_model', 'player');
 		$gameUid = $this->currentGame->getGameUid();
-		$targetUid = $this->input->post('targetUid');
-		$this->player->init($targetUid);
-		$this->currentPlayer->vote($gameUid, $targetUid);
+		$playerUid = $this->input->post('playerUid');
+		$this->player->init($playerUid);
+		$this->currentPlayer->vote($gameUid, $playerUid);
 
 		return $this->ajax->t(
 			[

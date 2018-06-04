@@ -80,7 +80,7 @@ export default class RoleModel extends BaseModel {
     }
 
     getType(){
-        this.get('type');
+        return this.get('type', '');
     }
 
     setType(type){

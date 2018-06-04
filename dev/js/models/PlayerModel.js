@@ -54,6 +54,8 @@ export default class PlayerModel extends BaseModel {
 	}
 
 	displayAction(firstOrSecond, newRole = false) {
+		
+		console.log('display role action', firstOrSecond)
 
 		let Role = newRole ? this.getNewRoleModel() : this.getRoleModel();
 		let Game = this.getGameModel();
@@ -77,21 +79,21 @@ export default class PlayerModel extends BaseModel {
 		let actionChoiceButtons = [];
 		let typeInput = null;
 		let submitButton = new ABuilder(
-			'input',
+			'button',
 			{
-				'class': 'btn btn-primary btn-block',
+				'class': 'btn btn-primary btn-block mt-2',
 				'type': 'submit',
-				'value': Lang.getLine('submit'),
 			},
+			Lang.getLine('submit')
 		);
 
 		let doNothingButton = new ABuilder(
-			'input',
+			'button',
 			{
-				'class': 'btn btn-warning mt-1 btn-block',
+				'class': 'btn btn-warning btn-block mt-2',
 				'type': 'submit',
-				'value': Lang.getLine('do_nothing'),
 			},
+			Lang.getLine('do_nothing')
 		);
 		let actionTitle = null;
 
@@ -106,21 +108,22 @@ export default class PlayerModel extends BaseModel {
 					let actionButton = new ABuilder(
 						'button',
 						{
-							'class': 'btn btn-' + btnType,
+							'class': 'btn btn-block mt-2 btn-' + btnType,
 							'type': 'button',
 							'data-name': action.name,
 							'data-type': action.type,
-							'data-nbTargets': action.nbTargets,
-							'data-targetType': action.targetType
+							'data-nbtargets': action.nbTargets,
+							'data-targettype': action.targetType
 						},
 						Lang.getLine(action.name)
 					);
 
 					actionButton.on('click', () => {
 						Role.setSecondActionName(actionButton.data('name'));
-						Role.setSecondActionNbTargets(actionButton.data('nbTargets'));
-						Role.setSecondActionTargetType(actionButton.data('targetType'));
+						Role.setSecondActionNbTargets(actionButton.data('nbtargets'));
+						Role.setSecondActionTargetType(actionButton.data('targettype'));
 						Role.setType(actionButton.data('type'));
+						
 						this.setRole(Role.toJSON());
 
 						this.displayAction('second')
@@ -298,8 +301,9 @@ export default class PlayerModel extends BaseModel {
 			}
 
 			targets.push(submitButton);
-
+			
 			if (Role.getType()) {
+				
 				typeInput = new ABuilder(
 					'input',
 					{
@@ -309,6 +313,7 @@ export default class PlayerModel extends BaseModel {
 					},
 					''
 				)
+				
 			}
 
 
@@ -391,14 +396,14 @@ export default class PlayerModel extends BaseModel {
 
 	}
 
-	displayRoleAndVote() {
+	displayVote() {
 		let Game = this.getGameModel();
 		let Lang = this.getLangModel();
 		let gamePlayers = Game.getPlayersModel();
 		let submitButton = new ABuilder(
-			'input',
+			'button',
 			{
-				'class': 'btn btn-primary btn-block',
+				'class': 'btn btn-primary btn-block mt-2',
 				'type': 'submit',
 			},
 			Lang.getLine('vote')
@@ -424,6 +429,7 @@ export default class PlayerModel extends BaseModel {
 		}
 
 		let playersSelect = new ABuilder('select', {
+			'name': 'playerUid',
 			'class': 'custom-select',
 		}, playersOptions);
 

@@ -60,7 +60,8 @@ class Voyante_model extends Role_model
 	 */
 	private function getOnePlayerRole(int $gameUid, int $playerUid): array
 	{
-
+		$this->setSecondActionName('get_one_player_role');
+			
 		$this->load->model('player_model', 'player');
 		$this->player->init($playerUid);
 
@@ -82,6 +83,7 @@ class Voyante_model extends Role_model
 	 */
 	private function getTwoMiddleCard(int $gameUid, int $firstCard, int $secondCard): array
 	{
+		$this->setSecondActionName('get_two_cards_role');
 
 		$this->load->model('player_model', 'card1');
 		$this->load->model('player_model', 'card2');

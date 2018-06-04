@@ -10,7 +10,7 @@
                        type="text">
             </div>
             <div class="form-group">
-                <input class="btn btn-primary btn-block" type="submit" value="{$lang['sign_in']}">
+				<button class="btn btn-primary btn-block" type="submit" >{$lang['sign_in']}</button>
             </div>
             <div class="form-group">
                 <div class="alert alert-success form-message form-message-success d-none text-center" role="alert"></div>

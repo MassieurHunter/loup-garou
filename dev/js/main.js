@@ -18,7 +18,8 @@ let loupGarou = {
 
 		Noty.overrideDefaults({
 			theme: 'bootstrap-v4',
-			layout: 'bottom'
+			layout: 'bottom',
+			timeout: 5000
 		});
 
 		this.listenCreateGame();
@@ -130,13 +131,21 @@ let loupGarou = {
 
 						let CurrentRole = new RoleModel(message.role);
 
-						console.log(this.player.getRoleModel().getModel(), CurrentRole.getModel());
-
 						if (this.player.getRoleModel().getModel() === CurrentRole.getModel()) {
 
 							if (this.player.getRoleModel().hasFirstAction() || this.player.getRoleModel().hasSecondAction()) {
 
 								this.player.displayAction('first');
+								
+							} else {
+
+								this.socket.emit('playerFinishedTurn', {
+
+									player: this.player.toJSON(),
+									game: this.game.toJSON(),
+									role: this.game.toJSON(),
+
+								});
 								
 							}
 
@@ -191,7 +200,7 @@ let loupGarou = {
 
 					case 'actionsFinished' :
 
-						this.player.displayRoleAndVote();
+						this.player.displayVote();
 
 						break;
 
