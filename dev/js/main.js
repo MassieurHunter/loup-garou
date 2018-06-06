@@ -130,6 +130,10 @@ let loupGarou = {
 					case 'roleTurn' :
 
 						let CurrentRole = new RoleModel(message.role);
+						
+						this.game.setCurrentRoleName(CurrentRole.getName());
+						this.game.setProgress(message.progress);
+						this.game.displayProgress();
 
 						if (this.player.getRoleModel().getModel() === CurrentRole.getModel()) {
 
@@ -148,10 +152,6 @@ let loupGarou = {
 								});
 								
 							}
-
-						} else {
-
-							console.log('waiting for ' + CurrentRole.getName())
 
 						}
 

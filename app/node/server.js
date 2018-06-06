@@ -261,7 +261,7 @@ io.sockets.on('connection', (socket) => {
 
 function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 
-	let randomMicroTime = lastRole !== null ? (Math.floor(Math.random() * 8) + 8) * 1000 : 0;
+	let randomMicroTime = lastRole !== null ? (Math.floor(Math.random() * 10) + 10) * 1000 : 0;
 	console.log('Entering send next role message');
 
 	if (randomMicroTime) {
@@ -323,7 +323,7 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 			io.in(roomUid).emit('message', {
 				type: 'roleTurn',
 				role: NextRole.toJSON(),
-				percent: Math.ceil(progress / total * 100),
+				progress: Math.ceil((progress  - 1) / total * 100),
 			});
 
 			console.log('message sent');

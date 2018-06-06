@@ -4,3 +4,8 @@
   right:20px;
   width:200px;
 }
+
+.progress-bar {
+	-webkit-transition: width 2.5s ease !important;
+	transition: width 2.5s ease !important;
+}

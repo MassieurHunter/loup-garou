@@ -22,11 +22,19 @@
 		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center"></div>
 	</div>
 
+	<div class="row game-progress">
+		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 md-1 text-center"></div>
+	</div>
+
 	<div class="row role-infos">
 		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center"></div>
 	</div>
 	
 	<div class="row action-results">
+		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center"></div>
+	</div>
+
+	<div class="row turn-finished">
 		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center"></div>
 	</div>
 	

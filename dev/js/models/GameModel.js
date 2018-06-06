@@ -6,143 +6,196 @@ import LangModel from "./LangModel";
 
 export default class GameModel extends BaseModel {
 
-  setLang(lang) {
-    this.set('lang', lang);
-  }
+	setLang(lang) {
+		this.set('lang', lang);
+	}
 
-  getLangModel() {
-    return new LangModel(this.get('lang', {}));
-  }
+	getLangModel() {
+		return new LangModel(this.get('lang', {}));
+	}
 
-  getGameUid() {
-    return this.getInt('gameUid');
-  }
+	getGameUid() {
+		return this.getInt('gameUid');
+	}
 
-  getCode() {
-    return this.get('code');
-  }
+	getCode() {
+		return this.get('code');
+	}
 
-  getNbPlayers() {
-    return this.getInt('nbPlayers');
-  }
+	getNbPlayers() {
+		return this.getInt('nbPlayers');
+	}
 
-  getMaxPlayers() {
-    return this.getInt('maxPlayers');
-  }
+	getMaxPlayers() {
+		return this.getInt('maxPlayers');
+	}
 
-  isReadyToStart() {
-    return this.getNbPlayers() === this.getMaxPlayers();
-  }
+	isReadyToStart() {
+		return this.getNbPlayers() === this.getMaxPlayers();
+	}
 
-  getRolesForCasting() {
+	getRolesForCasting() {
 
-    return this.get('rolesForCasting');
+		return this.get('rolesForCasting');
 
-  }
+	}
 
-  getRolesForRunning() {
+	getRolesForRunning() {
 
-    return this.get('rolesForRunning');
+		return this.get('rolesForRunning');
 
-  }
+	}
 
-  getRolesModelForCasting() {
+	setProgress(progress) {
+		this.set('progress', progress)
+	}
 
-    let roles = this.getRolesForCasting();
-    let rolesModel = [];
+	getProgress() {
+		return this.get('progress', 0);
+	}
 
-    for (let role of roles) {
-      rolesModel.push(new RoleModel(role))
-    }
+	setCurrentRoleName(currentRoleName) {
+		this.set('currentRoleName', currentRoleName)
+	}
 
-    return rolesModel;
+	getCurrentRoleName() {
+		return this.get('currentRoleName', '');
+	}
 
-  }
+	getRolesModelForCasting() {
 
-  getRolesModelForRunning() {
+		let roles = this.getRolesForCasting();
+		let rolesModel = [];
 
-    let roles = this.getRolesForRunning();
-    let rolesModel = [];
+		for (let role of roles) {
+			rolesModel.push(new RoleModel(role))
+		}
 
-    for (let role of roles) {
-      rolesModel.push(new RoleModel(role))
-    }
+		return rolesModel;
 
-    return rolesModel;
+	}
 
-  }
+	getRolesModelForRunning() {
 
-  getPlayers() {
-    return this.get('players')
-  }
+		let roles = this.getRolesForRunning();
+		let rolesModel = [];
 
-  getPlayersModel() {
-    let players = this.getPlayers();
-    let playersModel = [];
+		for (let role of roles) {
+			rolesModel.push(new RoleModel(role))
+		}
 
-    for (let player of players) {
-      playersModel.push(new PlayerModel(player))
-    }
+		return rolesModel;
 
-    return playersModel;
+	}
 
-  }
+	getPlayers() {
+		return this.get('players')
+	}
 
-  displayRoles() {
+	getPlayersModel() {
+		let players = this.getPlayers();
+		let playersModel = [];
 
-    let Lang = this.getLangModel();
-    let rolesForCasting = this.getRolesModelForCasting();
-    let rolesForRunning = this.getRolesModelForRunning();
+		for (let player of players) {
+			playersModel.push(new PlayerModel(player))
+		}
 
-    let rolesListForCasting = '';
-    let rolesListForRunning = '';
+		return playersModel;
 
-    for (let Role of rolesForCasting) {
+	}
 
-      rolesListForCasting += Role.getName() + ', ';
+	displayRoles() {
 
-    }
+		let Lang = this.getLangModel();
+		let rolesForCasting = this.getRolesModelForCasting();
+		let rolesForRunning = this.getRolesModelForRunning();
 
-    for (let Role of rolesForRunning) {
+		let rolesListForCasting = '';
+		let rolesListForRunning = '';
 
-      if(Role.hasFirstAction()) {
+		for (let Role of rolesForCasting) {
 
-        rolesListForRunning += Role.getName() + ', ';
+			rolesListForCasting += Role.getName() + ', ';
 
-      }
+		}
 
-    }
+		for (let Role of rolesForRunning) {
 
-    let rolesForCastingBlock = new ABuilder(
-      'div',
-      {
-        'class': ''
-      },
-      Lang.getLine('casted_roles') + rolesListForCasting.substr(0, rolesListForCasting.length - 2)
-    );
+			if (Role.hasFirstAction()) {
 
-    let rolesForRunningBlock = new ABuilder(
-      'div',
-      {
-        'class': ''
-      },
-      Lang.getLine('roles_running_order') + rolesListForRunning.substr(0, rolesListForRunning.length - 2)
-    );
+				rolesListForRunning += Role.getName() + ', ';
 
-    let RoleAlertBlock = new ABuilder(
-      'div',
-      {
-        'class': 'alert alert-primary'
-      },
-      [
-        rolesForCastingBlock,
-        rolesForRunningBlock
-      ]
-    );
+			}
 
-    $('.waiting-for-start').remove();
-    $('.roles-block > div').append(RoleAlertBlock);
+		}
 
-  }
+		let rolesForCastingBlock = new ABuilder(
+			'div',
+			{
+				'class': ''
+			},
+			Lang.getLine('casted_roles') + rolesListForCasting.substr(0, rolesListForCasting.length - 2)
+		);
+
+		let rolesForRunningBlock = new ABuilder(
+			'div',
+			{
+				'class': ''
+			},
+			Lang.getLine('roles_running_order') + rolesListForRunning.substr(0, rolesListForRunning.length - 2)
+		);
+
+		let RoleAlertBlock = new ABuilder(
+			'div',
+			{
+				'class': 'alert alert-primary'
+			},
+			[
+				rolesForCastingBlock,
+				rolesForRunningBlock
+			]
+		);
+
+		$('.waiting-for-start').remove();
+		$('.roles-block > div').append(RoleAlertBlock);
+
+	}
+
+	displayProgress() {
+		
+
+		let roleName = new ABuilder(
+			'h4',
+			{
+				'class': 'progress-role-name text-center'
+			},
+			this.getLangModel().getLine('current turn') 
+			+ ' '
+			+ this.getCurrentRoleName()
+		);
+
+
+		let progressBar = new ABuilder(
+			'div',
+			{'class': 'progress'},
+			new ABuilder(
+				'div',
+				{
+					'class': 'progress-bar progress-bar-striped progress-bar-animated',
+					'role': 'progressbar',
+					'aria-valuemin': 0,
+					'aria-valuemax': 100,
+					'aria-valuenow': this.getProgress(),
+					'style' : 'width:' + this.getProgress() + '%'
+				},
+			)
+		);
+		
+		$('.game-progress > div').html('');
+		$('.game-progress > div').append(roleName);
+		$('.game-progress > div').append(progressBar);
+
+
+	}
 
 }

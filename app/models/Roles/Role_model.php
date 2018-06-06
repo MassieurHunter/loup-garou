@@ -21,24 +21,24 @@ class Role_model extends MY_Model
 	 * @var array
 	 */
 	public $basics = [
-		'name' => 'getName',
-		'description' => 'getDescription',
-		'model' => 'getModel',
-		'firstAction' => 'hasFirstAction',
-		'firstActionName' => 'getFirstActionName',
-		'firstActionPassive' => 'isFirstActionPassive',
-		'firstActionNbTargets' => 'getFirstActionNbTargets',
-		'firstActionTargetType' => 'getFirstActionTargetType',
-		'secondAction' => 'hasSecondAction',
+		'name'                        => 'getName',
+		'description'                 => 'getDescription',
+		'model'                       => 'getModel',
+		'firstAction'                 => 'hasFirstAction',
+		'firstActionName'             => 'getFirstActionName',
+		'firstActionPassive'          => 'isFirstActionPassive',
+		'firstActionNbTargets'        => 'getFirstActionNbTargets',
+		'firstActionTargetType'       => 'getFirstActionTargetType',
+		'secondAction'                => 'hasSecondAction',
 		'secondActionNeedFailedFirst' => 'isSecondActionNeedFailedFirst',
-		'secondActionName' => 'getSecondActionName',
-		'secondActionPassive' => 'isSecondActionPassive',
-		'secondActionNbTargets' => 'getSecondActionNbTargets',
-		'secondActionTargetType' => 'getSecondActionTargetType',
-		'loup' => 'isLoup',
-		'villageois' => 'isVillageois',
-		'tanneur' => 'isTanneur',
-		'bootstrapClass' => 'getBootstrapClass'
+		'secondActionName'            => 'getSecondActionName',
+		'secondActionPassive'         => 'isSecondActionPassive',
+		'secondActionNbTargets'       => 'getSecondActionNbTargets',
+		'secondActionTargetType'      => 'getSecondActionTargetType',
+		'loup'                        => 'isLoup',
+		'villageois'                  => 'isVillageois',
+		'tanneur'                     => 'isTanneur',
+		'bootstrapClass'              => 'getBootstrapClass',
 	];
 	/**
 	 * @var int
@@ -128,8 +128,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return string
 	 */
-	public function getName(): string
-	{
+	public function getName(): string {
 		return (string)$this->name;
 	}
 
@@ -137,8 +136,7 @@ class Role_model extends MY_Model
 	 * @param string $name
 	 * @return Role_model
 	 */
-	public function setName(string $name): Role_model
-	{
+	public function setName(string $name): Role_model {
 		$this->name = $name;
 		return $this;
 	}
@@ -146,8 +144,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return string
 	 */
-	public function getDescription(): string
-	{
+	public function getDescription(): string {
 		return (string)$this->description;
 	}
 
@@ -155,8 +152,7 @@ class Role_model extends MY_Model
 	 * @param string $description
 	 * @return Role_model
 	 */
-	public function setDescription(string $description): Role_model
-	{
+	public function setDescription(string $description): Role_model {
 		$this->description = $description;
 		return $this;
 	}
@@ -164,8 +160,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getNb(): int
-	{
+	public function getNb(): int {
 		return (int)$this->nb;
 	}
 
@@ -173,8 +168,7 @@ class Role_model extends MY_Model
 	 * @param int $nb
 	 * @return Role_model
 	 */
-	public function setNb(int $nb): Role_model
-	{
+	public function setNb(int $nb): Role_model {
 		$this->nb = $nb;
 		return $this;
 	}
@@ -182,8 +176,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return bool
 	 */
-	public function isVillageois(): bool
-	{
+	public function isVillageois(): bool {
 		return $this->villageois == true;
 	}
 
@@ -191,8 +184,7 @@ class Role_model extends MY_Model
 	 * @param bool $villageois
 	 * @return Role_model
 	 */
-	public function setVillageois(bool $villageois): Role_model
-	{
+	public function setVillageois(bool $villageois): Role_model {
 		$this->villageois = $villageois;
 		return $this;
 	}
@@ -200,8 +192,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return string
 	 */
-	public function getBootstrapClass(): string
-	{
+	public function getBootstrapClass(): string {
 		if ($this->isLoup()) {
 
 			$class = 'dark';
@@ -222,8 +213,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return bool
 	 */
-	public function isLoup(): bool
-	{
+	public function isLoup(): bool {
 		return $this->loup == true;
 	}
 
@@ -231,8 +221,7 @@ class Role_model extends MY_Model
 	 * @param bool $loup
 	 * @return Role_model
 	 */
-	public function setLoup(bool $loup): Role_model
-	{
+	public function setLoup(bool $loup): Role_model {
 		$this->loup = $loup;
 		return $this;
 	}
@@ -240,8 +229,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return bool
 	 */
-	public function isTanneur(): bool
-	{
+	public function isTanneur(): bool {
 		return $this->tanneur == true;
 	}
 
@@ -249,8 +237,7 @@ class Role_model extends MY_Model
 	 * @param bool $tanneur
 	 * @return Role_model
 	 */
-	public function setTanneur(bool $tanneur): Role_model
-	{
+	public function setTanneur(bool $tanneur): Role_model {
 		$this->tanneur = $tanneur;
 		return $this;
 	}
@@ -258,8 +245,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getCastingOrder(): int
-	{
+	public function getCastingOrder(): int {
 		return (int)$this->castingOrder;
 	}
 
@@ -267,8 +253,7 @@ class Role_model extends MY_Model
 	 * @param int $castingOrder
 	 * @return Role_model
 	 */
-	public function setCastingOrder(int $castingOrder): Role_model
-	{
+	public function setCastingOrder(int $castingOrder): Role_model {
 		$this->castingOrder = $castingOrder;
 		return $this;
 	}
@@ -276,8 +261,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getRunningOrder(): int
-	{
+	public function getRunningOrder(): int {
 		return (int)$this->runningOrder;
 	}
 
@@ -285,8 +269,7 @@ class Role_model extends MY_Model
 	 * @param int $runningOrder
 	 * @return Role_model
 	 */
-	public function setRunningOrder(int $runningOrder): Role_model
-	{
+	public function setRunningOrder(int $runningOrder): Role_model {
 		$this->runningOrder = $runningOrder;
 		return $this;
 	}
@@ -294,24 +277,21 @@ class Role_model extends MY_Model
 	/**
 	 * @return bool
 	 */
-	public function isFirstActionPassive(): bool
-	{
+	public function isFirstActionPassive(): bool {
 		return $this->firstActionPassive == true;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getFirstActionNbTargets(): int
-	{
+	public function getFirstActionNbTargets(): int {
 		return (int)$this->firstActionNbTargets;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isSecondActionNeedFailedFirst(): bool
-	{
+	public function isSecondActionNeedFailedFirst(): bool {
 		return $this->secondActionNeedFailedFirst == true;
 	}
 
@@ -319,8 +299,7 @@ class Role_model extends MY_Model
 	 * @param bool $secondActionNeedFailedFirst
 	 * @return Role_model
 	 */
-	public function setSecondActionNeedFailedFirst(bool $secondActionNeedFailedFirst): Role_model
-	{
+	public function setSecondActionNeedFailedFirst(bool $secondActionNeedFailedFirst): Role_model {
 		$this->secondActionNeedFailedFirst = $secondActionNeedFailedFirst;
 		return $this;
 	}
@@ -328,16 +307,14 @@ class Role_model extends MY_Model
 	/**
 	 * @return bool
 	 */
-	public function isSecondActionPassive(): bool
-	{
+	public function isSecondActionPassive(): bool {
 		return $this->secondActionPassive == true;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getSecondActionNbTargets(): int
-	{
+	public function getSecondActionNbTargets(): int {
 		return (int)$this->secondActionNbTargets;
 	}
 
@@ -345,8 +322,7 @@ class Role_model extends MY_Model
 	 * @param array $arguments
 	 * @return array
 	 */
-	public function firstAction($arguments): array
-	{
+	public function firstAction($arguments): array {
 		$return = [];
 
 		if ($this->getSubmodel()->hasFirstAction()) {
@@ -360,16 +336,14 @@ class Role_model extends MY_Model
 	/**
 	 * @return bool
 	 */
-	public function hasFirstAction(): bool
-	{
+	public function hasFirstAction(): bool {
 		return $this->firstAction == true;
 	}
 
 	/**
 	 * @return Role_model
 	 */
-	public function getSubmodel(): Role_model
-	{
+	public function getSubmodel(): Role_model {
 
 		if (empty($this->subModel)) {
 
@@ -385,8 +359,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return string
 	 */
-	public function getModel(): string
-	{
+	public function getModel(): string {
 		return (string)$this->model;
 	}
 
@@ -394,8 +367,7 @@ class Role_model extends MY_Model
 	 * @param string $model
 	 * @return Role_model
 	 */
-	public function setModel(string $model): Role_model
-	{
+	public function setModel(string $model): Role_model {
 		$this->model = $model;
 		return $this;
 	}
@@ -403,8 +375,7 @@ class Role_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getRoleUid(): int
-	{
+	public function getRoleUid(): int {
 		return (int)$this->roleUid;
 	}
 
@@ -412,8 +383,7 @@ class Role_model extends MY_Model
 	 * @param int $roleUid
 	 * @return Role_model
 	 */
-	public function setRoleUid(int $roleUid): Role_model
-	{
+	public function setRoleUid(int $roleUid): Role_model {
 		$this->roleUid = $roleUid;
 		return $this;
 	}
@@ -421,8 +391,7 @@ class Role_model extends MY_Model
 	/**
 	 * @param array $action
 	 */
-	protected function logFirstAction(array $action)
-	{
+	protected function logFirstAction(array $action) {
 		$this->logAction(1, $action);
 	}
 
@@ -430,8 +399,7 @@ class Role_model extends MY_Model
 	 * @param int $actionNumber
 	 * @param array $actionInfos
 	 */
-	protected function logAction(int $actionNumber, array $actionInfos)
-	{
+	protected function logAction(int $actionNumber, array $actionInfos) {
 		$targetType = $actionNumber === 1 ? $this->getFirstActionTargetType() : $this->getSecondActionTargetType();
 		$player1 = isset($actionInfos['player_1']) ? $actionInfos['player_1'] : 0;
 		$player2 = isset($actionInfos['player_2']) ? $actionInfos['player_2'] : 0;
@@ -462,32 +430,28 @@ class Role_model extends MY_Model
 	/**
 	 * @return string
 	 */
-	public function getFirstActionTargetType(): string
-	{
+	public function getFirstActionTargetType(): string {
 		return (string)$this->firstActionTargetType;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getSecondActionTargetType(): string
-	{
+	public function getSecondActionTargetType(): string {
 		return (string)$this->secondActionTargetType;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getFirstActionName(): string
-	{
+	public function getFirstActionName(): string {
 		return (string)$this->firstActionName;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getSecondActionName(): string
-	{
+	public function getSecondActionName(): string {
 		return (string)$this->secondActionName;
 	}
 
@@ -495,20 +459,19 @@ class Role_model extends MY_Model
 	 * @param string $secondActionName
 	 * @return Role_model
 	 */
-	public function setSecondActionName(string $secondActionName): Role_model
-	{
+	public function setSecondActionName(string $secondActionName): Role_model {
 		
 		$this->secondActionName = $secondActionName;
+
 		return $this;
-			
+
 	}
 
 	/**
 	 * @param array $arguments
 	 * @return array
 	 */
-	public function secondAction($arguments): array
-	{
+	public function secondAction($arguments): array {
 		$return = [];
 
 		if ($this->getSubmodel()->hasSecondAction()) {
@@ -522,16 +485,14 @@ class Role_model extends MY_Model
 	/**
 	 * @return bool
 	 */
-	public function hasSecondAction(): bool
-	{
+	public function hasSecondAction(): bool {
 		return $this->secondAction == true;
 	}
 
 	/**
 	 * @param array $action
 	 */
-	protected function logSecondAction(array $action)
-	{
+	protected function logSecondAction(array $action) {
 		$this->logAction(2, $action);
 	}
 
@@ -540,10 +501,9 @@ class Role_model extends MY_Model
 	 * @param array $actionResponse
 	 * @return string
 	 */
-	public function buildActionMessage(int $actionNumber, array $actionResponse): string
-	{
-		$actionName = $actionNumber === 1 ? $this->getFirstActionName() : $this->getSecondActionName();
-		
+	public function buildActionMessage(int $actionNumber, array $actionResponse): string {
+		$actionName = $actionNumber === 1 ? $this->getSubmodel()->getFirstActionName() : $this->getSubmodel()->getSecondActionName();
+
 		if (isset($actionResponse['result'])) {
 
 			$actionLangKey = $actionName . '_result' . ($actionResponse['result'] === 0 ? '_empty' : ($actionResponse['result'] === 0.5 ? '_half' : ''));
@@ -557,11 +517,11 @@ class Role_model extends MY_Model
 				$actionLang = isset($actionResponse['role_1']) ? str_replace('*role_1*', $actionResponse['role_1']['name'], $actionLang) : $actionLang;
 				$actionLang = isset($actionResponse['role_2']) ? str_replace('*role_2*', $actionResponse['role_2']['name'], $actionLang) : $actionLang;
 			}
-			
+
 		} else {
 
 			$actionLang = $this->lang->line($actionName);
-			
+
 		}
 
 		return $actionLang;

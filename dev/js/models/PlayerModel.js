@@ -390,7 +390,7 @@ export default class PlayerModel extends BaseModel {
 			'role': 'alert'
 		}, this.getLangModel().getLine('finished'));
 
-		$('.role-infos > div').append(alert);
+		$('.turn-finished > div').append(alert);
 
 		$('.play-game').find('.action-form-container').remove();
 
