@@ -23,9 +23,9 @@
 			<div class="roles-block mt-1 md-1"></div>
 			<div class="game-progress mt-1 md-1"></div>
 			<div class="role-infos mt-1 md-1"></div>
+			<div class="turn-finished mt-1 md-1"></div>
 			<div class="action-results mt-1 md-1"></div>
 			<div class="action-form-container mt-1 md-1"></div>
-			<div class="turn-finished mt-1 md-1"></div>
 			<div class="vote-message mt-1 md-1"></div>
 			<div class="votes-infos mt-1 md-1"></div>
 		</div>

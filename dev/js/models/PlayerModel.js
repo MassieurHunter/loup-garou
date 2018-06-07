@@ -337,6 +337,7 @@ export default class PlayerModel extends BaseModel {
 
 			$('.action-form-container').html('');
 			$('.action-form-container')
+				.removeClass('d-none')
 				.append(actionTitle)
 				.append(actionForm)
 				.append(firstOrSecond === 'first' ? doNothingForm : null);
@@ -344,7 +345,7 @@ export default class PlayerModel extends BaseModel {
 			let forms = new Forms();
 
 			if (actionIsPassive) {
-				actionContent.addClass('d-none');
+				$('.action-form-container').addClass('d-none');
 				actionForm.trigger('submit');
 			}
 
@@ -361,7 +362,7 @@ export default class PlayerModel extends BaseModel {
 
 		$('.turn-finished').append(alert);
 
-		$('.play-game').find('.action-form-container').remove();
+		$('.action-form-container').html('');
 
 	}
 
@@ -413,26 +414,13 @@ export default class PlayerModel extends BaseModel {
 				submitButton
 			]
 		);
- 
-		let actionContent = new ABuilder(
-			'div',
-			{
-				'class': 'row action-form-container',
-			},
-			new ABuilder(
-				'div',
-				{
-					'class': 'col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1',
-				},
-				[
-					title,
-					voteForm
-				]
-			)
-		);
 
-		$('.play-game').find('.action-form-container').remove();
-		$('.play-game').append(actionContent);
+		$('.progress-role-name').html(this.getLangModel().getLine('now_vote'));
+		$('.action-form-container').html('');
+		$('.action-form-container')
+			.removeClass('d-none')
+			.append(title)
+			.append(voteForm);
 
 		let forms = new Forms();
 

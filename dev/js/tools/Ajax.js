@@ -193,6 +193,7 @@ class Ajax {
 					break;
 					
 				case "vote" :
+					$('.action-form-container').remove();
 					$('.vote-message').append(
 						new ABuilder('div', {
 							'class': 'alert alert-primary',

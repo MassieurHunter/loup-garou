@@ -347,7 +347,7 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 			io.in(roomUid).emit('message', {
 				type: 'roleTurn',
 				role: NextRole.toJSON(),
-				progress: Math.ceil((progress - 1) / total * 100),
+				progress: Math.ceil(progress / total * 100),
 			});
 
 			console.log('message sent');
