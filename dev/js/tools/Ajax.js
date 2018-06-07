@@ -183,8 +183,17 @@ class Ajax {
 					socket.emit(action.message, action.params);
 					break;
 
-				case "roleActionResult" :
-					$('.action-results > div').append(
+				case "actionResult" :
+					$('.action-results').append(
+						new ABuilder('div', {
+							'class': 'alert alert-primary',
+							'role': 'alert'
+						}, action.message)
+					);
+					break;
+					
+				case "vote" :
+					$('.vote-message').append(
 						new ABuilder('div', {
 							'class': 'alert alert-primary',
 							'role': 'alert'

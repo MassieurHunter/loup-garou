@@ -121,11 +121,7 @@ export default class GameModel extends BaseModel {
 
 		for (let Role of rolesForRunning) {
 
-			if (Role.hasFirstAction()) {
-
-				rolesListForRunning += Role.getName() + ', ';
-
-			}
+			rolesListForRunning += Role.getName() + ', ';
 
 		}
 
@@ -157,19 +153,19 @@ export default class GameModel extends BaseModel {
 		);
 
 		$('.waiting-for-start').remove();
-		$('.roles-block > div').append(RoleAlertBlock);
+		$('.roles-block').append(RoleAlertBlock);
 
 	}
 
 	displayProgress() {
-		
+
 
 		let roleName = new ABuilder(
 			'h4',
 			{
 				'class': 'progress-role-name text-center'
 			},
-			this.getLangModel().getLine('current turn') 
+			this.getLangModel().getLine('current turn')
 			+ ' '
 			+ this.getCurrentRoleName()
 		);
@@ -186,16 +182,19 @@ export default class GameModel extends BaseModel {
 					'aria-valuemin': 0,
 					'aria-valuemax': 100,
 					'aria-valuenow': this.getProgress(),
-					'style' : 'width:' + this.getProgress() + '%'
+					'style': 'width:' + this.getProgress() + '%'
 				},
 			)
 		);
-		
-		$('.game-progress > div').html('');
-		$('.game-progress > div').append(roleName);
-		$('.game-progress > div').append(progressBar);
 
+		$('.game-progress').html('');
+		$('.game-progress').append(roleName);
+		$('.game-progress').append(progressBar);
 
+	}
+
+	refreshVotes(nbVotes){
+		this.getLangModel().getLine('nb_votes') + ' ' + nbVotes;
 	}
 
 }

@@ -177,26 +177,11 @@ export default class PlayerModel extends BaseModel {
 				);
 
 
-				let actionContent = new ABuilder(
-					'div',
-					{
-						'class': 'row action-form-container',
-					},
-					new ABuilder(
-						'div',
-						{
-							'class': 'col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1',
-						},
-						[
-							actionTitle,
-							actionForm,
-							doNothingForm
-						]
-					)
-				);
-
-				$('.play-game').find('.action-form-container').remove();
-				$('.play-game').append(actionContent);
+				$('.action-form-container').html('');
+				$('.action-form-container')
+					.append(actionTitle)
+					.append(actionForm)
+					.append(doNothingForm);
 
 				let forms = new Forms();
 				
@@ -350,27 +335,11 @@ export default class PlayerModel extends BaseModel {
 				]
 			);
 
-
-			let actionContent = new ABuilder(
-				'div',
-				{
-					'class': 'row action-form-container',
-				},
-				new ABuilder(
-					'div',
-					{
-						'class': 'col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1',
-					},
-					[
-						actionTitle,
-						actionForm,
-						firstOrSecond === 'first' ? doNothingForm : null
-					]
-				)
-			);
-
-			$('.play-game').find('.action-form-container').remove();
-			$('.play-game').append(actionContent);
+			$('.action-form-container').html('');
+			$('.action-form-container')
+				.append(actionTitle)
+				.append(actionForm)
+				.append(firstOrSecond === 'first' ? doNothingForm : null);
 
 			let forms = new Forms();
 
@@ -390,7 +359,7 @@ export default class PlayerModel extends BaseModel {
 			'role': 'alert'
 		}, this.getLangModel().getLine('finished'));
 
-		$('.turn-finished > div').append(alert);
+		$('.turn-finished').append(alert);
 
 		$('.play-game').find('.action-form-container').remove();
 
@@ -444,7 +413,7 @@ export default class PlayerModel extends BaseModel {
 				submitButton
 			]
 		);
-
+ 
 		let actionContent = new ABuilder(
 			'div',
 			{

@@ -17,27 +17,20 @@
 			</div>
 		</div>
 	</div>
-	
-	<div class="row roles-block">
-		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center"></div>
+
+	<div class="row">
+		<div class="alerts-container col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center">
+			<div class="roles-block mt-1 md-1"></div>
+			<div class="game-progress mt-1 md-1"></div>
+			<div class="role-infos mt-1 md-1"></div>
+			<div class="action-results mt-1 md-1"></div>
+			<div class="action-form-container mt-1 md-1"></div>
+			<div class="turn-finished mt-1 md-1"></div>
+			<div class="vote-message mt-1 md-1"></div>
+			<div class="votes-infos mt-1 md-1"></div>
+		</div>
 	</div>
 
-	<div class="row game-progress">
-		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 md-1 text-center"></div>
-	</div>
-
-	<div class="row role-infos">
-		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center"></div>
-	</div>
-	
-	<div class="row action-results">
-		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center"></div>
-	</div>
-
-	<div class="row turn-finished">
-		<div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center"></div>
-	</div>
-	
 </div>
 
 

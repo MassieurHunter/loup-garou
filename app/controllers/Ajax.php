@@ -228,7 +228,7 @@ class Ajax extends MY_Controller
 			]);
 
 		}
-		$this->ajax->roleActionResultMessage($actionMessage);
+		$this->ajax->actionResultMessage($actionMessage);
 
 		return $this->ajax->t(
 			$roleModel->getFirstActionTargetType() === 'ajax' ? $actionResponse : []
@@ -267,7 +267,7 @@ class Ajax extends MY_Controller
 			'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
 		]);
 
-		$this->ajax->roleActionResultMessage($actionMessage);
+		$this->ajax->actionResultMessage($actionMessage);
 
 		return $this->ajax->t();
 
@@ -281,12 +281,17 @@ class Ajax extends MY_Controller
 		$playerUid = $this->input->post('playerUid');
 		$this->player->init($playerUid);
 		$this->currentPlayer->vote($gameUid, $playerUid);
+		
+		$message = str_replace('*playername*', $this->player->getName(), $this->lang->line('voted_for'));
 
-		return $this->ajax->t(
-			[
-				$this->player->getBasicInfos(),
-			]
-		);
+		$this->ajax->voteMessage($message);
+
+		$this->ajax->socketMessage('playerVoted', [
+			'game' => $this->currentGame->getBasicInfos(),
+			'player' => $this->currentPlayer->getBasicInfos(),
+		]);
+
+		return $this->ajax->t();
 
 	}
 

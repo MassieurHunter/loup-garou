@@ -157,11 +157,19 @@ class AjaxResponse
 	}
 
 	/**
-	 * @param array $message
+	 * @param string $message
 	 */
-	public function roleActionResultMessage(string $message)
+	public function actionResultMessage(string $message)
 	{
-		$this->addAction(["method" => "roleActionResult", "message" => $message]);
+		$this->addAction(["method" => "actionResult", "message" => $message]);
+	}
+
+	/**
+	 * @param string $message
+	 */
+	public function voteMessage(string $message)
+	{
+		$this->addAction(["method" => "vote", "message" => $message]);
 	}
 
 	/**

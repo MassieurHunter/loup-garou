@@ -185,11 +185,8 @@ let loupGarou = {
 								});
 							}
 
-						} else {
-
-							console.log('waiting for ' + Role.getName())
-
 						}
+						
 						break;
 
 					case 'playerFinishedTurn' :
@@ -201,6 +198,12 @@ let loupGarou = {
 					case 'actionsFinished' :
 
 						this.player.displayVote();
+
+						break;
+
+					case 'playerVoted' :
+
+						this.game.refreshVotes(message.nbVotes);
 
 						break;
 

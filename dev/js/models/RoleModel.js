@@ -110,7 +110,7 @@ export default class RoleModel extends BaseModel {
             'role': 'alert'
         }, this.getName());
 
-        $('.role-infos > div').append(alert);
+        $('.role-infos').append(alert);
     }
 
 

@@ -6,3 +6,4 @@ $lang['error_game_finished'] = "Cette partie est terminée";
 $lang['error_game_full'] = "Cette partie est déjà complète";
 $lang['joining_game'] = "Connexion à la partie";
 $lang['current turn'] = 'Tour actuel :';
+$lang['nb_votes'] = 'Votes : ';

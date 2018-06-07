@@ -413,7 +413,7 @@ class Game_model extends MY_Model
 
             if ($previousRole) {
 
-                if ($previousRole->getModel() === $roleModel->getModel()) {
+                if ($previousRole->getModel() === $roleModel->getModel() || !$roleModel->hasFirstAction()) {
 
                     unset($arrRoles[$key]);
                     continue;
