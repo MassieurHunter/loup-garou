@@ -197,7 +197,7 @@ class Ajax extends MY_Controller
 		$actionMessage = $roleModel->buildActionMessage(1, $actionResponse);
 
 
-		if ($roleModel->hasSecondAction()) {
+		if ($roleModel->hasSecondAction() || $isDoppelFirstAction) {
 
 			if ($roleModel->isSecondActionNeedFailedFirst()) {
 
@@ -293,6 +293,16 @@ class Ajax extends MY_Controller
 
 		return $this->ajax->t();
 
+	}
+	
+	private function voteResults(){
+		
+		$gameResults = $this->currentGame->getResults();
+
+		$this->ajax->gameResults($gameResults, $this->currentPlayer);
+
+		return $this->ajax->t();
+		
 	}
 
 }

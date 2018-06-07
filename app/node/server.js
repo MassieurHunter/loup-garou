@@ -285,7 +285,7 @@ io.sockets.on('connection', (socket) => {
 
 function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 
-	let randomMicroTime = lastRole !== null ? (Math.floor(Math.random() * 10) + 10) * 1000 : 0;
+	let randomMicroTime = lastRole !== null ? (Math.floor(Math.random() * 5) + 5) * 1000 : 0;
 	console.log('Entering send next role message');
 
 	if (randomMicroTime) {

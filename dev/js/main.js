@@ -130,7 +130,7 @@ let loupGarou = {
 					case 'roleTurn' :
 
 						let CurrentRole = new RoleModel(message.role);
-						
+
 						this.game.setCurrentRoleName(CurrentRole.getName());
 						this.game.setProgress(message.progress);
 						this.game.displayProgress();
@@ -140,7 +140,7 @@ let loupGarou = {
 							if (this.player.getRoleModel().hasFirstAction() || this.player.getRoleModel().hasSecondAction()) {
 
 								this.player.displayAction('first');
-								
+
 							} else {
 
 								this.socket.emit('playerFinishedTurn', {
@@ -150,7 +150,7 @@ let loupGarou = {
 									role: this.game.toJSON(),
 
 								});
-								
+
 							}
 
 						}
@@ -171,6 +171,8 @@ let loupGarou = {
 
 							} else if (doppel && this.player.getRoleModel().getModel() === 'doppelganger') {
 
+								console.log('nouveau role du doppel', NewRole.getName())
+
 								this.player.setNewRole(NewRole.toJSON());
 								this.player.displayAction('first', true);
 
@@ -185,8 +187,25 @@ let loupGarou = {
 								});
 							}
 
+						} else if (this.player.getNewRoleModel().getModel() === Role.getModel()) {
+
+							if (this.player.getNewRoleModel().hasSecondAction()) {
+
+								this.player.displayAction('second', true);
+
+							} else {
+
+								this.socket.emit('playerFinishedTurn', {
+
+									player: this.player.toJSON(),
+									game: this.game.toJSON(),
+									role: this.game.toJSON(),
+
+								});
+							}
+
 						}
-						
+
 						break;
 
 					case 'playerFinishedTurn' :
@@ -204,7 +223,7 @@ let loupGarou = {
 					case 'playerVoted' :
 
 						this.game.refreshVotes(message.nbVotes);
-
+						
 						break;
 
 				}

@@ -201,6 +201,15 @@ class Ajax {
 						}, action.message)
 					);
 					break;
+					
+				case "gameResults" :
+					$('.game-results').append(
+						new ABuilder('div', {
+							'class': 'alert alert-primary',
+							'role': 'alert'
+						}, action.message)
+					);
+					break;
 
 				case "call":
 

@@ -3,6 +3,7 @@ import PlayerModel from "./PlayerModel";
 import RoleModel from "./RoleModel";
 import ABuilder from '../tools/ABuilder';
 import LangModel from "./LangModel";
+import Ajax from "../tools/Ajax";
 
 export default class GameModel extends BaseModel {
 
@@ -193,8 +194,24 @@ export default class GameModel extends BaseModel {
 
 	}
 
-	refreshVotes(nbVotes){
-		this.getLangModel().getLine('nb_votes') + ' ' + nbVotes;
+	refreshVotes(nbVotes) {
+
+		$('.vote-infos').append(
+			new ABuilder(
+				'div',
+				{
+					'class': 'alert alert-primary',
+					'role': 'alert'
+				},
+				this.getLangModel().getLine('nb_votes') + ' ' + nbVotes)
+		);
+		
+		if(nbVotes === this.getNbPlayers()){
+			
+			Ajax.post('vote/results', params, (response) => {})
+			
+		}
+
 	}
 
 }

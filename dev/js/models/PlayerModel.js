@@ -57,6 +57,7 @@ export default class PlayerModel extends BaseModel {
 		
 		console.log('display role action', firstOrSecond)
 
+		let doppel = newRole && this.getRoleModel().getModel() === 'doppelganger';
 		let Role = newRole ? this.getNewRoleModel() : this.getRoleModel();
 		let Game = this.getGameModel();
 		let Lang = this.getLangModel();
@@ -99,7 +100,8 @@ export default class PlayerModel extends BaseModel {
 
 
 		if (actionTargetType === 'ajax') {
-			Ajax.post('player/action/first', [], (response) => {
+			let params = doppel ? [{neme : 'doppel', value : '1'}] : [];
+			Ajax.post('player/action/first', params, (response) => {
 
 				let i = 0;
 				for (let action of response.data) {
@@ -126,7 +128,7 @@ export default class PlayerModel extends BaseModel {
 						
 						this.setRole(Role.toJSON());
 
-						this.displayAction('second')
+						this.displayAction('second', newRole)
 					});
 
 					actionChoiceButtons.push(
@@ -300,6 +302,16 @@ export default class PlayerModel extends BaseModel {
 				)
 				
 			}
+			
+			let doppelInput = doppel ? new ABuilder(
+				'input',
+				{
+					'name': 'doppel',
+					'value': 1,
+					'type' : 'hidden'
+				},
+				''
+			) : null;
 
 
 			let actionForm = new ABuilder(
@@ -311,6 +323,7 @@ export default class PlayerModel extends BaseModel {
 				[
 					actionChoiceButtons,
 					typeInput,
+					doppelInput,
 					targets
 				]
 			);

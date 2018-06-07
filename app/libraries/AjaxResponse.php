@@ -173,6 +173,14 @@ class AjaxResponse
 	}
 
 	/**
+	 * @param array $results
+	 */
+	public function gameResults(array $results)
+	{
+		$this->addAction(["method" => "gameResults", "results" => $results]);
+	}
+
+	/**
 	 * @param $aSelector
 	 * @param array $aParams
 	 */
