@@ -5,6 +5,7 @@
  *
  * @property Player_model $_playerModel
  * @property Role_model $_roleModel
+ * @property Log_model $_logModel
  */
 class Game_model extends MY_Model
 {
@@ -78,6 +79,10 @@ class Game_model extends MY_Model
 	 */
 	protected $arrRoles = [];
 	/**
+	 * @var Log_model[]
+	 */
+	protected $arrLogs = [];
+	/**
 	 * @var array
 	 */
 	protected $arrVotes = [];
@@ -149,22 +154,6 @@ class Game_model extends MY_Model
 	 */
 	public function setStarted(bool $started): Game_model {
 		$this->started = $started;
-		return $this;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isFinished(): bool {
-		return $this->finished;
-	}
-
-	/**
-	 * @param bool $finished
-	 * @return Game_model
-	 */
-	public function setFinished(bool $finished): Game_model {
-		$this->finished = $finished;
 		return $this;
 	}
 
@@ -286,6 +275,7 @@ class Game_model extends MY_Model
 			->select($this->_playerModel->table . '.*')
 			->where($this->primary_key, $this->getGameUid())
 			->join($this->player_games_table, $this->_playerModel->primary_key)
+			->order_by('name')
 			->get($this->_playerModel->table)
 			->result();
 
@@ -449,7 +439,6 @@ class Game_model extends MY_Model
 		return $arrRoles;
 	}
 
-
 	/**
 	 * @return array
 	 */
@@ -515,134 +504,126 @@ class Game_model extends MY_Model
 	}
 
 	/**
+	 * @param int $playerUid
 	 * @return array
 	 */
-	public function getResults(): array {
+	public function finish(int $playerUid): array {
+
+		if (!$this->isFinished()) {
+
+			$this
+				->setFinished(true)
+				->saveModifications();
+
+		}
 
 		$arrVotes = $this->getVotes();
 		$arrPlayers = $this->getRealPlayers();
 
-		$arrVoteResults = [
-			'votes'      => $arrVotes,
-			'killed'     => [],
-			'winnerTeam' => [],
-			'winners'    => [],
-			'loosers'    => [],
+		$arrMessages = [
+			'votes'         => '',
+			'killed'        => [],
+			'winnerTeam'    => [],
+			'playerMessage' => '',
+			'playerWon'     => '',
 		];
 
 		$maxNbVotes = 0;
+		$votesList = '';
+		$loupKilled = false;
+		$tanneurKilled = false;
 
 		foreach ($arrVotes as $key => $vote) {
 
 			/** @var Player_model $player */
 			$player = $vote['player'];
+			$votesList .= '<li>' . $player->getName() . ': ' . $vote['nbVotes'] . '</li>';
 
 			if ($key === 0) {
 
 				$maxNbVotes = $vote['nbVotes'];
-				$arrVoteResults['killed'][$key] = $player->getBasicInfos();
-				$arrVoteResults['killed'][$key]['role'] = $player->getcurrentroleWithBasicInfos($this->getGameUid());
 
-			} else {
+			}
 
-				if ($vote['nbVotes'] === $maxNbVotes) {
+			if ($vote['nbVotes'] === $maxNbVotes) {
 
-					$arrVoteResults['killed'][$key] = $player->getBasicInfos();
-					$arrVoteResults['killed'][$key]['role'] = $player->getcurrentroleWithBasicInfos($this->getGameUid());
+				$arrMessages['killed'][] =
+					str_replace('*player_name*', $player->getName(), $this->lang->line('player_killed'))
+					. ', '
+					. str_replace(['*player_name*', '*player_role*'], [$player->getName(), $player->getCurrentRoleModel($this->getGameUid())->getName()], $this->lang->line('player_was_role'));
 
-				} else {
-
-					break;
-
-				}
+				$loupKilled = $loupKilled || $player->getCurrentRoleModel($this->getGameUid())->isLoup();
+				$tanneurKilled = $tanneurKilled || $player->getCurrentRoleModel($this->getGameUid())->isTanneur();
 
 			}
 
 
 		}
 
-
-		$loupKilled = false;
-		$tanneurKilled = false;
-
-
-		foreach ($arrVoteResults['killed'] as $killed) {
-			/** @var $killed Player_model */
-
-			if ($killed['role']['loup']) {
-
-				$loupKilled = true;
-
-			}
-
-			if ($killed['role']['tanneur']) {
-
-				$tanneurKilled = true;
-
-			}
-
-		}
+		$arrMessages['votes'] = str_replace('*votes_list*', $votesList, $this->lang->line('vote_results'));
 
 		if ($loupKilled) {
 
-			$arrVoteResults['winnerTeam'][] = 'villageois';
+			$arrMessages['winnerTeam'][] = $this->lang->line('villageois_won');
 
-		} else {
+		} else if (!$loupKilled && !$tanneurKilled) {
 
-			$arrVoteResults['winnerTeam'][] = ['loups'];
+			$arrMessages['winnerTeam'][] = $this->lang->line('loups_won');
 
 		}
 
 		if ($tanneurKilled) {
 
-			$arrVoteResults['winnerTeam'][] = 'tanneur';
+			$arrMessages['winnerTeam'][] = $this->lang->line('tanneur_won');
 
 		}
 
 		foreach ($arrPlayers as $player) {
 
-			if ($player->getCurrentRoleModel($this->getGameUid())->isLoup()) {
+			if ($playerUid === $player->getPlayerUid()) {
 
-				if ($loupKilled) {
+				if ($player->getCurrentRoleModel($this->getGameUid())->isLoup()) {
 
-					$arrVoteResults['loosers'][] = $player->getBasicInfos();
+					$arrMessages['playerMessage'] = $loupKilled ? $this->lang->line('you_lost') : $this->lang->line('you_won');
+					$arrMessages['playerWon'] = !$loupKilled;
 
-				} else {
+				} else if ($player->getCurrentRoleModel($this->getGameUid())->isTanneur()) {
 
-					$arrVoteResults['winners'][] = $player->getBasicInfos();
+					$arrMessages['playerMessage'] = $tanneurKilled ? $this->lang->line('you_won') : $this->lang->line('you_lost');
+					$arrMessages['playerWon'] = $tanneurKilled;
 
-				}
-
-			} else if ($player->getCurrentRoleModel($this->getGameUid())->isTanneur()) {
-
-				if ($tanneurKilled) {
-
-					$arrVoteResults['winners'][] = $player->getBasicInfos();
 
 				} else {
 
-					$arrVoteResults['loosers'][] = $player->getBasicInfos();
+					$arrMessages['playerMessage'] = $loupKilled ? $this->lang->line('you_won') : $this->lang->line('you_lost');
+					$arrMessages['playerWon'] = $loupKilled;
 
 				}
 
-			} else {
-
-				if ($loupKilled) {
-
-					$arrVoteResults['winners'][] = $player->getBasicInfos();
-
-				} else {
-
-					$arrVoteResults['loosers'][] = $player->getBasicInfos();
-
-				}
-
+				break;
 			}
 
 		}
 
-		return $arrVoteResults;
 
+		return $arrMessages;
+
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isFinished(): bool {
+		return $this->finished;
+	}
+
+	/**
+	 * @param bool $finished
+	 * @return Game_model
+	 */
+	public function setFinished(bool $finished): Game_model {
+		$this->finished = $finished;
+		return $this;
 	}
 
 	/**
@@ -656,6 +637,9 @@ class Game_model extends MY_Model
 		return $this->arrVotes;
 	}
 
+	/**
+	 *
+	 */
 	public function initVotes() {
 		$this->arrVotes = [];
 
@@ -666,7 +650,8 @@ class Game_model extends MY_Model
 			->where($this->primary_key, $this->getGameUid())
 			->group_by('targetUid')
 			->order_by('nbVotes', 'DESC')
-			->get('votes');
+			->get('votes')
+			->result();
 
 		foreach ($votes as $vote) {
 
@@ -678,6 +663,146 @@ class Game_model extends MY_Model
 
 		}
 
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getSummary(): array {
+		$arrLogs = $this->getLogs();
+		$arrPlayers = $this->getPlayers();
+		$arrRolesForCasting = $this->getRolesForCasting();
+
+		/*
+		 * starting roles
+		 */
+		$startingRoles = '';
+		foreach ($arrPlayers as $player) {
+			if ($player->getPlayerUid() > 3) {
+				$startingRoles .= '<li>' . str_replace(['*player_name*', '*player_role*'], [$player->getName(), $player->getOriginalRoleName($this->getGameUid())], $this->lang->line('player_is_role')) . '</li>';
+			}
+		}
+
+		/*
+		 * blank line
+		 */
+		$startingRoles .= '<li></li>';
+
+		/*
+		 * middle cards
+		 */
+		foreach ($arrPlayers as $player) {
+			if ($player->getPlayerUid() <= 3) {
+				$startingRoles .= '<li>' . str_replace(['*player_name*', '*player_role*'], [$player->getName(), $player->getOriginalRoleName($this->getGameUid())], $this->lang->line('player_is_role')) . '</li>';
+			}
+		}
+
+
+		/*
+		 * actions
+		 */
+		$actions = [];
+		$loupPassed = false;
+		$francMacPassed = false;
+		foreach ($arrLogs as $log) {
+
+			$player = $arrPlayers[$log->getPlayerUid()];
+			$playerRole = $arrRolesForCasting[$log->getRoleUid()];
+
+			if ($playerRole->getModel() !== 'loup' || ($playerRole->getModel() === 'loup' && !$loupPassed)) {
+
+				$loupPassed = true;
+
+			} else {
+
+				continue;
+
+			}
+
+			if ($playerRole->getModel() !== 'francmac' || ($playerRole->getModel() === 'francmac' && !$francMacPassed)) {
+
+				$francMacPassed = true;
+
+			} else {
+
+				continue;
+
+			}
+
+
+			$target1 = isset($arrPlayers[$log->getTarget1()]) ? $arrPlayers[$log->getTarget1()] : $this->_playerModel;
+			$target2 = isset($arrPlayers[$log->getTarget2()]) ? $arrPlayers[$log->getTarget2()] : $this->_playerModel;
+			$target1Role = isset($arrRolesForCasting[$log->getTarget1Role()]) ? $arrRolesForCasting[$log->getTarget1Role()] : $this->_roleModel;
+			$target2Role = isset($arrRolesForCasting[$log->getTarget2Role()]) ? $arrRolesForCasting[$log->getTarget2Role()] : $this->_roleModel;
+
+			$actions[] = $playerRole->buildActionSummary($log->getAction(), $player, $playerRole, $target1, $target2, $target1Role, $target2Role);
+
+		}
+
+
+		/*
+		 * ending roles
+		 */
+		$endingRoles = '';
+		foreach ($arrPlayers as $player) {
+			if ($player->getPlayerUid() > 3) {
+				$endingRoles .= '<li>' . str_replace(['*player_name*', '*player_role*'], [$player->getName(), $player->getCurrentRoleName($this->getGameUid())], $this->lang->line('player_is_role')) . '</li>';
+			}
+		}
+
+		/*
+		 * blank line
+		 */
+		$endingRoles .= '<li></li>';
+
+		/*
+		 * middle cards
+		 */
+		foreach ($arrPlayers as $player) {
+			if ($player->getPlayerUid() <= 3) {
+				$endingRoles .= '<li>' . str_replace(['*player_name*', '*player_role*'], [$player->getName(), $player->getCurrentRoleName($this->getGameUid())], $this->lang->line('player_is_role')) . '</li>';
+			}
+		}
+
+		return [
+			'startingRoles' => str_replace('*roles_list*', $startingRoles, $this->lang->line('starting_roles')),
+			'actions'       => $actions,
+			'endingRoles'   => str_replace('*roles_list*', $endingRoles, $this->lang->line('ending_roles')),
+		];
+
+	}
+
+	/**
+	 * @return Log_model[]
+	 */
+	public function getLogs(): array {
+
+		if (empty($this->arrLogs)) {
+			$this->initLogs();
+		}
+
+		return $this->arrLogs;
+
+	}
+
+	/**
+	 *
+	 */
+	public function initLogs() {
+		$this->load->model('log_model', '_logModel');
+
+		$arrLogs = $this->db
+			->select($this->_logModel->table . '.*')
+			->where($this->primary_key, $this->getGameUid())
+			->get($this->_logModel->table)
+			->result();
+
+		foreach ($arrLogs as $log) {
+			$logModel = clone $this->_logModel;
+			$logModel->init(false, $log);
+
+			$this->arrLogs[$logModel->getGameLogUid()] = $logModel;
+		}
 
 	}
 

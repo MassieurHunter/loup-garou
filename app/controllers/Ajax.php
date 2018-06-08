@@ -297,9 +297,11 @@ class Ajax extends MY_Controller
 	
 	private function voteResults(){
 		
-		$gameResults = $this->currentGame->getResults();
+		$gameResultMessages = $this->currentGame->finish($this->currentPlayer->getPlayerUid());
+		$gameSummary = $this->currentGame->getSummary();
 
-		$this->ajax->gameResults($gameResults, $this->currentPlayer);
+		$this->ajax->gameResults($gameResultMessages);
+		$this->ajax->gameSummary($gameSummary);
 
 		return $this->ajax->t();
 		

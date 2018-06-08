@@ -153,6 +153,10 @@ let loupGarou = {
 
 							}
 
+						} else if(this.player.getNewRoleModel().getModel() === 'insomniaque' && this.player.getNewRoleModel().getModel() === CurrentRole.getModel()){
+
+							this.player.displayAction('first', true);
+							
 						}
 
 						break;
@@ -174,7 +178,22 @@ let loupGarou = {
 								console.log('nouveau role du doppel', NewRole.getName())
 
 								this.player.setNewRole(NewRole.toJSON());
-								this.player.displayAction('first', true);
+
+								if (this.player.getNewRoleModel().getModel() !== 'insomniaque' && (this.player.getNewRoleModel().hasFirstAction() || this.player.getNewRoleModel().hasSecondAction())) {
+									
+									this.player.displayAction('first', true);
+								
+								} else {
+
+									this.socket.emit('playerFinishedTurn', {
+
+										player: this.player.toJSON(),
+										game: this.game.toJSON(),
+										role: this.player.getRoleModel().toJSON(),
+
+									});
+									
+								}
 
 							} else {
 
@@ -182,7 +201,7 @@ let loupGarou = {
 
 									player: this.player.toJSON(),
 									game: this.game.toJSON(),
-									role: this.game.toJSON(),
+									role: this.player.getRoleModel().toJSON(),
 
 								});
 							}
@@ -222,6 +241,7 @@ let loupGarou = {
 
 					case 'playerVoted' :
 
+						console.log('plop');
 						this.game.refreshVotes(message.nbVotes);
 						
 						break;

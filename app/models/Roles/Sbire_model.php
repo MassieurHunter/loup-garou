@@ -5,6 +5,7 @@
  *
  * @property Player_model $loup1
  * @property Player_model $loup2
+ * @property Player_model $loup3
  *
  */
 class Sbire_model extends Role_model
@@ -14,25 +15,24 @@ class Sbire_model extends Role_model
 	 * @param array $arguments
 	 * @return array
 	 */
-	public function firstAction($arguments): array
-	{
+	public function firstAction($arguments): array {
 
-		return $this->getLoups($arguments['gameUid']);
+		return $this->getLoups($arguments['gameUid'], $arguments['currentPlayer']);
 
 	}
 
 	/**
 	 * @param int $gameUid
+	 * @param Player_model $oPlayer
 	 * @return array
 	 */
-	private function getLoups(int $gameUid): array
-	{
+	private function getLoups(int $gameUid, Player_model $oPlayer): array {
 
 		$number = 0;
 		$arrReturn = [
+			'gameUid'       => $gameUid,
+			'currentPlayer' => $oPlayer->getBasicInfos(),
 		];
-		$this->load->model('player_model', 'loup1');
-		$this->load->model('player_model', 'loup2');
 
 		$arrLoups = $this->db
 			->select($this->loup1->table . '.*')
@@ -45,14 +45,15 @@ class Sbire_model extends Role_model
 			->result();
 
 		foreach ($arrLoups as $key => $loup) {
-
-			$this->{'loup' . $key}->init(false, $loup);
-			$arrReturn['player_' . ($key + 1)] = $this->{'loup' . $key}->getBasicInfos();
+			$key2 = $key + 1;
+			$this->load->model('player_model', 'loup' . $key2);
+			$this->{'loup' . $key2}->init(false, $loup);
+			$arrReturn['player_' . $key2] = $this->{'loup' . $key2}->getBasicInfos();
 			$number++;
 
 		}
 
-		$arrReturn['result'] = $number / 2;
+		$arrReturn['result'] = $number < 2 ? 1 / 2 : 1;
 
 		return $arrReturn;
 

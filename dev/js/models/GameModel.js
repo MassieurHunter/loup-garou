@@ -196,19 +196,19 @@ export default class GameModel extends BaseModel {
 
 	refreshVotes(nbVotes) {
 
-		$('.vote-infos').append(
+		$('.vote-infos').html(
 			new ABuilder(
 				'div',
 				{
 					'class': 'alert alert-primary',
 					'role': 'alert'
 				},
-				this.getLangModel().getLine('nb_votes') + ' ' + nbVotes)
+				this.getLangModel().getLine('nb_votes') + ' ' + nbVotes + '/' + this.getNbPlayers())
 		);
 		
 		if(nbVotes === this.getNbPlayers()){
 			
-			Ajax.post('vote/results', params, (response) => {})
+			Ajax.post('vote/results', [], (response) => {})
 			
 		}
 

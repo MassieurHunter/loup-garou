@@ -4,6 +4,7 @@
  * Class Role_model
  *
  * @property Log_model $_log
+ * @property Player_model $_player_model
  * @property Role_model $subModel
  *
  */
@@ -124,22 +125,6 @@ class Role_model extends MY_Model
 	 * @var string
 	 */
 	protected $secondActionTargetType;
-
-	/**
-	 * @return string
-	 */
-	public function getName(): string {
-		return (string)$this->name;
-	}
-
-	/**
-	 * @param string $name
-	 * @return Role_model
-	 */
-	public function setName(string $name): Role_model {
-		$this->name = $name;
-		return $this;
-	}
 
 	/**
 	 * @return string
@@ -326,7 +311,6 @@ class Role_model extends MY_Model
 		$return = [];
 
 		if ($this->getSubmodel()->hasFirstAction()) {
-			$this->logFirstAction($arguments);
 			$return = $this->getSubmodel()->firstAction($arguments);
 		}
 
@@ -389,56 +373,62 @@ class Role_model extends MY_Model
 	}
 
 	/**
-	 * @param array $action
+	 * @param array $arguments
+	 * @return array
 	 */
-	protected function logFirstAction(array $action) {
-		$this->logAction(1, $action);
+	public function secondAction($arguments): array {
+		$return = [];
+
+		if ($this->getSubmodel()->hasSecondAction()) {
+			$return = $this->getSubmodel()->secondAction($arguments);
+		}
+
+		return $return;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasSecondAction(): bool {
+		return $this->secondAction == true;
 	}
 
 	/**
 	 * @param int $actionNumber
-	 * @param array $actionInfos
-	 */
-	protected function logAction(int $actionNumber, array $actionInfos) {
-		$targetType = $actionNumber === 1 ? $this->getFirstActionTargetType() : $this->getSecondActionTargetType();
-		$player1 = isset($actionInfos['player_1']) ? $actionInfos['player_1'] : 0;
-		$player2 = isset($actionInfos['player_2']) ? $actionInfos['player_2'] : 0;
-		$card1 = isset($actionInfos['card_1']) ? $actionInfos['card_1'] : 0;
-		$card2 = isset($actionInfos['card_2']) ? $actionInfos['card_2'] : 0;
-
-		$target1 = $targetType === 'player' ? $player1 : ($targetType === 'card' ? $card1 : 0);
-		$target2 = $targetType === 'player' ? $player2 : ($targetType === 'card' ? $card2 : 0);
-		$gameUid = $actionInfos['gameUid'];
-		/** @var Player_model $currentPlayer */
-		$currentPlayer = $actionInfos['currentPlayer'];
-
-		$this->load->model('log_model', '_log');
-
-		$this->_log
-			->setGameUid($gameUid)
-			->setPlayerUid($currentPlayer->getPlayerUid())
-			->setRoleUid($this->getRoleUid())
-			->setAction($actionNumber === 1 ? $this->getFirstActionName() : $this->getSecondActionName())
-			->setTarget1($target1)
-			->setTarget2($target2)
-			->create();
-
-		unset($this->_log);
-
-	}
-
-	/**
+	 * @param array $actionResponse
 	 * @return string
 	 */
-	public function getFirstActionTargetType(): string {
-		return (string)$this->firstActionTargetType;
-	}
+	public function buildActionMessage(int $actionNumber, array $actionResponse): string {
+		$actionName = $actionNumber === 1 ? $this->getSubmodel()->getFirstActionName() : $this->getSubmodel()->getSecondActionName();
 
-	/**
-	 * @return string
-	 */
-	public function getSecondActionTargetType(): string {
-		return (string)$this->secondActionTargetType;
+		if ($this->getSubmodel()->getModel() !== 'voyante' || ($this->getSubmodel()->getModel() === 'voyante' && $actionNumber === 2)) {
+
+			$this->logAction($actionNumber, $actionResponse);
+
+		}
+
+		if (isset($actionResponse['result'])) {
+
+			$actionLangKey = $actionName . '_result' . ($actionResponse['result'] === 0 ? '_empty' : ($actionResponse['result'] === 0.5 ? '_half' : ''));
+			$actionLang = $this->lang->line($actionLangKey);
+
+			if ($actionResponse['result']) {
+				$actionLang = str_replace(['*li_player_1*', '*player_1*'], isset($actionResponse['player_1']) ? ['<li>' . $actionResponse['player_1']['name'] . '</li>', $actionResponse['player_1']['name']] : '', $actionLang);
+				$actionLang = str_replace(['*li_player_2*', '*player_2*'], isset($actionResponse['player_2']) ? ['<li>' . $actionResponse['player_2']['name'] . '</li>', $actionResponse['player_2']['name']] : '', $actionLang);
+				$actionLang = str_replace(['*li_player_3*', '*player_3*'], isset($actionResponse['player_3']) ? ['<li>' . $actionResponse['player_3']['name'] . '</li>', $actionResponse['player_3']['name']] : '', $actionLang);
+				$actionLang = str_replace('*card_1*', isset($actionResponse['card_1']) ? $actionResponse['card_1']['name'] : '', $actionLang);
+				$actionLang = str_replace('*card_2*', isset($actionResponse['card_2']) ? $actionResponse['card_2']['name'] : '', $actionLang);
+				$actionLang = str_replace('*role_1*', isset($actionResponse['role_1']) ? $actionResponse['role_1']['name'] : '', $actionLang);
+				$actionLang = str_replace('*role_2*', isset($actionResponse['role_2']) ? $actionResponse['role_2']['name'] : '', $actionLang);
+			}
+
+		} else {
+
+			$actionLang = $this->lang->line($actionName);
+
+		}
+
+		return $actionLang;
 	}
 
 	/**
@@ -460,7 +450,7 @@ class Role_model extends MY_Model
 	 * @return Role_model
 	 */
 	public function setSecondActionName(string $secondActionName): Role_model {
-		
+
 		$this->secondActionName = $secondActionName;
 
 		return $this;
@@ -468,63 +458,100 @@ class Role_model extends MY_Model
 	}
 
 	/**
-	 * @param array $arguments
-	 * @return array
-	 */
-	public function secondAction($arguments): array {
-		$return = [];
-
-		if ($this->getSubmodel()->hasSecondAction()) {
-			$this->logSecondAction($arguments);
-			$return = $this->getSubmodel()->secondAction($arguments);
-		}
-
-		return $return;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasSecondAction(): bool {
-		return $this->secondAction == true;
-	}
-
-	/**
-	 * @param array $action
-	 */
-	protected function logSecondAction(array $action) {
-		$this->logAction(2, $action);
-	}
-
-	/**
 	 * @param int $actionNumber
-	 * @param array $actionResponse
+	 * @param array $actionInfos
+	 */
+	protected function logAction(int $actionNumber, array $actionInfos) {
+
+		$this->load->model('player_model', '_player_model');
+		$gameUid = $actionInfos['gameUid'];
+
+		$targetType = $actionNumber === 1 ? $this->getSubmodel()->getFirstActionTargetType() : $this->getSubmodel()->getSecondActionTargetType();
+		$player1 = isset($actionInfos['player_1']['playerUid']) ? $actionInfos['player_1']['playerUid'] : 0;
+		$player2 = isset($actionInfos['player_2']['playerUid']) ? $actionInfos['player_2']['playerUid'] : 0;
+		$card1 = isset($actionInfos['card_1']['playerUid']) ? $actionInfos['card_1']['playerUid'] : 0;
+		$card2 = isset($actionInfos['card_2']['playerUid']) ? $actionInfos['card_2']['playerUid'] : 0;
+
+		$target1 = $targetType === 'player' ? $player1 : ($targetType === 'card' ? $card1 : 0);
+		$target2 = $targetType === 'player' ? $player2 : ($targetType === 'card' ? $card2 : 0);
+
+		$target1Role = isset($actionInfos['role_1']['roleUid']) ? $actionInfos['role_1']['roleUid'] : 0;
+		$target2Role = isset($actionInfos['role_2']['roleUid']) ? $actionInfos['role_2']['roleUid'] : 0;
+
+		/** @var Player_model $currentPlayer */
+		$currentPlayer = $actionInfos['currentPlayer'];
+
+		$this->load->model('log_model', '_log');
+
+		$this->_log
+			->setGameUid($gameUid)
+			->setPlayerUid($currentPlayer['playerUid'])
+			->setRoleUid($this->getSubmodel()->getRoleUid())
+			->setAction($actionNumber === 1 ? $this->getSubmodel()->getFirstActionName() : $this->getSubmodel()->getSecondActionName())
+			->setTarget1($target1)
+			->setTarget2($target2)
+			->setTarget1Role($target1Role)
+			->setTarget2Role($target2Role)
+			->create();
+
+		unset($this->_log);
+
+	}
+
+	/**
 	 * @return string
 	 */
-	public function buildActionMessage(int $actionNumber, array $actionResponse): string {
-		$actionName = $actionNumber === 1 ? $this->getSubmodel()->getFirstActionName() : $this->getSubmodel()->getSecondActionName();
+	public function getFirstActionTargetType(): string {
+		return (string)$this->firstActionTargetType;
+	}
 
-		if (isset($actionResponse['result'])) {
+	/**
+	 * @return string
+	 */
+	public function getSecondActionTargetType(): string {
+		return (string)$this->secondActionTargetType;
+	}
 
-			$actionLangKey = $actionName . '_result' . ($actionResponse['result'] === 0 ? '_empty' : ($actionResponse['result'] === 0.5 ? '_half' : ''));
-			$actionLang = $this->lang->line($actionLangKey);
+	/**
+	 * @param string $actionName
+	 * @param Player_model $player
+	 * @param Role_model $playerRole
+	 * @param Player_model $target1
+	 * @param Player_model $target2
+	 * @param Role_model $target1Role
+	 * @param Role_model $target2Role
+	 * @return string
+	 */
+	public function buildActionSummary(string $actionName, Player_model $player, Role_model $playerRole, Player_model $target1, Player_model $target2, Role_model $target1Role, Role_model $target2Role): string {
 
-			if ($actionResponse['result']) {
-				$actionLang = isset($actionResponse['player_1']) ? str_replace('*player_1*', $actionResponse['player_1']['name'], $actionLang) : $actionLang;
-				$actionLang = isset($actionResponse['player_2']) ? str_replace('*player_2*', $actionResponse['player_2']['name'], $actionLang) : $actionLang;
-				$actionLang = isset($actionResponse['card_1']) ? str_replace('*card_1*', $actionResponse['card_1']['name'], $actionLang) : $actionLang;
-				$actionLang = isset($actionResponse['card_2']) ? str_replace('*card_2*', $actionResponse['card_2']['name'], $actionLang) : $actionLang;
-				$actionLang = isset($actionResponse['role_1']) ? str_replace('*role_1*', $actionResponse['role_1']['name'], $actionLang) : $actionLang;
-				$actionLang = isset($actionResponse['role_2']) ? str_replace('*role_2*', $actionResponse['role_2']['name'], $actionLang) : $actionLang;
-			}
+		$actionLangKey = $actionName . ($actionName ? '_summary' . (!$target1->getPlayerUid() && $this->getModel() !== 'insomniaque' ? '_empty' : '') : '');
+		$actionLang = $this->lang->line($actionLangKey);
 
-		} else {
 
-			$actionLang = $this->lang->line($actionName);
-
-		}
+		$actionLang = str_replace(['*li_player_1*', '*player_1*'], $player->getPlayerUid() ? ['<li>' . $player->getName() . '</li>', $player->getName()] : '', $actionLang);
+		$actionLang = str_replace(['*li_player_2*', '*player_2*', '*card_1*'], $target1->getPlayerUid() ? ['<li>' . $target1->getName() . '</li>', $target1->getName()] : '', $actionLang);
+		$actionLang = str_replace(['*li_player_3*', '*player_3*', '*card_2*'], $target2->getPlayerUid() ? ['<li>' . $target2->getName() . '</li>', $target2->getName()] : '', $actionLang);
+		$actionLang = str_replace('*role_1*', $playerRole->getRoleUid() ? $playerRole->getName() : '', $actionLang);
+		$actionLang = str_replace('*role_2*', $target1Role->getRoleUid() ? $target1Role->getName() : '', $actionLang);
+		$actionLang = str_replace('*role_3*', $target2Role->getRoleUid() ? $target2Role->getName() : '', $actionLang);
 
 		return $actionLang;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName(): string {
+		return (string)$this->name;
+	}
+
+	/**
+	 * @param string $name
+	 * @return Role_model
+	 */
+	public function setName(string $name): Role_model {
+		$this->name = $name;
+		return $this;
 	}
 
 

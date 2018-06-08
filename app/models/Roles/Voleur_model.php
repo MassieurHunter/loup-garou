@@ -12,8 +12,7 @@ class Voleur_model extends Role_model
 	 * @param array $arguments
 	 * @return array
 	 */
-	public function firstAction($arguments): array
-	{
+	public function firstAction($arguments): array {
 		return $this->switchWithPlayer($arguments['gameUid'], $arguments['currentPlayer'], $arguments['player_1']);
 	}
 
@@ -23,8 +22,7 @@ class Voleur_model extends Role_model
 	 * @param int $playerUid
 	 * @return array
 	 */
-	private function switchWithPlayer(int $gameUid, Player_model $oPlayer, int $playerUid): array
-	{
+	private function switchWithPlayer(int $gameUid, Player_model $oPlayer, int $playerUid): array {
 
 		$this->load->model('player_model', 'otherPlayer');
 		$this->otherPlayer->init($playerUid);
@@ -35,9 +33,11 @@ class Voleur_model extends Role_model
 		$this->otherPlayer->addNewRole($gameUid, $playerRole);
 
 		return [
-			'result' => 1,
-			'player_1' => $this->otherPlayer->getBasicInfos(),
-			'role_1' => $otherPlayerRole->getBasicInfos(),
+			'result'        => 1,
+			'gameUid'       => $gameUid,
+			'currentPlayer' => $oPlayer->getBasicInfos(),
+			'player_1'      => $this->otherPlayer->getBasicInfos(),
+			'role_1'        => $otherPlayerRole->getBasicInfos(),
 		];
 
 	}

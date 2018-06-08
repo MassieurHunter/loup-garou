@@ -181,6 +181,14 @@ class AjaxResponse
 	}
 
 	/**
+	 * @param array $summary
+	 */
+	public function gameSummary(array $summary)
+	{
+		$this->addAction(["method" => "gameSummary", "results" => $summary]);
+	}
+
+	/**
 	 * @param $aSelector
 	 * @param array $aParams
 	 */

@@ -3,7 +3,8 @@
 /**
  * Class Loup_model
  *
- * @property Player_model $otherLoup
+ * @property Player_model $otherLoup1
+ * @property Player_model $otherLoup2
  * @property Player_model $middleCard
  */
 class Loup_model extends Role_model
@@ -13,8 +14,7 @@ class Loup_model extends Role_model
 	 * @param array $arguments
 	 * @return array
 	 */
-	public function firstAction($arguments): array
-	{
+	public function firstAction($arguments): array {
 
 		return $this->getOtherLoup($arguments['gameUid'], $arguments['currentPlayer']);
 
@@ -25,29 +25,38 @@ class Loup_model extends Role_model
 	 * @param Player_model $oPlayer
 	 * @return array
 	 */
-	private function getOtherLoup(int $gameUid, Player_model $oPlayer): array
-	{
-		
-		$otherLoup = $this->db
+	private function getOtherLoup(int $gameUid, Player_model $oPlayer): array {
+		$number = 0;
+		$arrReturn = [
+			'gameUid'       => $gameUid,
+			'currentPlayer' => $oPlayer->getBasicInfos(),
+		];
+
+		$arrLoups = $this->db
 			->select($oPlayer->table . '.*')
 			->join($oPlayer->player_roles_table, $oPlayer->primary_key)
 			->where('gameUid', $gameUid)
 			->where($this->primary_key, $this->getRoleUid())
-			->where($oPlayer->primary_key . ' != ',  $oPlayer->getPlayerUid())
-			->where($oPlayer->primary_key . ' > ',  3)
-			->where('order', 0)
+			->where($oPlayer->primary_key . ' != ', $oPlayer->getPlayerUid())
+			->where($oPlayer->primary_key . ' > ', 3)
+			->group_by($oPlayer->primary_key)
 			->get($oPlayer->table)
-			->row();
-		
-		
+			->result();
 
-		$this->load->model('player_model', 'otherLoup');
-		$this->otherLoup->init(false, $otherLoup);
 
-		return [
-			'result' => $this->otherLoup->getPlayerUid() > 0 ? 1 : 0,
-			'player_1' => $this->otherLoup->getBasicInfos(),
-		];
+		foreach ($arrLoups as $key => $loup) {
+
+			$key2 = $key + 1;
+			$this->load->model('player_model', 'otherLoup' . $key2);
+			$this->{'otherLoup' . $key2}->init(false, $loup);
+			$arrReturn['player_' . $key2] = $this->{'otherLoup' . $key2}->getBasicInfos();
+			$number++;
+
+		}
+
+		$arrReturn['result'] = $number > 0 ? 1 : 0;
+
+		return $arrReturn;
 
 	}
 
@@ -55,30 +64,29 @@ class Loup_model extends Role_model
 	 * @param array $arguments
 	 * @return array
 	 */
-	public function secondAction($arguments): array
-	{
+	public function secondAction($arguments): array {
 
-		return $this->getOneMiddleCard($arguments['gameUid'], $arguments['card_1']);
+		return $this->getOneMiddleCard($arguments['gameUid'], $arguments['card_1'], $arguments['currentPlayer']);
 
 	}
 
 	/**
-	 *
 	 * @param int $gameUid
 	 * @param int $cardNumber
-	 *
+	 * @param Player_model $oPlayer
 	 * @return array
 	 */
-	private function getOneMiddleCard(int $gameUid, int $cardNumber): array
-	{
+	private function getOneMiddleCard(int $gameUid, int $cardNumber, Player_model $oPlayer): array {
 
 		$this->load->model('player_model', 'middleCard');
 		$this->middleCard->init($cardNumber);
 
 		return [
-			'result' => 1,
-			'card_1' => $this->middleCard->getBasicInfos(),
-			'role_1' => $this->middleCard->getCurrentRoleWithBasicInfos($gameUid),
+			'result'        => 1,
+			'gameUid'       => $gameUid,
+			'currentPlayer' => $oPlayer->getBasicInfos(),
+			'card_1'        => $this->middleCard->getBasicInfos(),
+			'role_1'        => $this->middleCard->getCurrentRoleWithBasicInfos($gameUid),
 		];
 	}
 

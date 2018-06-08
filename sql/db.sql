@@ -50,8 +50,8 @@ CREATE TABLE `players_game_roles` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-DROP TABLE IF EXISTS `games_logs`;
-CREATE TABLE `games_logs` (
+DROP TABLE IF EXISTS `games_actions_logs`;
+CREATE TABLE `games_actions_logs` (
   `gameLogUid` int(11) NOT NULL AUTO_INCREMENT,
   `gameUid`    int(11)          DEFAULT NULL,
   `playerUid`  int(11)          DEFAULT NULL,
@@ -59,6 +59,8 @@ CREATE TABLE `games_logs` (
   `action`     varchar(50)      DEFAULT NULL,
   `target1`    int(11)          DEFAULT NULL,
   `target2`    int(11)          DEFAULT NULL,
+  `target1Role`    int(11)          DEFAULT NULL,
+  `target2Role`    int(11)          DEFAULT NULL,
   `date`       DATETIME         DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`gameLogUid`)
 )

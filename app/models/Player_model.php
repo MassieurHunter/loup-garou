@@ -439,6 +439,18 @@ class Player_model extends MY_Model
 
 	/**
 	 * @param int $gameUid
+	 * @param int $order
+	 * @return Role_model
+	 */
+	public function getSpecificRoleModel(int $gameUid, $order): Role_model
+	{
+		$arrRoleModel = $this->getArrRoleModel($gameUid);
+
+		return isset($arrRoleModel[$order]) ? $arrRoleModel[$order] : $this->_roleModel;
+	}
+
+	/**
+	 * @param int $gameUid
 	 * @return array
 	 */
 	public function getOriginalRoleWithBasicInfos(int $gameUid): array

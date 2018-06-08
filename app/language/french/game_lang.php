@@ -16,3 +16,6 @@ $lang['tanneur_won'] = 'Le tanneur a gagné';
 $lang['villageois_won'] = 'Les villageois ont gagné';
 $lang['you_won'] = 'Vous avez gagné';
 $lang['you_lost'] = 'Vous avez perdu';
+$lang['vote_results'] = 'Résultat des votes: <ul>*votes_list*</ul>';
+$lang['starting_roles'] = 'Rôles au départ: <ul>*roles_list*</ul>';
+$lang['ending_roles'] = 'Rôles finaux: <ul>*roles_list*</ul>';

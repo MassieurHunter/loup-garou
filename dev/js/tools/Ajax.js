@@ -191,7 +191,7 @@ class Ajax {
 						}, action.message)
 					);
 					break;
-					
+
 				case "vote" :
 					$('.action-form-container').remove();
 					$('.vote-message').append(
@@ -201,14 +201,112 @@ class Ajax {
 						}, action.message)
 					);
 					break;
-					
+
 				case "gameResults" :
+
 					$('.game-results').append(
-						new ABuilder('div', {
-							'class': 'alert alert-primary',
-							'role': 'alert'
-						}, action.message)
+						new ABuilder(
+							'div',
+							{
+								'class': 'alert alert-primary',
+								'role': 'alert'
+							},
+							action.results.votes
+						)
 					);
+
+					for (let killed of action.results.killed) {
+
+						$('.game-results').append(
+							new ABuilder(
+								'div',
+								{
+									'class': 'alert alert-primary',
+									'role': 'alert'
+								},
+								killed
+							)
+						);
+					}
+					for (let team of action.results.winnerTeam) {
+
+						$('.game-results').append(
+							new ABuilder(
+								'div',
+								{
+									'class': 'alert alert-primary',
+									'role': 'alert'
+								},
+								team
+							)
+						);
+					}
+
+					$('.game-results').append(
+						new ABuilder(
+							'div',
+							{
+								'class': 'alert alert-' + (action.results.playerWon ? 'success' : 'danger'),
+								'role': 'alert'
+							},
+							action.results.playerMessage
+						)
+					);
+
+
+					break;
+
+				case "gameSummary" :
+
+					$('.game-summary').append(
+						new ABuilder(
+							'div',
+							{
+								'class': 'alert alert-primary',
+								'role': 'alert'
+							},
+							action.results.startingRoles
+						)
+					);
+
+					let actions = [];
+					for (let line of action.results.actions) {
+						actions.push(
+							new ABuilder(
+								'li',
+								{},
+								line
+							)
+						);
+					}
+
+					$('.game-summary').append(
+						new ABuilder(
+							'div',
+							{
+								'class': 'alert alert-primary',
+								'role': 'alert'
+							},
+							new ABuilder(
+								'ul',
+								{},
+								actions
+							)
+						)
+					);
+
+					$('.game-summary').append(
+						new ABuilder(
+							'div',
+							{
+								'class': 'alert alert-primary',
+								'role': 'alert'
+							},
+							action.results.endingRoles
+						)
+					);
+
+
 					break;
 
 				case "call":
