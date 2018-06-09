@@ -10,6 +10,21 @@
  */
 class Role_model extends MY_Model
 {
+	
+	
+	const LOUP = 1;
+	const VOLEUR = 2;
+	const NOISEUSE = 3;
+	const TANNEUR = 4;
+	const SOULARD = 5;
+	const INSOMNIAQUE = 6;
+	const VOYANTE = 7;
+	const DOPPELGANGER = 8;
+	const SBIRE = 9;
+	const CHASSEUR = 10;
+	const FRANC_MACON = 11;
+	const VILLAGEOIS = 12;
+	
 	/**
 	 * @var string
 	 */
@@ -22,6 +37,7 @@ class Role_model extends MY_Model
 	 * @var array
 	 */
 	public $basics = [
+		'roleUid'                     => 'getRoleUid',
 		'name'                        => 'getName',
 		'description'                 => 'getDescription',
 		'model'                       => 'getModel',
@@ -482,6 +498,9 @@ class Role_model extends MY_Model
 		$currentPlayer = $actionInfos['currentPlayer'];
 
 		$this->load->model('log_model', '_log');
+		
+		$now = new DateTime();
+		$timeStamp = $now->format('Y-m-d H:i:s');
 
 		$this->_log
 			->setGameUid($gameUid)
@@ -492,6 +511,7 @@ class Role_model extends MY_Model
 			->setTarget2($target2)
 			->setTarget1Role($target1Role)
 			->setTarget2Role($target2Role)
+			->setDate($timeStamp)
 			->create();
 
 		unset($this->_log);
@@ -529,8 +549,8 @@ class Role_model extends MY_Model
 
 
 		$actionLang = str_replace(['*li_player_1*', '*player_1*'], $player->getPlayerUid() ? ['<li>' . $player->getName() . '</li>', $player->getName()] : '', $actionLang);
-		$actionLang = str_replace(['*li_player_2*', '*player_2*', '*card_1*'], $target1->getPlayerUid() ? ['<li>' . $target1->getName() . '</li>', $target1->getName()] : '', $actionLang);
-		$actionLang = str_replace(['*li_player_3*', '*player_3*', '*card_2*'], $target2->getPlayerUid() ? ['<li>' . $target2->getName() . '</li>', $target2->getName()] : '', $actionLang);
+		$actionLang = str_replace(['*li_player_2*', '*player_2*', '*card_1*'], $target1->getPlayerUid() ? ['<li>' . $target1->getName() . '</li>', $target1->getName(), $target1->getName()] : '', $actionLang);
+		$actionLang = str_replace(['*li_player_3*', '*player_3*', '*card_2*'], $target2->getPlayerUid() ? ['<li>' . $target2->getName() . '</li>', $target2->getName(), $target2->getName()] : '', $actionLang);
 		$actionLang = str_replace('*role_1*', $playerRole->getRoleUid() ? $playerRole->getName() : '', $actionLang);
 		$actionLang = str_replace('*role_2*', $target1Role->getRoleUid() ? $target1Role->getName() : '', $actionLang);
 		$actionLang = str_replace('*role_3*', $target2Role->getRoleUid() ? $target2Role->getName() : '', $actionLang);

@@ -79,6 +79,15 @@ class Ajax extends MY_Controller
 			: $this->ajax->f($loginResult['message']);
 
 	}
+	
+	private function playerTheme(){
+		
+		$this->currentPlayer
+			->setTheme($this->input->post('theme'))
+			->saveModifications();
+		
+		return $this->ajax->t();
+	}
 
 
 	/**

@@ -216,6 +216,13 @@ export default class PlayerModel extends BaseModel {
 			let playersOptions = [];
 
 			for (let player of gamePlayers) {
+				
+				if(this.getRoleModel().getModel() === 'doppelganger' && player.getPlayerUid() === this.getPlayerUid()){
+				
+					continue;
+					
+				}
+				
 				playersOptions.push(new ABuilder('option', {
 					'value': player.getPlayerUid(),
 				}, player.getName()))

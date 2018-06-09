@@ -23,15 +23,17 @@ class Player extends MY_Controller
 
     }
 
-    public function create($name, $password) {
+    public function create($name) {
 
+    	$password = random_string();
+    	
         $this->load->model('player_model', 'player');
         $this->player
             ->setName($name)
             ->hashAndSetPassword($password)
             ->create();
 
-        echo "Joueur $name créé\n";
+        echo "Joueur $name créé avec le mot de passe $password\n";
 
     }
 

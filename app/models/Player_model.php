@@ -49,6 +49,10 @@ class Player_model extends MY_Model
 	 */
 	protected $password;
 	/**
+	 * @var string
+	 */
+	protected $theme;
+	/**
 	 * @var array
 	 */
 	protected $arrRoleModel = [];
@@ -151,7 +155,7 @@ class Player_model extends MY_Model
 	 */
 	public function getPlayerUid(): int
 	{
-		return (int)$this->playerUid;
+		return (int) $this->playerUid;
 	}
 
 	/**
@@ -183,7 +187,7 @@ class Player_model extends MY_Model
 	 */
 	public function getPassword(): string
 	{
-		return $this->password;
+		return (string) $this->password;
 	}
 
 	/**
@@ -195,6 +199,26 @@ class Player_model extends MY_Model
 		$this->password = $password;
 		return $this;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getTheme(): string
+	{
+		return (string) $this->theme;
+	}
+
+	/**
+	 * @param string $theme
+	 * @return Player_model
+	 */
+	public function setTheme(string $theme): Player_model
+	{
+		$this->theme = $theme;
+		return $this;
+	}
+
+	
 
 	/**
 	 *

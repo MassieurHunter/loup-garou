@@ -7,6 +7,7 @@ $lang['theme_default'] = "Défaut";
  * welcome page
  */
 $lang['welcome'] = "Bienvenue";
+$lang['back_home'] = "Retourner à l'accueil";
 
 /*
  * join game page
@@ -33,6 +34,7 @@ $lang['password'] = "Mot de passe";
 /*
  * Play game
  */
+$lang['sure_to_leave'] = 'Voulez vous vraiment quitter la partie, faire chier tous les autres et vous faire ban ?';
 $lang['submit'] = 'Valider';
 $lang['play_game'] = 'Jouer';
 $lang['nb_players'] = 'Nombre de joueurs';

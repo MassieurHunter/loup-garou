@@ -31,14 +31,40 @@ class Loup_model extends Role_model
 			'gameUid'       => $gameUid,
 			'currentPlayer' => $oPlayer->getBasicInfos(),
 		];
+		
+		
+		$doppelLoupSubSubQuery = $this->db
+			->select($oPlayer->primary_key)
+			->where('gameUid', $gameUid)
+			->where($this->primary_key, self::DOPPELGANGER)
+			->where($oPlayer->primary_key . ' > ', 3)
+			->where('order', 0)
+			->get_compiled_select($oPlayer->player_roles_table);
+
+
+		$doppelLoupSubQuery = $this->db
+			->select($oPlayer->primary_key)
+			->where('gameUid', $gameUid)
+			->where($this->primary_key, $this->getRoleUid())
+			->where($oPlayer->primary_key . ' != ', $oPlayer->getPlayerUid())
+			->where($oPlayer->primary_key . ' > ', 3)
+			->where('order', 1)
+			->where_in($oPlayer->primary_key, $doppelLoupSubSubQuery, false)
+			->get_compiled_select($oPlayer->player_roles_table);
 
 		$arrLoups = $this->db
 			->select($oPlayer->table . '.*')
 			->join($oPlayer->player_roles_table, $oPlayer->primary_key)
 			->where('gameUid', $gameUid)
+			->group_start()
 			->where($this->primary_key, $this->getRoleUid())
 			->where($oPlayer->primary_key . ' != ', $oPlayer->getPlayerUid())
 			->where($oPlayer->primary_key . ' > ', 3)
+			->where('order', 0)
+			->group_end()
+			->or_group_start()
+			->where_in($oPlayer->primary_key, $doppelLoupSubQuery, false)
+			->group_end()
 			->group_by($oPlayer->primary_key)
 			->get($oPlayer->table)
 			->result();

@@ -105,10 +105,27 @@ export default class RoleModel extends BaseModel {
 
 
     displayName() {
-        let alert = new ABuilder('div', {
-            'class': 'alert alert-' + this.getBootstrapClass(),
-            'role': 'alert'
-        }, this.getName());
+    	
+    	let roleName = new ABuilder(
+    		'h5',
+			{},
+			this.getName()
+		);
+    	
+    	let roleDesc = new ABuilder(
+    		'p',
+			{},
+			this.getDescription()
+		);
+
+		let alert = new ABuilder('div', {
+				'class': 'alert alert-' + this.getBootstrapClass(),
+				'role': 'alert'
+			},
+			[
+				roleName,
+				roleDesc
+			]);
 
         $('.role-infos').append(alert);
     }

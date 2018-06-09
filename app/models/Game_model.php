@@ -6,6 +6,7 @@
  * @property Player_model $_playerModel
  * @property Role_model $_roleModel
  * @property Log_model $_logModel
+ * @property History_model $_history
  */
 class Game_model extends MY_Model
 {
@@ -577,6 +578,8 @@ class Game_model extends MY_Model
 			$arrMessages['winnerTeam'][] = $this->lang->line('tanneur_won');
 
 		}
+		
+		$playerTeam = [];
 
 		foreach ($arrPlayers as $player) {
 
@@ -584,26 +587,67 @@ class Game_model extends MY_Model
 
 				if ($player->getCurrentRoleModel($this->getGameUid())->isLoup()) {
 
+					$playerTeam[$player->getPlayerUid()] = 'loup';
 					$arrMessages['playerMessage'] = $loupKilled ? $this->lang->line('you_lost') : $this->lang->line('you_won');
 					$arrMessages['playerWon'] = !$loupKilled;
 
 				} else if ($player->getCurrentRoleModel($this->getGameUid())->isTanneur()) {
 
+					$playerTeam[$player->getPlayerUid()] = 'tanneur';
 					$arrMessages['playerMessage'] = $tanneurKilled ? $this->lang->line('you_won') : $this->lang->line('you_lost');
 					$arrMessages['playerWon'] = $tanneurKilled;
 
 
 				} else {
 
+					$playerTeam[$player->getPlayerUid()] = 'villageois';
 					$arrMessages['playerMessage'] = $loupKilled ? $this->lang->line('you_won') : $this->lang->line('you_lost');
 					$arrMessages['playerWon'] = $loupKilled;
 
 				}
 
-				break;
+			} else {
+
+				if ($player->getCurrentRoleModel($this->getGameUid())->isLoup()) {
+
+					$playerTeam[$player->getPlayerUid()] = 'loup';
+
+				} else if ($player->getCurrentRoleModel($this->getGameUid())->isTanneur()) {
+
+					$playerTeam[$player->getPlayerUid()] = 'tanneur';
+
+
+				} else {
+
+					$playerTeam[$player->getPlayerUid()] = 'villageois';
+
+				}
+				
 			}
 
 		}
+		
+		$currentPlayerTeam = $playerTeam[$playerUid];
+		$playerAllies = [];
+		
+		foreach ($playerTeam as $loopPlayerUid => $team){
+			
+			if($currentPlayerTeam === $team && $loopPlayerUid !== $playerUid){
+
+				$playerAllies[] = $loopPlayerUid;
+				
+			}
+			
+		}
+
+		$this->load->model('history_model', '_history');
+		$this->_history
+			->setPlayerUid($playerUid)
+			->setGameUid($this->getGameUid())
+			->setWinner($arrMessages['playerWon'])
+			->setTeam($currentPlayerTeam)
+			->setAllies(implode(',', $playerAllies))
+			->create();
 
 
 		return $arrMessages;

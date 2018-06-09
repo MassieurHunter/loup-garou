@@ -272,6 +272,17 @@ io.sockets.on('connection', (socket) => {
 			type: 'playerVoted',
 			nbVotes: gamesPlayersVoted[roomUid].length 
 		});
+		
+		if(gamesPlayersVoted[roomUid].length === gamesPlayersWithRoles[roomUid].length){
+			
+			console.log('game '  + Game.getCode() + ' is finished');
+			delete gamesPlayersVoted[roomUid]; 
+			delete gamesPlayersWithRoles[roomUid]; 
+			delete gamesPlayersForStarting[roomUid]; 
+			delete gamesSockets[roomUid]; 
+			
+		}
+		
 
 	});
 

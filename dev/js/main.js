@@ -47,6 +47,9 @@ let loupGarou = {
 
 			if (themeSelector.val() !== '') {
 				themeStyle.attr('href', 'css/' + themeSelector.val() + '/bootstrap.min.css');
+				
+				let dataPost = [{name: 'theme', value: themeSelector.val()}];
+				Ajax.post('player/theme', dataPost, (response) => {});
 			}
 
 		});
@@ -55,6 +58,7 @@ let loupGarou = {
 
 	play() {
 		if ($('#play-socket').val() === '1') {
+
 			let getUrl = window.location;
 			let baseUrl = getUrl.protocol + "//" + getUrl.host;
 			this.socket = io.connect(baseUrl + ':3000');
@@ -67,6 +71,10 @@ let loupGarou = {
 							this.game = new GameModel(response.data.game);
 							this.lang = new LangModel(response.data.lang);
 							this.socket.emit('playerJoined', response.data);
+
+							$(window).bind('beforeunload', (e) => {
+									return this.lang.getLine('sure_to_leave');
+							});
 
 						});
 						break;

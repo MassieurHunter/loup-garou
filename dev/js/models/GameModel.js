@@ -4,6 +4,7 @@ import RoleModel from "./RoleModel";
 import ABuilder from '../tools/ABuilder';
 import LangModel from "./LangModel";
 import Ajax from "../tools/Ajax";
+import $ from "jquery";
 
 export default class GameModel extends BaseModel {
 
@@ -208,7 +209,8 @@ export default class GameModel extends BaseModel {
 		
 		if(nbVotes === this.getNbPlayers()){
 			
-			Ajax.post('vote/results', [], (response) => {})
+			Ajax.post('vote/results', [], (response) => {});
+			$(window).unbind('beforeunload');
 			
 		}
 

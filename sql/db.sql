@@ -28,15 +28,16 @@ CREATE TABLE `players` (
   `playerUid` int(11) NOT NULL AUTO_INCREMENT,
   `name`      varchar(45)      DEFAULT NULL,
   `password`  varchar(255)     DEFAULT NULL,
+  `theme`     varchar(255)     DEFAULT NULL,
   PRIMARY KEY (`playerUid`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
 INSERT INTO `players` VALUES
-  (1, 'Carte 1', 'XXXXX'),
-  (2, 'Carte 2', 'XXXXX'),
-  (3, 'Carte 3', 'XXXXX');
+  (1, 'Carte 1', 'XXXXX', ''),
+  (2, 'Carte 2', 'XXXXX', ''),
+  (3, 'Carte 3', 'XXXXX', '');
 
 DROP TABLE IF EXISTS `players_game_roles`;
 CREATE TABLE `players_game_roles` (
@@ -59,9 +60,9 @@ CREATE TABLE `games_actions_logs` (
   `action`     varchar(50)      DEFAULT NULL,
   `target1`    int(11)          DEFAULT NULL,
   `target2`    int(11)          DEFAULT NULL,
-  `target1Role`    int(11)          DEFAULT NULL,
-  `target2Role`    int(11)          DEFAULT NULL,
-  `date`       DATETIME         DEFAULT CURRENT_TIMESTAMP,
+  `target1Role`    int(11)       DEFAULT NULL,
+  `target2Role`    int(11)      DEFAULT NULL,
+  `date`       DATETIME         DEFAULT NULL,
   PRIMARY KEY (`gameLogUid`)
 )
   ENGINE = InnoDB
@@ -94,7 +95,7 @@ CREATE TABLE `roles` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
-  
+
 INSERT INTO `roles` VALUES 
 (1, 'Loup', 'Pendant la nuit, il va prendre connaissance de l’identité de son semblable. Si un loup est seul dans la partie, il a le droit de regarder un des rôles centraux.', 'loup', 2, 1, 0, 0, 1, 'know_other_loup', 'player', 1, 1, 1, 1, 'watch_card', 'card', 1, 0, 0, 10),
  (2, 'Voleur', 'Pendant la nuit, il va pouvoir choisir une cible avec laquelle il échangera de rôle et prendra connaissance de son nouveau rôle.', 'voleur', 1, 0, 0, 1, 1, 'steal_player', 'player', 1, 0, 0, 0, '', '', 0, 0, 10, 50),
@@ -105,8 +106,9 @@ INSERT INTO `roles` VALUES
  (7, 'Voyante', 'Pendant la nuit, elle va pouvoir soit regarder le rôle d’un joueur, soit regarder 2 des 3 rôles centraux.', 'voyante', 1, 0, 0, 1, 1, 'choose_action', 'ajax', 1, 0, 1, 0, '', '', 0, 0, 50, 40), 
  (8, 'Doppelganger', 'Pendant la nuit, elle va copier le rôle et rejoindre l’équipe d’un autre joueur.', 'doppelganger', 1, 0, 0, 1, 1, 'copy_player_role', 'player', 1, 0, 0, 0, '', '', 0, 0, 60, 0), 
  (9, 'Sbire', 'Pendant la nuit, l’identité des loups lui est révélé. S’il meurt lors du vote et qu’aucun loup n’est tué, lui et les loups gagnent la partie. Si les loups ne sont pas joués, il ne gagne que si un autre joueur est tué.', 'sbire', 1, 1, 0, 0, 1, 'know_loups', 'player', 0, 1, 0, 0, '', '', 0, 0, 70, 20), 
- (10, 'Chasseur', 'S’il meurt lors du vote, la personne contre qui il a voté meurt aussi.', 'chasseur', 1, 0, 0, 1, 1, 'kill_someone', 'player', 1, 0, 0, 0, '', '', 0, 0, 90, 999), 
- (11, 'Franc Maçon', 'Pendant la nuit, il va prendre connaissance de l’identité de son semblable.', 'francmac', 2, 0, 0, 1, 1, 'know_other_francmac', 'player', 0, 1, 0, 0, '', '', 0, 0, 100, 30);
+ /*(10, 'Chasseur', 'S’il meurt lors du vote, la personne contre qui il a voté meurt aussi.', 'chasseur', 1, 0, 0, 1, 1, 'kill_someone', 'player', 1, 0, 0, 0, '', '', 0, 0, 90, 999),*/ 
+ (11, 'Franc Maçon', 'Pendant la nuit, il va prendre connaissance de l’identité de son semblable.', 'francmac', 2, 0, 0, 1, 1, 'know_other_francmac', 'player', 0, 1, 0, 0, '', '', 0, 0, 100, 30),
+ (12, 'Villageois', 'Le villageois ne peux rien faire et va gentiment attendre la fin de la nuit.', 'villageois', 3, 0, 0, 1, 0, '', '', 0, 0, 0, 0, '', '', 0, 0, 100, 1000);
 
 
 DROP TABLE IF EXISTS `votes`;
@@ -116,6 +118,19 @@ CREATE TABLE `votes` (
   `playerUid` int(11)          DEFAULT NULL,
   `targetUid` int(11)          DEFAULT NULL,
   PRIMARY KEY (`voteUid`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+DROP TABLE IF EXISTS `games_history`;
+CREATE TABLE `games_history` (
+  `gameHistoryUid`   int(11) NOT NULL AUTO_INCREMENT,
+  `gameUid`   	int(11)         DEFAULT NULL,
+  `playerUid` 	int(11)         DEFAULT NULL,
+  `winner` 		tinyint(1)      DEFAULT NULL,
+  `team`		varchar(50)		DEFAULT NULL,
+  `allies`		varchar(255)	DEFAULT NULL,
+  PRIMARY KEY (`gameHistoryUid`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;

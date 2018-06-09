@@ -9,3 +9,12 @@
 	-webkit-transition: width 2.5s ease !important;
 	transition: width 2.5s ease !important;
 }
+
+ul{
+	text-align: left;
+}
+
+li {
+	text-align: left;
+	list-style: none;
+}
