@@ -166,10 +166,11 @@ class AjaxResponse
 
 	/**
 	 * @param string $message
+	 * @param string $cancelVote
 	 */
-	public function voteMessage(string $message)
+	public function voteMessage(string $message,string $cancelVote)
 	{
-		$this->addAction(["method" => "vote", "message" => $message]);
+		$this->addAction(["method" => "vote", "message" => $message, "cancelVote" => $cancelVote]);
 	}
 
 	/**

@@ -8,11 +8,17 @@ class Themes
     {
 
         if ($cssHandle = opendir(CSS_PATH)) {
+        	
             while (false !== ($line = readdir($cssHandle))) {
+            	
                 if ($line !== '.' && $line !== '..' && is_dir(CSS_PATH . $line)) {
+                	
                     $this->arrThemes[$line] = ucwords($line);
+                    
                 }
             }
+            
+            asort($this->arrThemes);
 
         }
     }

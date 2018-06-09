@@ -20,6 +20,7 @@ $lang['get_two_cards_role'] = "Connaitre deux cartes du milieu";
 /*
  * action result texts
  */
+$lang['you_did_nothing'] = 'Vous passez votre tour';
 $lang['know_other_loup_result'] = "Les autres loups sont : <ul>*li_player_1* *li_player_2*</ul>";
 $lang['know_other_loup_result_empty'] = "Vous êtes le seul loup";
 $lang['know_loups_result'] = "Les autres loups sont : <ul>*li_player_1* *li_player_2* *li_player_3*</li></ul>";

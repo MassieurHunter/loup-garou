@@ -1,9 +1,15 @@
 import PlayerModel from '../../dev/js/models/PlayerModel';
 import RoleModel from '../../dev/js/models/RoleModel';
 import GameModel from '../../dev/js/models/GameModel';
-import http from 'http';
+import https from 'https';
+import fs from 'fs';
 
-let server = http.createServer();
+let ssl_options = {
+	key: fs.readFileSync('/home/ssl-cert/loup-garou.local.key'),
+	cert: fs.readFileSync('/home/ssl-cert/loup-garou.local.crt')
+};
+
+let server = https.createServer(ssl_options);
 let io = require('socket.io').listen(server);
 let gamesPlayersForStarting = {};
 let gamesPlayersVoted = {};
@@ -283,6 +289,39 @@ io.sockets.on('connection', (socket) => {
 			
 		}
 		
+
+	});
+	
+	socket.on('playerCanceledVote', (data) => {
+
+		let Player = new PlayerModel(data.player);
+		let Game = new GameModel(data.game);
+		let roomUid = 'game' + Game.getCode();
+
+		console.log('player ' + Player.getName() + ' has canceled his vote');
+
+		if (!gamesPlayersVoted.hasOwnProperty(roomUid)) {
+			gamesPlayersVoted[roomUid] = [];
+		}
+
+		let oldGamesPlayersVoted = gamesPlayersVoted[roomUid];
+		gamesPlayersVoted[roomUid] = [];
+		
+		for(let loopPlayer of oldGamesPlayersVoted){
+
+			if(loopPlayer.getPlayerUid() !== Player.getPlayerUid()){
+
+				gamesPlayersVoted[roomUid].push(loopPlayer);
+
+			}
+		
+		}
+
+		io.in(roomUid).emit('message', {
+			type: 'playerCanceledVote',
+			player: Player.toJSON(), 
+			nbVotes: gamesPlayersVoted[roomUid].length 
+		});		
 
 	});
 

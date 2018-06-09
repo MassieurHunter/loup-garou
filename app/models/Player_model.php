@@ -6,6 +6,7 @@
  * @property \Player_model $_oTestPlayer
  * @property \Role_model $_roleModel
  * @property \Vote_model $newVote
+ * @property \Vote_model $_vote
  *
  */
 class Player_model extends MY_Model
@@ -495,7 +496,6 @@ class Player_model extends MY_Model
 
 
 	/**
-	 * Voter pour un joueur
 	 * @param int $gameUid
 	 * @param int $targetUid
 	 */
@@ -509,6 +509,22 @@ class Player_model extends MY_Model
 			->setTargetUid($targetUid)
 			->create();
 	}
+	
+	
+	/**
+	 * @param int $gameUid
+	 */
+	public function cancelVote(int $gameUid)
+	{
+
+		$this->load->model('vote_model', '_vote');
+		$this->_vote
+			->initWithGameAndPlayer($gameUid, $this->getPlayerUid())
+			->delete();
+		
+	}
+	
+	
 
 	/**
 	 * @param int $gameUid

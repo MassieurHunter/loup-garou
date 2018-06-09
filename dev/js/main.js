@@ -47,9 +47,10 @@ let loupGarou = {
 
 			if (themeSelector.val() !== '') {
 				themeStyle.attr('href', 'css/' + themeSelector.val() + '/bootstrap.min.css');
-				
+
 				let dataPost = [{name: 'theme', value: themeSelector.val()}];
-				Ajax.post('player/theme', dataPost, (response) => {});
+				Ajax.post('player/theme', dataPost, (response) => {
+				});
 			}
 
 		});
@@ -73,7 +74,7 @@ let loupGarou = {
 							this.socket.emit('playerJoined', response.data);
 
 							$(window).bind('beforeunload', (e) => {
-									return this.lang.getLine('sure_to_leave');
+								return this.lang.getLine('sure_to_leave');
 							});
 
 						});
@@ -161,10 +162,10 @@ let loupGarou = {
 
 							}
 
-						} else if(this.player.getNewRoleModel().getModel() === 'insomniaque' && this.player.getNewRoleModel().getModel() === CurrentRole.getModel()){
+						} else if (this.player.getNewRoleModel().getModel() === 'insomniaque' && this.player.getNewRoleModel().getModel() === CurrentRole.getModel()) {
 
 							this.player.displayAction('first', true);
-							
+
 						}
 
 						break;
@@ -188,9 +189,9 @@ let loupGarou = {
 								this.player.setNewRole(NewRole.toJSON());
 
 								if (this.player.getNewRoleModel().getModel() !== 'insomniaque' && (this.player.getNewRoleModel().hasFirstAction() || this.player.getNewRoleModel().hasSecondAction())) {
-									
+
 									this.player.displayAction('first', true);
-								
+
 								} else {
 
 									this.socket.emit('playerFinishedTurn', {
@@ -200,7 +201,7 @@ let loupGarou = {
 										role: this.player.getRoleModel().toJSON(),
 
 									});
-									
+
 								}
 
 							} else {
@@ -249,9 +250,23 @@ let loupGarou = {
 
 					case 'playerVoted' :
 
-						console.log('plop');
 						this.game.refreshVotes(message.nbVotes);
-						
+
+						break;
+
+
+					case 'playerCanceledVote' :
+
+						let Canceler = new PlayerModel(message.player);
+						this.game.refreshVotes(message.nbVotes);
+
+						if (Canceler.getPlayerUid() === this.player.getPlayerUid()) {
+
+							this.player.displayVote();
+
+						}
+
+
 						break;
 
 				}

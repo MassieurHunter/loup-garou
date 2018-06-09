@@ -100,7 +100,7 @@ export default class PlayerModel extends BaseModel {
 
 
 		if (actionTargetType === 'ajax') {
-			let params = doppel ? [{neme : 'doppel', value : '1'}] : [];
+			let params = doppel ? [{name : 'doppel', value : '1'}] : [];
 			Ajax.post('player/action/first', params, (response) => {
 
 				let i = 0;
@@ -436,6 +436,7 @@ export default class PlayerModel extends BaseModel {
 		);
 
 		$('.progress-role-name').html(this.getLangModel().getLine('now_vote'));
+		$('.vote-message').html('');
 		$('.action-form-container').html('');
 		$('.action-form-container')
 			.removeClass('d-none')

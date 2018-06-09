@@ -193,7 +193,24 @@ class Ajax {
 					break;
 
 				case "vote" :
-					$('.action-form-container').remove();
+					$('.action-form-container').html('');
+
+					let cancelVoteButton = new ABuilder(
+						'button',
+						{
+							'class': 'btn btn-warning btn-block mt-2',
+						},
+						action.cancelVote
+					);
+					
+					cancelVoteButton.on('click', () => {
+						
+						this.post('player/vote/cancel', [], (response) => {});
+						
+					});
+
+					$('.action-form-container').append(cancelVoteButton);
+					
 					$('.vote-message').append(
 						new ABuilder('div', {
 							'class': 'alert alert-primary',

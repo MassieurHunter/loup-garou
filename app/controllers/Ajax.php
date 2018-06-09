@@ -79,13 +79,14 @@ class Ajax extends MY_Controller
 			: $this->ajax->f($loginResult['message']);
 
 	}
-	
-	private function playerTheme(){
-		
+
+	private function playerTheme()
+	{
+
 		$this->currentPlayer
 			->setTheme($this->input->post('theme'))
 			->saveModifications();
-		
+
 		return $this->ajax->t();
 	}
 
@@ -201,42 +202,59 @@ class Ajax extends MY_Controller
 
 		}
 
+		if (!isset($arguments['nothing'])) {
 
-		$actionResponse = $roleModel->firstAction($arguments);
-		$actionMessage = $roleModel->buildActionMessage(1, $actionResponse);
+			$actionResponse = $roleModel->firstAction($arguments);
+			$actionMessage = $roleModel->buildActionMessage(1, $actionResponse);
 
 
-		if ($roleModel->hasSecondAction() || $isDoppelFirstAction) {
+			if ($roleModel->hasSecondAction() || $isDoppelFirstAction) {
 
-			if ($roleModel->isSecondActionNeedFailedFirst()) {
+				if ($roleModel->isSecondActionNeedFailedFirst()) {
 
-				$socketMessage = $actionResponse['result'] ? 'playerFinishedTurn' : 'playerPlayedFirstAction';
+					$socketMessage = $actionResponse['result'] ? 'playerFinishedTurn' : 'playerPlayedFirstAction';
 
+
+				} else {
+
+					$socketMessage = 'playerPlayedFirstAction';
+
+				}
 
 			} else {
 
-				$socketMessage = 'playerPlayedFirstAction';
+				$socketMessage = 'playerFinishedTurn';
+
+			}
+
+
+			if ($roleModel->getFirstActionTargetType() !== 'ajax') {
+
+				$this->ajax->socketMessage($socketMessage, [
+					'game' => $this->currentGame->getAdvancedInfos(),
+					'player' => $this->currentPlayer->getBasicInfos(),
+					'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
+					'newRole' => $isDoppelFirstAction ? $this->currentPlayer->getCurrentRoleWithBasicInfos($gameUid) : [],
+					'doppel' => $isDoppelFirstAction,
+				]);
 
 			}
 
 		} else {
 
-			$socketMessage = 'playerFinishedTurn';
-
-		}
-
-
-		if ($roleModel->getFirstActionTargetType() !== 'ajax') {
-
-			$this->ajax->socketMessage($socketMessage, [
+			$actionMessage = $roleModel->buildActionMessage(0, [
+				'currentPlayer' => $this->currentPlayer->getBasicInfos(),
+				'gameUid' => $gameUid,
+			]);
+			$this->ajax->socketMessage('playerFinishedTurn', [
 				'game' => $this->currentGame->getAdvancedInfos(),
 				'player' => $this->currentPlayer->getBasicInfos(),
 				'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
-				'newRole' => $isDoppelFirstAction ? $this->currentPlayer->getCurrentRoleWithBasicInfos($gameUid) : [],
-				'doppel' => $isDoppelFirstAction,
+				'nothing' => true,
 			]);
 
 		}
+
 		$this->ajax->actionResultMessage($actionMessage);
 
 		return $this->ajax->t(
@@ -290,10 +308,11 @@ class Ajax extends MY_Controller
 		$playerUid = $this->input->post('playerUid');
 		$this->player->init($playerUid);
 		$this->currentPlayer->vote($gameUid, $playerUid);
-		
-		$message = str_replace('*playername*', $this->player->getName(), $this->lang->line('voted_for'));
 
-		$this->ajax->voteMessage($message);
+		$message = str_replace('*playername*', $this->player->getName(), $this->lang->line('voted_for'));
+		$cancelVote = $this->lang->line('cancel_vote');
+
+		$this->ajax->voteMessage($message, $cancelVote);
 
 		$this->ajax->socketMessage('playerVoted', [
 			'game' => $this->currentGame->getBasicInfos(),
@@ -303,9 +322,24 @@ class Ajax extends MY_Controller
 		return $this->ajax->t();
 
 	}
-	
-	private function voteResults(){
-		
+
+	private function playerVoteCancel(): array
+	{
+		$gameUid = $this->currentGame->getGameUid();
+		$this->currentPlayer->cancelVote($gameUid);
+
+		$this->ajax->socketMessage('playerCanceledVote', [
+			'game' => $this->currentGame->getBasicInfos(),
+			'player' => $this->currentPlayer->getBasicInfos(),
+		]);
+
+		return $this->ajax->t();
+
+	}
+
+	private function voteResults()
+	{
+
 		$gameResultMessages = $this->currentGame->finish($this->currentPlayer->getPlayerUid());
 		$gameSummary = $this->currentGame->getSummary();
 
@@ -313,7 +347,7 @@ class Ajax extends MY_Controller
 		$this->ajax->gameSummary($gameSummary);
 
 		return $this->ajax->t();
-		
+
 	}
 
 }
