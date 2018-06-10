@@ -3,11 +3,11 @@ Options +FollowSymLinks
 RewriteEngine on
 RewriteBase /
 
-#RewriteCond %{THE_REQUEST} \s/+(.*?)/{2,}([^\s]*)
-#RewriteRule ^ %1/%2 [R=302,L,NE]
+RewriteCond %{THE_REQUEST} \s/+(.*?)/{2,}([^\s]*)
+RewriteRule ^ %1/%2 [R=302,L,NE]
 
-#RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+(.+?)/{2,}[?\s] [NC]
-#RewriteRule ^ /%1/ [L,R=301]
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+(.+?)/{2,}[?\s] [NC]
+RewriteRule ^ /%1/ [L,R=301]
 
 ##############################
 ### CSS / JS / IMG / FONTS ###

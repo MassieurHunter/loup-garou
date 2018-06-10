@@ -20,7 +20,8 @@
 
 	<div class="row">
 		<div class="alerts-container col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1 text-center">
-			<div class="roles-block mt-1 md-1"></div>
+			<div class="roles-block text-left mt-1 md-1"></div>
+			<div class="players-list text-left mt-1 md-1"></div>
 			<div class="game-progress mt-1 md-1"></div>
 			<div class="role-infos mt-1 md-1"></div>
 			<div class="turn-finished mt-1 md-1"></div>

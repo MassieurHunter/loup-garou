@@ -221,6 +221,8 @@ class Ajax {
 
 				case "gameResults" :
 
+					$('.action-form-container').html('');
+
 					$('.game-results').append(
 						new ABuilder(
 							'div',

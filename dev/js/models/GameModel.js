@@ -106,6 +106,17 @@ export default class GameModel extends BaseModel {
 
 	}
 
+	displayPlayers(players){
+
+		$('.players-list').append(
+			new ABuilder('div', {
+				'class': 'alert alert-primary',
+				'role': 'alert'
+			}, players)
+		);
+		
+	}
+
 	displayRoles() {
 
 		let Lang = this.getLangModel();

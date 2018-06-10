@@ -3,6 +3,7 @@
 /**
  * Class Sbire_model
  *
+ * @property Player_model $_loup
  * @property Player_model $loup1
  * @property Player_model $loup2
  * @property Player_model $loup3
@@ -33,15 +34,17 @@ class Sbire_model extends Role_model
 			'gameUid'       => $gameUid,
 			'currentPlayer' => $oPlayer->getBasicInfos(),
 		];
+		
+		$this->load->model('player_model', '_loup');
 
 		$arrLoups = $this->db
-			->select($this->loup1->table . '.*')
-			->join($this->loup1->player_roles_table, $this->loup1->primary_key)
+			->select($this->_loup->table . '.*')
+			->join($this->_loup->player_roles_table, $this->_loup->primary_key)
 			->where('gameUid', $gameUid)
-			->where('model', 'loup')
+			->where('roleuid', self::LOUP)
 			->where('order', 0)
-			->where($this->loup1->primary_key . ' >', 3)//playerUid [1, 2, 3] => middle cards
-			->get($this->loup1->table)
+			->where($this->_loup->primary_key . ' >', 3)//playerUid [1, 2, 3] => middle cards
+			->get($this->_loup->table)
 			->result();
 
 		foreach ($arrLoups as $key => $loup) {

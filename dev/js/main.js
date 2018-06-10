@@ -126,6 +126,7 @@ let loupGarou = {
 							this.player.setLang(this.lang.toJSON());
 
 							this.game.displayRoles();
+							this.game.displayPlayers(response.data.players);
 							this.player.displayRoleName();
 							this.socket.emit('roleTurn', {
 								game: this.game.toJSON(),
