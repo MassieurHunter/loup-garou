@@ -405,6 +405,7 @@ class Game_model extends MY_Model
 
 		return $arrPlayers;
 	}
+
 	/**
 	 * @return string
 	 */
@@ -415,10 +416,10 @@ class Game_model extends MY_Model
 		foreach ($this->getRealPlayers() as $playerUid => $player) {
 			$arrPlayersName[] = $player->getName();
 		}
-		
+
 		sort($arrPlayersName);
 
-		return $this->lang->line('players_list') .  implode(', ', $arrPlayersName);
+		return $this->lang->line('players_list') . implode(', ', $arrPlayersName);
 	}
 
 	public function getRealPlayers()
@@ -836,10 +837,34 @@ class Game_model extends MY_Model
 
 			$target1 = isset($arrPlayers[$log->getTarget1()]) ? $arrPlayers[$log->getTarget1()] : $this->_playerModel;
 			$target2 = isset($arrPlayers[$log->getTarget2()]) ? $arrPlayers[$log->getTarget2()] : $this->_playerModel;
-			$target1Role = isset($arrRolesForCasting[$log->getTarget1Role()]) ? $arrRolesForCasting[$log->getTarget1Role()] : $this->_roleModel;
-			$target2Role = isset($arrRolesForCasting[$log->getTarget2Role()]) ? $arrRolesForCasting[$log->getTarget2Role()] : $this->_roleModel;
+			$target3 = isset($arrPlayers[$log->getTarget3()]) ? $arrPlayers[$log->getTarget3()] : $this->_playerModel;
+			$target1Role = clone $this->_roleModel;
+			$target2Role = clone $this->_roleModel;
+			$target3Role = clone $this->_roleModel;
 
-			$actions[] = $playerRole->buildActionSummary($log->getAction(), $player, $playerRole, $target1, $target2, $target1Role, $target2Role);
+			foreach ($arrRolesForCasting as $role) {
+
+				if ($role->getRoleUid() === $log->getTarget1Role()) {
+
+					$target1Role = $role;
+					
+				}
+				
+				if ($role->getRoleUid() === $log->getTarget2Role()) {
+
+					$target2Role = $role;
+					
+				}
+
+				if ($role->getRoleUid() === $log->getTarget3Role()) {
+
+					$target3Role = $role;
+
+				}
+
+			}
+
+			$actions[] = $playerRole->buildActionSummary($log->getAction(), $player, $playerRole, $target1, $target2, $target3, $target1Role, $target2Role, $target3Role);
 
 		}
 
@@ -876,6 +901,93 @@ class Game_model extends MY_Model
 
 	}
 
+
+	/**
+	 * @param Player_model $oPlayer
+	 * @return array
+	 */
+	public function rebuildActions(Player_model $oPlayer): array
+	{
+
+		$actions = [];
+		$arrLogs = $this->getLogs();
+		$arrPlayers = $this->getPlayers();
+		$arrRolesForCasting = $this->getRolesForCasting();
+
+		if(!isset($this->_roleModel)){
+			$this->load->model('roles/role_model', '_roleModel');
+		}
+
+		$playerRole = clone $this->_roleModel;
+
+		foreach ($arrLogs as $log) {
+
+			if ($log->getPlayerUid() === $oPlayer->getPlayerUid()) {
+
+				$target1 = isset($arrPlayers[$log->getTarget1()]) ? $arrPlayers[$log->getTarget1()] : $this->_playerModel;
+				$target2 = isset($arrPlayers[$log->getTarget2()]) ? $arrPlayers[$log->getTarget2()] : $this->_playerModel;
+				$target3 = isset($arrPlayers[$log->getTarget3()]) ? $arrPlayers[$log->getTarget3()] : $this->_playerModel;
+				$target1Role = clone $this->_roleModel;
+				$target2Role = clone $this->_roleModel;
+				$target3Role = clone $this->_roleModel;
+
+				foreach ($arrRolesForCasting as $role) {
+
+					if ($role->getRoleUid() === $log->getRoleUid()) {
+
+						$playerRole = $role;
+
+					}
+
+					if ($role->getRoleUid() === $log->getTarget1Role()) {
+
+						$target1Role = $role;
+
+					}
+
+					if ($role->getRoleUid() === $log->getTarget2Role()) {
+
+						$target2Role = $role;
+
+					}
+
+					if ($role->getRoleUid() === $log->getTarget3Role()) {
+
+						$target3Role = $role;
+
+					}
+
+				}
+
+				$actions[] = $playerRole->rebuildActionMessage($log->getAction(), $target1, $target2, $target3, $target1Role, $target2Role, $target3Role);
+				
+				
+			}
+
+		}
+		
+		$playerFinishedTurn = false;
+		
+		if($playerRole->getRoleUid()){
+
+			foreach ($arrLogs as $log) {
+
+				$loopRole = clone $this->_roleModel;
+				$loopRole->init($log->getRoleUid());
+
+				$playerFinishedTurn = $playerFinishedTurn || $playerRole->getRunningOrder() < $loopRole->getRunningOrder();
+				
+			}
+			
+		}
+		
+		return [
+			'actions' => $actions,
+			'finishedTurn' => $playerFinishedTurn,
+		];
+
+	}
+
 	/**
 	 * @return Log_model[]
 	 */
@@ -900,6 +1012,7 @@ class Game_model extends MY_Model
 		$arrLogs = $this->db
 			->select($this->_logModel->table . '.*')
 			->where($this->primary_key, $this->getGameUid())
+			->order_by('date')
 			->get($this->_logModel->table)
 			->result();
 

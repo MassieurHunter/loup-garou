@@ -44,11 +44,19 @@ class Log_model extends MY_Model
 	/**
 	 * @var int
 	 */
+	protected $target3;
+	/**
+	 * @var int
+	 */
 	protected $target1Role;
 	/**
 	 * @var int
 	 */
 	protected $target2Role;
+	/**
+	 * @var int
+	 */
+	protected $target3Role;
 	/**
 	 * @var string
 	 */
@@ -58,14 +66,16 @@ class Log_model extends MY_Model
 	 * Log_model constructor.
 	 * @param array $arrParams
 	 */
-	public function __construct(array $arrParams = []) {
+	public function __construct(array $arrParams = [])
+	{
 		parent::__construct($arrParams);
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getTarget1Role(): int {
+	public function getTarget1Role(): int
+	{
 		return $this->target1Role;
 	}
 
@@ -73,7 +83,8 @@ class Log_model extends MY_Model
 	 * @param int $target1Role
 	 * @return Log_model
 	 */
-	public function setTarget1Role(int $target1Role): Log_model {
+	public function setTarget1Role(int $target1Role): Log_model
+	{
 		$this->target1Role = $target1Role;
 		return $this;
 	}
@@ -81,7 +92,8 @@ class Log_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getTarget2Role(): int {
+	public function getTarget2Role(): int
+	{
 		return $this->target2Role;
 	}
 
@@ -89,7 +101,8 @@ class Log_model extends MY_Model
 	 * @param int $target2Role
 	 * @return Log_model
 	 */
-	public function setTarget2Role(int $target2Role): Log_model {
+	public function setTarget2Role(int $target2Role): Log_model
+	{
 		$this->target2Role = $target2Role;
 		return $this;
 	}
@@ -97,7 +110,8 @@ class Log_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getGameLogUid(): int {
+	public function getGameLogUid(): int
+	{
 		return $this->gameLogUid;
 	}
 
@@ -105,7 +119,8 @@ class Log_model extends MY_Model
 	 * @param int $gameLogUid
 	 * @return Log_model
 	 */
-	public function setGameLogUid(int $gameLogUid): Log_model {
+	public function setGameLogUid(int $gameLogUid): Log_model
+	{
 		$this->gameLogUid = $gameLogUid;
 		return $this;
 	}
@@ -113,7 +128,8 @@ class Log_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getGameUid(): int {
+	public function getGameUid(): int
+	{
 		return $this->gameUid;
 	}
 
@@ -121,7 +137,8 @@ class Log_model extends MY_Model
 	 * @param int $gameUid
 	 * @return Log_model
 	 */
-	public function setGameUid(int $gameUid): Log_model {
+	public function setGameUid(int $gameUid): Log_model
+	{
 		$this->gameUid = $gameUid;
 		return $this;
 	}
@@ -129,7 +146,8 @@ class Log_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getPlayerUid(): int {
+	public function getPlayerUid(): int
+	{
 		return $this->playerUid;
 	}
 
@@ -137,7 +155,8 @@ class Log_model extends MY_Model
 	 * @param int $playerUid
 	 * @return Log_model
 	 */
-	public function setPlayerUid(int $playerUid): Log_model {
+	public function setPlayerUid(int $playerUid): Log_model
+	{
 		$this->playerUid = $playerUid;
 		return $this;
 	}
@@ -145,7 +164,8 @@ class Log_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getRoleUid(): int {
+	public function getRoleUid(): int
+	{
 		return $this->roleUid;
 	}
 
@@ -153,7 +173,8 @@ class Log_model extends MY_Model
 	 * @param int $roleUid
 	 * @return Log_model
 	 */
-	public function setRoleUid(int $roleUid): Log_model {
+	public function setRoleUid(int $roleUid): Log_model
+	{
 		$this->roleUid = $roleUid;
 		return $this;
 	}
@@ -161,7 +182,8 @@ class Log_model extends MY_Model
 	/**
 	 * @return string
 	 */
-	public function getAction(): string {
+	public function getAction(): string
+	{
 		return $this->action;
 	}
 
@@ -169,7 +191,8 @@ class Log_model extends MY_Model
 	 * @param string $action
 	 * @return Log_model
 	 */
-	public function setAction(string $action): Log_model {
+	public function setAction(string $action): Log_model
+	{
 		$this->action = $action;
 		return $this;
 	}
@@ -177,7 +200,8 @@ class Log_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getTarget1(): int {
+	public function getTarget1(): int
+	{
 		return $this->target1;
 	}
 
@@ -185,7 +209,8 @@ class Log_model extends MY_Model
 	 * @param int $target1
 	 * @return Log_model
 	 */
-	public function setTarget1(int $target1): Log_model {
+	public function setTarget1(int $target1): Log_model
+	{
 		$this->target1 = $target1;
 		return $this;
 	}
@@ -193,7 +218,8 @@ class Log_model extends MY_Model
 	/**
 	 * @return int
 	 */
-	public function getTarget2(): int {
+	public function getTarget2(): int
+	{
 		return $this->target2;
 	}
 
@@ -201,15 +227,54 @@ class Log_model extends MY_Model
 	 * @param int $target2
 	 * @return Log_model
 	 */
-	public function setTarget2(int $target2): Log_model {
+	public function setTarget2(int $target2): Log_model
+	{
 		$this->target2 = $target2;
 		return $this;
 	}
 
 	/**
+	 * @return int
+	 */
+	public function getTarget3(): int
+	{
+		return $this->target3;
+	}
+
+	/**
+	 * @param int $target3
+	 * @return Log_model
+	 */
+	public function setTarget3(int $target3): Log_model
+	{
+		$this->target3 = $target3;
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getTarget3Role(): int
+	{
+		return $this->target3Role;
+	}
+
+	/**
+	 * @param int $target3Role
+	 * @return Log_model
+	 */
+	public function setTarget3Role(int $target3Role): Log_model
+	{
+		$this->target3Role = $target3Role;
+		return $this;
+	}
+	
+
+	/**
 	 * @return string
 	 */
-	public function getDate(): string {
+	public function getDate(): string
+	{
 		return $this->date;
 	}
 
@@ -217,7 +282,8 @@ class Log_model extends MY_Model
 	 * @param string $date
 	 * @return Log_model
 	 */
-	public function setDate(string $date): Log_model {
+	public function setDate(string $date): Log_model
+	{
 		$this->date = $date;
 		return $this;
 	}

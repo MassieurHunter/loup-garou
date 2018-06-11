@@ -274,6 +274,10 @@ class Ajax extends MY_Controller
 		$arguments['gameUid'] = $gameUid;
 		$isDoppelCopiedRoleSecondAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger';
 
+//		$this->currentPlayer->initRoles($gameUid);
+//		print_r($this->currentPlayer);
+//		die;
+		
 		if ($isDoppelCopiedRoleSecondAction) {
 
 			$roleModel = $this->currentPlayer->getCurrentRoleModel($gameUid);
@@ -294,6 +298,32 @@ class Ajax extends MY_Controller
 		]);
 
 		$this->ajax->actionResultMessage($actionMessage);
+
+		return $this->ajax->t();
+
+	}
+
+	private function playerActionsRebuild(): array
+	{
+
+		$actionsRebuild = $this->currentGame->rebuildActions($this->currentPlayer);
+
+		foreach ($actionsRebuild['actions'] as $actionMessage) {
+
+			$this->ajax->actionResultMessage($actionMessage);
+
+		}
+
+		if ($actionsRebuild['finishedTurn']) {
+
+			$this->ajax->socketMessage('playerFinishedTurn', [
+				'game' => $this->currentGame->getAdvancedInfos(),
+				'player' => $this->currentPlayer->getBasicInfos(),
+				'refresh' => true,
+			]);
+
+
+		}
 
 		return $this->ajax->t();
 
@@ -326,6 +356,25 @@ class Ajax extends MY_Controller
 	{
 		$gameUid = $this->currentGame->getGameUid();
 		$this->currentPlayer->cancelVote($gameUid);
+
+		$this->ajax->socketMessage('playerCanceledVote', [
+			'game' => $this->currentGame->getBasicInfos(),
+			'player' => $this->currentPlayer->getBasicInfos(),
+		]);
+
+		return $this->ajax->t();
+
+	}
+
+	private function playerVoteRebuild(): array
+	{
+		$gameUid = $this->currentGame->getGameUid();
+
+		if ($this->currentPlayer->hasVoted($gameUid)) {
+
+			$this->currentPlayer->cancelVote($gameUid);
+
+		}
 
 		$this->ajax->socketMessage('playerCanceledVote', [
 			'game' => $this->currentGame->getBasicInfos(),

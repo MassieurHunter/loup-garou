@@ -58,10 +58,12 @@ CREATE TABLE `games_actions_logs` (
   `playerUid`  int(11)          DEFAULT NULL,
   `roleUid`    int(11)          DEFAULT NULL,
   `action`     varchar(50)      DEFAULT NULL,
-  `target1`    int(11)          DEFAULT NULL,
-  `target2`    int(11)          DEFAULT NULL,
-  `target1Role`    int(11)       DEFAULT NULL,
-  `target2Role`    int(11)      DEFAULT NULL,
+  `target1`    int(11)          DEFAULT '0',
+  `target2`    int(11)          DEFAULT '0',
+  `target3`    int(11)          DEFAULT '0',
+  `target1Role`    int(11)       DEFAULT '0',
+  `target2Role`    int(11)      DEFAULT '0',
+  `target3Role`    int(11)      DEFAULT '0',
   `date`       DATETIME         DEFAULT NULL,
   PRIMARY KEY (`gameLogUid`)
 )

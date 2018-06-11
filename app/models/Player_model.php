@@ -509,6 +509,19 @@ class Player_model extends MY_Model
 			->setTargetUid($targetUid)
 			->create();
 	}
+
+	/**
+	 * @param int $gameUid
+	 * @return bool
+	 */
+	public function hasVoted(int $gameUid) : bool {
+
+		$this->load->model('vote_model', '_vote');
+		$this->_vote->initWithGameAndPlayer($gameUid, $this->getPlayerUid());
+		
+		return $this->_vote->getVoteUid() > 0;
+		
+	}
 	
 	
 	/**

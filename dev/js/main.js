@@ -85,10 +85,14 @@ let loupGarou = {
 						let Player = new PlayerModel(message.player);
 						this.game = new GameModel(message.game);
 
-						new Noty({
-							type: 'info',
-							text: this.lang.getLine('player_joined_game').replace('*playername*', Player.getName())
-						}).show();
+						if(Player.getPlayerUid() !== this.player.getPlayerUid()) {
+
+							new Noty({
+								type: 'info',
+								text: this.lang.getLine('player_joined_game').replace('*playername*', Player.getName())
+							}).show();
+
+						}
 
 						$('.nb-players').html(this.game.getNbPlayers());
 
@@ -99,6 +103,30 @@ let loupGarou = {
 								player: this.player.toJSON()
 							});
 
+						}
+
+						break;
+						
+					case 'playerRejoined' :
+
+						let Player2 = new PlayerModel(message.player);
+						this.game = new GameModel(message.game);
+						
+						if(Player2.getPlayerUid() !== this.player.getPlayerUid()) {
+
+							new Noty({
+								type: 'info',
+								text: this.lang.getLine('player_rejoined_game').replace('*playername*', Player2.getName())
+							}).show();
+
+						} else {
+
+							this.socket.emit('playerRejoined', {
+								game: this.game.toJSON(),
+								player: this.player.toJSON(),
+							});
+							
+							
 						}
 
 						break;
@@ -242,10 +270,22 @@ let loupGarou = {
 						this.player.finishTurn();
 
 						break;
+						
+					case 'rebuildActions' :
+						
+						Ajax.post('player/actions/rebuild', [], (response) => {});
+						
+						break;
 
 					case 'actionsFinished' :
 
 						this.player.displayVote();
+
+						break;
+
+					case 'rebuildVote' :
+
+						Ajax.post('player/vote/rebuild', [], (response) => {});
 
 						break;
 

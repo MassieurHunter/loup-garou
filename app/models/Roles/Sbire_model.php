@@ -37,13 +37,37 @@ class Sbire_model extends Role_model
 		
 		$this->load->model('player_model', '_loup');
 
+		$doppelLoupSubSubQuery = $this->db
+			->select($oPlayer->primary_key)
+			->where('gameUid', $gameUid)
+			->where($this->primary_key, self::DOPPELGANGER)
+			->where($oPlayer->primary_key . ' > ', 3)
+			->where('order', 0)
+			->get_compiled_select($oPlayer->player_roles_table);
+
+
+		$doppelLoupSubQuery = $this->db
+			->select($oPlayer->primary_key)
+			->where('gameUid', $gameUid)
+			->where($this->primary_key, $this->getRoleUid())
+			->where($oPlayer->primary_key . ' != ', $oPlayer->getPlayerUid())
+			->where($oPlayer->primary_key . ' > ', 3)
+			->where('order', 1)
+			->where_in($oPlayer->primary_key, $doppelLoupSubSubQuery, false)
+			->get_compiled_select($oPlayer->player_roles_table);
+
 		$arrLoups = $this->db
 			->select($this->_loup->table . '.*')
 			->join($this->_loup->player_roles_table, $this->_loup->primary_key)
 			->where('gameUid', $gameUid)
+			->group_start()
 			->where('roleuid', self::LOUP)
-			->where('order', 0)
 			->where($this->_loup->primary_key . ' >', 3)//playerUid [1, 2, 3] => middle cards
+			->where('order', 0)
+			->group_end()
+			->or_group_start()
+			->where_in($oPlayer->primary_key, $doppelLoupSubQuery, false)
+			->group_end()
 			->get($this->_loup->table)
 			->result();
 

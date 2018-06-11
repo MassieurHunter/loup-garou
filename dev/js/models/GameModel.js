@@ -36,6 +36,10 @@ export default class GameModel extends BaseModel {
 		return this.getNbPlayers() === this.getMaxPlayers();
 	}
 
+	isStarted() {
+		return this.get('started', false);
+	}
+
 	getRolesForCasting() {
 
 		return this.get('rolesForCasting');

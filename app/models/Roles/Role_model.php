@@ -480,6 +480,42 @@ class Role_model extends MY_Model
 	}
 
 	/**
+	 * @param string $actionName
+	 * @param Player_model $target1
+	 * @param Player_model $target2
+	 * @param Player_model $target3
+	 * @param Role_model $target1Role
+	 * @param Role_model $target2Role
+	 * @param Role_model $target3Role
+	 * @return string
+	 */
+	public function rebuildActionMessage(string $actionName, Player_model $target1, Player_model $target2, Player_model $target3, Role_model $target1Role, Role_model $target2Role, Role_model $target3Role): string {
+
+		if ($actionName !== 'did_nothing') {
+
+
+			$actionLangKey = $actionName . ($actionName ? '_result' . (!$target1->getPlayerUid() && $this->getModel() !== 'insomniaque' ? '_empty' : '') : '');
+			$actionLang = $this->lang->line($actionLangKey);
+
+			$actionLang = str_replace(['*li_player_1*', '*player_1*', '*card_1*'], $target1->getPlayerUid() ? ['<li>' . $target1->getName() . '</li>', $target1->getName(), $target1->getName()] : '', $actionLang);
+			$actionLang = str_replace(['*li_player_2*', '*player_2*', '*card_2*'], $target2->getPlayerUid() ? ['<li>' . $target2->getName() . '</li>', $target2->getName(), $target2->getName()] : '', $actionLang);
+			$actionLang = str_replace(['*li_player_3*', '*player_3*'], $target3->getPlayerUid() ? ['<li>' . $target3->getName() . '</li>', $target3->getName()] : '', $actionLang);
+			$actionLang = str_replace('*role_1*', $target1Role->getRoleUid() ? $target1Role->getName() : '', $actionLang);
+			$actionLang = str_replace('*role_2*', $target2Role->getRoleUid() ? $target2Role->getName() : '', $actionLang);
+
+		} else {
+
+			$actionLangKey = 'you_did_nothing';
+			$actionLang = $this->lang->line($actionLangKey);
+
+		}
+
+		return $actionLang;
+		
+	}
+	
+	
+	/**
 	 * @return string
 	 */
 	public function getFirstActionName(): string
@@ -521,14 +557,17 @@ class Role_model extends MY_Model
 		$targetType = $actionNumber === 1 ? $this->getSubmodel()->getFirstActionTargetType() : $this->getSubmodel()->getSecondActionTargetType();
 		$player1 = isset($actionInfos['player_1']['playerUid']) ? $actionInfos['player_1']['playerUid'] : 0;
 		$player2 = isset($actionInfos['player_2']['playerUid']) ? $actionInfos['player_2']['playerUid'] : 0;
+		$player3 = isset($actionInfos['player_3']['playerUid']) ? $actionInfos['player_3']['playerUid'] : 0;
 		$card1 = isset($actionInfos['card_1']['playerUid']) ? $actionInfos['card_1']['playerUid'] : 0;
 		$card2 = isset($actionInfos['card_2']['playerUid']) ? $actionInfos['card_2']['playerUid'] : 0;
 
 		$target1 = $targetType === 'player' ? $player1 : ($targetType === 'card' ? $card1 : 0);
 		$target2 = $targetType === 'player' ? $player2 : ($targetType === 'card' ? $card2 : 0);
+		$target3 = $targetType === 'player' ? $player3 : 0;
 
 		$target1Role = isset($actionInfos['role_1']['roleUid']) ? $actionInfos['role_1']['roleUid'] : 0;
 		$target2Role = isset($actionInfos['role_2']['roleUid']) ? $actionInfos['role_2']['roleUid'] : 0;
+		$target3Role = isset($actionInfos['role_3']['roleUid']) ? $actionInfos['role_3']['roleUid'] : 0;
 
 		/** @var Player_model $currentPlayer */
 		$currentPlayer = $actionInfos['currentPlayer'];
@@ -545,8 +584,10 @@ class Role_model extends MY_Model
 			->setAction($actionNumber === 1 ? $this->getSubmodel()->getFirstActionName() : ($actionNumber === 2 ? $this->getSubmodel()->getSecondActionName(): 'did_nothing'))
 			->setTarget1($target1)
 			->setTarget2($target2)
+			->setTarget3($target3)
 			->setTarget1Role($target1Role)
 			->setTarget2Role($target2Role)
+			->setTarget3Role($target3Role)
 			->setDate($timeStamp)
 			->create();
 
@@ -576,11 +617,13 @@ class Role_model extends MY_Model
 	 * @param Role_model $playerRole
 	 * @param Player_model $target1
 	 * @param Player_model $target2
+	 * @param Player_model $target3
 	 * @param Role_model $target1Role
 	 * @param Role_model $target2Role
+	 * @param Role_model $target3Role
 	 * @return string
 	 */
-	public function buildActionSummary(string $actionName, Player_model $player, Role_model $playerRole, Player_model $target1, Player_model $target2, Role_model $target1Role, Role_model $target2Role): string
+	public function buildActionSummary(string $actionName, Player_model $player, Role_model $playerRole, Player_model $target1, Player_model $target2, Player_model $target3, Role_model $target1Role, Role_model $target2Role, Role_model $target3Role): string
 	{
 
 		$actionLangKey = $actionName . ($actionName ? '_summary' . (!$target1->getPlayerUid() && $this->getModel() !== 'insomniaque' ? '_empty' : '') : '');

@@ -15,6 +15,7 @@ let gamesPlayersForStarting = {};
 let gamesPlayersVoted = {};
 let gamesPlayersWithRoles = {};
 let gamesSockets = {};
+let gamesProgress = {};
 
 const {exec} = require('child_process');
 
@@ -37,15 +38,74 @@ io.sockets.on('connection', (socket) => {
 			gamesSockets[roomUid] = [];
 		}
 
-		gamesSockets[roomUid][Player.getPlayerUid()] = socket;
-
 		socket.join(roomUid);
 
-		io.in(roomUid).emit('message', {
-			type: 'playerJoined',
-			player: Player.toJSON(),
+		if (gamesSockets[roomUid].hasOwnProperty(Player.getPlayerUid())) {
+
+			gamesSockets[roomUid][Player.getPlayerUid()] = socket;
+
+			io.in(roomUid).emit('message', {
+				type: 'playerRejoined',
+				player: Player.toJSON(),
+				game: Game.toJSON()
+			});
+
+		} else {
+
+			gamesSockets[roomUid][Player.getPlayerUid()] = socket;
+
+			io.in(roomUid).emit('message', {
+				type: 'playerJoined',
+				player: Player.toJSON(),
+				game: Game.toJSON()
+			});
+
+		}
+
+	});
+
+	socket.on('playerRejoined', (data) => {
+
+		let Game = new GameModel(data.game);
+		let roomUid = 'game' + Game.getCode();
+		let Player = new PlayerModel(data.player);
+
+		gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+			type: 'rolesInfos',
 			game: Game.toJSON()
 		});
+
+		if (gamesProgress.hasOwnProperty(roomUid)) {
+
+			if (gamesProgress.currentRole.getName() !== '') {
+
+				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+					type: 'roleTurn',
+					role: gamesProgress.currentRole.toJSON(),
+					progress: gamesProgress.progress,
+				});
+
+				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+					type: 'rebuildActions'
+				});
+
+			} else {
+
+				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+					type: 'rebuildActions'
+				});
+				
+				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+					type: 'actionsFinished'
+				});
+
+				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+					type: 'rebuildVote'
+				});
+			
+			}
+
+		}
 
 	});
 
@@ -80,6 +140,15 @@ io.sockets.on('connection', (socket) => {
 
 			if (gamesPlayersForStarting[roomUid].length === Game.getMaxPlayers()) {
 
+				if (!gamesProgress.hasOwnProperty(roomUid)) {
+
+					gamesProgress[roomUid] = {
+						progress: 0,
+						currentRole: new RoleModel(),
+					};
+
+				}
+
 				console.log('Starting game ' + Game.getCode());
 
 				let randomPlayer = gamesPlayersForStarting[roomUid][Math.floor(Math.random() * gamesPlayersForStarting[roomUid].length)];
@@ -108,7 +177,6 @@ io.sockets.on('connection', (socket) => {
 		});
 
 	});
-
 
 	socket.on('roleTurn', (data) => {
 
@@ -179,6 +247,16 @@ io.sockets.on('connection', (socket) => {
 		let Game = new GameModel(data.game);
 		let Role = new RoleModel(data.role);
 		let roomUid = 'game' + Game.getCode();
+		let refresh = data.refresh;
+		
+		if(refresh){
+			
+			gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+				type: 'playerFinishedTurn',
+			});
+			
+			return;
+		}
 
 		console.log('player ' + Player.getName() + ' finished his turn (' + Role.getName() + ')');
 
@@ -258,8 +336,6 @@ io.sockets.on('connection', (socket) => {
 
 	});
 
-
-
 	socket.on('playerVoted', (data) => {
 
 		let Player = new PlayerModel(data.player);
@@ -276,19 +352,19 @@ io.sockets.on('connection', (socket) => {
 
 		io.in(roomUid).emit('message', {
 			type: 'playerVoted',
-			nbVotes: gamesPlayersVoted[roomUid].length 
+			nbVotes: gamesPlayersVoted[roomUid].length
 		});
-		
-		if(gamesPlayersVoted[roomUid].length === gamesPlayersWithRoles[roomUid].length){
-			
-			console.log('game '  + Game.getCode() + ' is finished');
-			delete gamesPlayersVoted[roomUid]; 
-			delete gamesPlayersWithRoles[roomUid]; 
-			delete gamesPlayersForStarting[roomUid]; 
-			delete gamesSockets[roomUid]; 
-			
+
+		if (gamesPlayersVoted[roomUid].length === gamesPlayersWithRoles[roomUid].length) {
+
+			console.log('game ' + Game.getCode() + ' is finished');
+			delete gamesPlayersVoted[roomUid];
+			delete gamesPlayersWithRoles[roomUid];
+			delete gamesPlayersForStarting[roomUid];
+			delete gamesSockets[roomUid];
+
 		}
-		
+
 
 	});
 	
@@ -306,22 +382,22 @@ io.sockets.on('connection', (socket) => {
 
 		let oldGamesPlayersVoted = gamesPlayersVoted[roomUid];
 		gamesPlayersVoted[roomUid] = [];
-		
-		for(let loopPlayer of oldGamesPlayersVoted){
 
-			if(loopPlayer.getPlayerUid() !== Player.getPlayerUid()){
+		for (let loopPlayer of oldGamesPlayersVoted) {
+
+			if (loopPlayer.getPlayerUid() !== Player.getPlayerUid()) {
 
 				gamesPlayersVoted[roomUid].push(loopPlayer);
 
 			}
-		
+
 		}
 
 		io.in(roomUid).emit('message', {
 			type: 'playerCanceledVote',
-			player: Player.toJSON(), 
-			nbVotes: gamesPlayersVoted[roomUid].length 
-		});		
+			player: Player.toJSON(),
+			nbVotes: gamesPlayersVoted[roomUid].length
+		});
 
 	});
 
@@ -394,10 +470,17 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 
 			}
 
+			let percent = Math.ceil(progress / total * 100);
+
+			gamesProgress[roomUid] = {
+				progress: percent,
+				currentRole: NextRole.toJSON(),
+			};
+
 			io.in(roomUid).emit('message', {
 				type: 'roleTurn',
-				role: NextRole.toJSON(),
-				progress: Math.ceil(progress / total * 100),
+				role: NextRole,
+				progress: percent,
 			});
 
 			console.log('message sent');
@@ -411,6 +494,11 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 			}
 
 		} else {
+
+			gamesProgress[roomUid] = {
+				progress: 100,
+				currentRole: new RoleModel,
+			};
 
 			console.log("no more roles, let's finish the game");
 
