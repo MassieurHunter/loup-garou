@@ -5,8 +5,8 @@ import https from 'https';
 import fs from 'fs';
 
 let ssl_options = {
-	key: fs.readFileSync('/home/ssl-cert/loup-garou.local.key'),
-	cert: fs.readFileSync('/home/ssl-cert/loup-garou.local.crt')
+	key: fs.readFileSync('/etc/nginx/ssl/loup-garou.local.key'),
+	cert: fs.readFileSync('/etc/nginx/ssl/loup-garou.local.crt')
 };
 
 let server = https.createServer(ssl_options);
@@ -74,38 +74,42 @@ io.sockets.on('connection', (socket) => {
 			type: 'rolesInfos',
 			game: Game.toJSON()
 		});
+		
+		setTimeout(() => {
 
-		if (gamesProgress.hasOwnProperty(roomUid)) {
+			if (gamesProgress.hasOwnProperty(roomUid)) {
 
-			if (gamesProgress.currentRole.getName() !== '') {
+				if (gamesProgress[roomUid].currentRole.getName() !== '') {
 
-				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
-					type: 'roleTurn',
-					role: gamesProgress.currentRole.toJSON(),
-					progress: gamesProgress.progress,
-				});
+					gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+						type: 'roleTurn',
+						role: gamesProgress[roomUid].currentRole.toJSON(),
+						progress: gamesProgress[roomUid].progress,
+					});
 
-				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
-					type: 'rebuildActions'
-				});
+					gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+						type: 'rebuildActions'
+					});
 
-			} else {
+				} else {
 
-				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
-					type: 'rebuildActions'
-				});
-				
-				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
-					type: 'actionsFinished'
-				});
+					gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+						type: 'rebuildActions'
+					});
 
-				gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
-					type: 'rebuildVote'
-				});
-			
+					gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+						type: 'actionsFinished'
+					});
+
+					gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+						type: 'rebuildVote'
+					});
+
+				}
+
 			}
 
-		}
+		}, 1000);
 
 	});
 
@@ -474,7 +478,7 @@ function sendNextRoleMessage(Game, PlayersWithRole, lastRole = null) {
 
 			gamesProgress[roomUid] = {
 				progress: percent,
-				currentRole: NextRole.toJSON(),
+				currentRole: NextRole,
 			};
 
 			io.in(roomUid).emit('message', {

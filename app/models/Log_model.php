@@ -76,7 +76,7 @@ class Log_model extends MY_Model
 	 */
 	public function getTarget1Role(): int
 	{
-		return $this->target1Role;
+		return (int) $this->target1Role;
 	}
 
 	/**
@@ -94,7 +94,7 @@ class Log_model extends MY_Model
 	 */
 	public function getTarget2Role(): int
 	{
-		return $this->target2Role;
+		return (int) $this->target2Role;
 	}
 
 	/**
@@ -112,7 +112,7 @@ class Log_model extends MY_Model
 	 */
 	public function getGameLogUid(): int
 	{
-		return $this->gameLogUid;
+		return (int) $this->gameLogUid;
 	}
 
 	/**
@@ -130,7 +130,7 @@ class Log_model extends MY_Model
 	 */
 	public function getGameUid(): int
 	{
-		return $this->gameUid;
+		return (int) $this->gameUid;
 	}
 
 	/**
@@ -148,7 +148,7 @@ class Log_model extends MY_Model
 	 */
 	public function getPlayerUid(): int
 	{
-		return $this->playerUid;
+		return (int) $this->playerUid;
 	}
 
 	/**
@@ -166,7 +166,7 @@ class Log_model extends MY_Model
 	 */
 	public function getRoleUid(): int
 	{
-		return $this->roleUid;
+		return (int) $this->roleUid;
 	}
 
 	/**
@@ -184,7 +184,7 @@ class Log_model extends MY_Model
 	 */
 	public function getAction(): string
 	{
-		return $this->action;
+		return (string) $this->action;
 	}
 
 	/**
@@ -202,7 +202,7 @@ class Log_model extends MY_Model
 	 */
 	public function getTarget1(): int
 	{
-		return $this->target1;
+		return (int) $this->target1;
 	}
 
 	/**
@@ -220,7 +220,7 @@ class Log_model extends MY_Model
 	 */
 	public function getTarget2(): int
 	{
-		return $this->target2;
+		return (int) $this->target2;
 	}
 
 	/**
@@ -238,7 +238,7 @@ class Log_model extends MY_Model
 	 */
 	public function getTarget3(): int
 	{
-		return $this->target3;
+		return (int) $this->target3;
 	}
 
 	/**
@@ -256,7 +256,7 @@ class Log_model extends MY_Model
 	 */
 	public function getTarget3Role(): int
 	{
-		return $this->target3Role;
+		return (int) $this->target3Role;
 	}
 
 	/**
@@ -275,7 +275,7 @@ class Log_model extends MY_Model
 	 */
 	public function getDate(): string
 	{
-		return $this->date;
+		return (string) $this->date;
 	}
 
 	/**

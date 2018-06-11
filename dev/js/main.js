@@ -173,6 +173,8 @@ let loupGarou = {
 						this.game.setProgress(message.progress);
 						this.game.displayProgress();
 
+						console.log(this.player.getRoleModel().getModel(), CurrentRole.getModel(), this.player.getRoleModel().getModel() === CurrentRole.getModel());
+						
 						if (this.player.getRoleModel().getModel() === CurrentRole.getModel()) {
 
 							if (this.player.getRoleModel().hasFirstAction() || this.player.getRoleModel().hasSecondAction()) {
@@ -267,6 +269,7 @@ let loupGarou = {
 
 					case 'playerFinishedTurn' :
 
+						console.log('plop');
 						this.player.finishTurn();
 
 						break;
