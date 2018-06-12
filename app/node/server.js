@@ -78,7 +78,7 @@ io.sockets.on('connection', (socket) => {
 		setTimeout(() => {
 
 			if (gamesProgress.hasOwnProperty(roomUid)) {
-				
+
 				console.log(gamesProgress[roomUid].currentRole.getName());
 
 				if (gamesProgress[roomUid].currentRole.getName() !== null) {
@@ -254,13 +254,13 @@ io.sockets.on('connection', (socket) => {
 		let Role = new RoleModel(data.role);
 		let roomUid = 'game' + Game.getCode();
 		let refresh = data.refresh;
-		
-		if(refresh){
-			
+
+		if (refresh) {
+
 			gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
 				type: 'playerFinishedTurn',
 			});
-			
+
 			return;
 		}
 
@@ -354,7 +354,23 @@ io.sockets.on('connection', (socket) => {
 			gamesPlayersVoted[roomUid] = [];
 		}
 
-		gamesPlayersVoted[roomUid].push(Player);
+		let alreadyVoted = false;
+
+		for (let loopPlayer of gamesPlayersVoted[roomUid]) {
+
+			if (loopPlayer.getPlayerUid() === Player.getPlayerUid()) {
+
+				alreadyVoted = true;
+
+			}
+
+		}
+
+		if (!alreadyVoted) {
+
+			gamesPlayersVoted[roomUid].push(Player);
+
+		}
 
 		io.in(roomUid).emit('message', {
 			type: 'playerVoted',
@@ -373,7 +389,7 @@ io.sockets.on('connection', (socket) => {
 
 
 	});
-	
+
 	socket.on('playerCanceledVote', (data) => {
 
 		let Player = new PlayerModel(data.player);

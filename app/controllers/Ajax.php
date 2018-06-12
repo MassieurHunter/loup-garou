@@ -11,8 +11,7 @@
 class Ajax extends MY_Controller
 {
 
-	public function __construct()
-	{
+	public function __construct() {
 		parent::__construct();
 
 		$this->load->library('ajaxResponse', NULL, 'ajax');
@@ -21,8 +20,7 @@ class Ajax extends MY_Controller
 
 	}
 
-	private function executeMethod()
-	{
+	private function executeMethod() {
 		$target = $this->input->get_post('target');
 
 		$method = lcfirst(str_replace('/', '', ucwords($target, '/')));
@@ -49,16 +47,14 @@ class Ajax extends MY_Controller
 		die;
 	}
 
-	public function index()
-	{
+	public function index() {
 	}
 
 
 	/**
 	 * @return array
 	 */
-	private function playerLogin(): array
-	{
+	private function playerLogin(): array {
 
 		$name = $this->input->post_get('name');
 		$password = $this->input->post('password');
@@ -80,8 +76,7 @@ class Ajax extends MY_Controller
 
 	}
 
-	private function playerTheme()
-	{
+	private function playerTheme() {
 
 		$this->currentPlayer
 			->setTheme($this->input->post('theme'))
@@ -94,8 +89,7 @@ class Ajax extends MY_Controller
 	/**
 	 * @return array
 	 */
-	private function gameCreate(): array
-	{
+	private function gameCreate(): array {
 
 		$this->load->model('game_model', 'game');
 		$this->game
@@ -113,8 +107,7 @@ class Ajax extends MY_Controller
 	/**
 	 * @return array
 	 */
-	private function gameJoin(): array
-	{
+	private function gameJoin(): array {
 
 		$code = $this->input->post('game-code');
 		$this->load->model('game_model', 'game');
@@ -142,21 +135,19 @@ class Ajax extends MY_Controller
 	/**
 	 * @return array
 	 */
-	private function socketConnection(): array
-	{
+	private function socketConnection(): array {
 
 		return $this->ajax->t([
-			'lang' => $this->lang->language,
-			'game' => $this->currentGame->getBasicInfos(),
+			'lang'   => $this->lang->language,
+			'game'   => $this->currentGame->getBasicInfos(),
 			'player' => $this->currentPlayer->getBasicInfos(),
 		]);
 
 	}
 
-	private function gameStart()
-	{
+	private function gameStart() {
 		$this->currentGame->start();
-		
+
 		return $this->ajax->t();
 
 	}
@@ -165,12 +156,11 @@ class Ajax extends MY_Controller
 	/**
 	 * @return array
 	 */
-	private function rolesInfos(): array
-	{
+	private function rolesInfos(): array {
 
 		return $this->ajax->t([
-			'game' => $this->currentGame->getAdvancedInfos(),
-			'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
+			'game'    => $this->currentGame->getAdvancedInfos(),
+			'role'    => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
 			'players' => $this->currentGame->getRealPlayersName(),
 		]);
 
@@ -180,8 +170,7 @@ class Ajax extends MY_Controller
 	/**
 	 * @return array
 	 */
-	private function playerActionFirst(): array
-	{
+	private function playerActionFirst(): array {
 
 		$arguments = $this->input->post();
 		$arguments['currentPlayer'] = $this->currentPlayer;
@@ -230,11 +219,11 @@ class Ajax extends MY_Controller
 			if ($roleModel->getFirstActionTargetType() !== 'ajax') {
 
 				$this->ajax->socketMessage($socketMessage, [
-					'game' => $this->currentGame->getAdvancedInfos(),
-					'player' => $this->currentPlayer->getBasicInfos(),
-					'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
+					'game'    => $this->currentGame->getAdvancedInfos(),
+					'player'  => $this->currentPlayer->getBasicInfos(),
+					'role'    => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
 					'newRole' => $isDoppelFirstAction ? $this->currentPlayer->getCurrentRoleWithBasicInfos($gameUid) : [],
-					'doppel' => $isDoppelFirstAction,
+					'doppel'  => $isDoppelFirstAction,
 				]);
 
 			}
@@ -243,12 +232,12 @@ class Ajax extends MY_Controller
 
 			$actionMessage = $roleModel->buildActionMessage(0, [
 				'currentPlayer' => $this->currentPlayer->getBasicInfos(),
-				'gameUid' => $gameUid,
+				'gameUid'       => $gameUid,
 			]);
 			$this->ajax->socketMessage('playerFinishedTurn', [
-				'game' => $this->currentGame->getAdvancedInfos(),
-				'player' => $this->currentPlayer->getBasicInfos(),
-				'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
+				'game'    => $this->currentGame->getAdvancedInfos(),
+				'player'  => $this->currentPlayer->getBasicInfos(),
+				'role'    => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
 				'nothing' => true,
 			]);
 
@@ -265,8 +254,7 @@ class Ajax extends MY_Controller
 	/**
 	 * @return array
 	 */
-	private function playerActionSecond(): array
-	{
+	private function playerActionSecond(): array {
 
 		$arguments = $this->input->post();
 		$arguments['currentPlayer'] = $this->currentPlayer;
@@ -277,7 +265,7 @@ class Ajax extends MY_Controller
 //		$this->currentPlayer->initRoles($gameUid);
 //		print_r($this->currentPlayer);
 //		die;
-		
+
 		if ($isDoppelCopiedRoleSecondAction) {
 
 			$roleModel = $this->currentPlayer->getCurrentRoleModel($gameUid);
@@ -292,9 +280,9 @@ class Ajax extends MY_Controller
 		$actionMessage = $roleModel->buildActionMessage(2, $actionResponse);
 
 		$this->ajax->socketMessage('playerFinishedTurn', [
-			'game' => $this->currentGame->getAdvancedInfos(),
+			'game'   => $this->currentGame->getAdvancedInfos(),
 			'player' => $this->currentPlayer->getBasicInfos(),
-			'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
+			'role'   => $this->currentPlayer->getOriginalRoleWithBasicInfos($gameUid),
 		]);
 
 		$this->ajax->actionResultMessage($actionMessage);
@@ -303,8 +291,7 @@ class Ajax extends MY_Controller
 
 	}
 
-	private function playerActionsRebuild(): array
-	{
+	private function playerActionsRebuild(): array {
 
 		$actionsRebuild = $this->currentGame->rebuildActions($this->currentPlayer);
 
@@ -317,8 +304,8 @@ class Ajax extends MY_Controller
 		if ($actionsRebuild['finishedTurn']) {
 
 			$this->ajax->socketMessage('playerFinishedTurn', [
-				'game' => $this->currentGame->getAdvancedInfos(),
-				'player' => $this->currentPlayer->getBasicInfos(),
+				'game'    => $this->currentGame->getAdvancedInfos(),
+				'player'  => $this->currentPlayer->getBasicInfos(),
 				'refresh' => true,
 			]);
 
@@ -330,8 +317,7 @@ class Ajax extends MY_Controller
 	}
 
 
-	private function playerVote(): array
-	{
+	private function playerVote(): array {
 		$this->load->model('player_model', 'player');
 		$gameUid = $this->currentGame->getGameUid();
 		$playerUid = $this->input->post('playerUid');
@@ -344,7 +330,7 @@ class Ajax extends MY_Controller
 		$this->ajax->voteMessage($message, $cancelVote);
 
 		$this->ajax->socketMessage('playerVoted', [
-			'game' => $this->currentGame->getBasicInfos(),
+			'game'   => $this->currentGame->getBasicInfos(),
 			'player' => $this->currentPlayer->getBasicInfos(),
 		]);
 
@@ -352,13 +338,12 @@ class Ajax extends MY_Controller
 
 	}
 
-	private function playerVoteCancel(): array
-	{
+	private function playerVoteCancel(): array {
 		$gameUid = $this->currentGame->getGameUid();
 		$this->currentPlayer->cancelVote($gameUid);
 
 		$this->ajax->socketMessage('playerCanceledVote', [
-			'game' => $this->currentGame->getBasicInfos(),
+			'game'   => $this->currentGame->getBasicInfos(),
 			'player' => $this->currentPlayer->getBasicInfos(),
 		]);
 
@@ -366,27 +351,40 @@ class Ajax extends MY_Controller
 
 	}
 
-	private function playerVoteRebuild(): array
-	{
+	private function playerVoteRebuild(): array {
+		$this->load->model('player_model', 'player');
+
 		$gameUid = $this->currentGame->getGameUid();
 
-		if ($this->currentPlayer->hasVoted($gameUid)) {
+		$playerUid = $this->currentPlayer->getVote($gameUid);
 
-			$this->currentPlayer->cancelVote($gameUid);
+		if ($playerUid) {
+
+			$this->player->init($playerUid);
+			$message = str_replace('*playername*', $this->player->getName(), $this->lang->line('voted_for'));
+			$cancelVote = $this->lang->line('cancel_vote');
+
+			$this->ajax->voteMessage($message, $cancelVote);
+
+			$this->ajax->socketMessage('playerVoted', [
+				'game'   => $this->currentGame->getBasicInfos(),
+				'player' => $this->currentPlayer->getBasicInfos(),
+			]);
 
 		}
 
-		$this->ajax->socketMessage('playerCanceledVote', [
-			'game' => $this->currentGame->getBasicInfos(),
-			'player' => $this->currentPlayer->getBasicInfos(),
-		]);
+		if ($this->currentGame->isFinished()) {
+
+			$this->voteResults();
+
+		}
+
 
 		return $this->ajax->t();
 
 	}
 
-	private function voteResults()
-	{
+	private function voteResults() {
 
 		$gameResultMessages = $this->currentGame->finish($this->currentPlayer->getPlayerUid());
 		$gameSummary = $this->currentGame->getSummary();

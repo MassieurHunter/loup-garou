@@ -204,9 +204,10 @@ export default class GameModel extends BaseModel {
 			)
 		);
 
-		$('.game-progress').html('');
-		$('.game-progress').append(roleName);
-		$('.game-progress').append(progressBar);
+		$('.game-progress')
+			.html('')
+			.append(roleName)
+			.append(progressBar);
 
 	}
 

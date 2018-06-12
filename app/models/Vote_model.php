@@ -54,7 +54,7 @@ class Vote_model extends MY_Model
 	 */
 	public function getVoteUid()
 	{
-		return $this->voteUid;
+		return (int) $this->voteUid;
 	}
 
 	/**
@@ -72,7 +72,7 @@ class Vote_model extends MY_Model
 	 */
 	public function getGameUid()
 	{
-		return $this->gameUid;
+		return (int) $this->gameUid;
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Vote_model extends MY_Model
 	 */
 	public function getPlayerUid()
 	{
-		return $this->playerUid;
+		return (int) $this->playerUid;
 	}
 
 	/**
@@ -108,7 +108,7 @@ class Vote_model extends MY_Model
 	 */
 	public function getTargetUid()
 	{
-		return $this->targetUid;
+		return (int) $this->targetUid;
 	}
 
 	/**

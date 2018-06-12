@@ -497,6 +497,21 @@ class Player_model extends MY_Model
 
 	/**
 	 * @param int $gameUid
+	 * @return int
+	 */
+	public function getVote(int $gameUid) : int
+	{
+
+		$this->load->model('vote_model', '_vote');
+		$this->_vote->initWithGameAndPlayer($gameUid, $this->getPlayerUid());
+		
+		return $this->_vote->getTargetUid();
+		
+	}
+
+
+	/**
+	 * @param int $gameUid
 	 * @param int $targetUid
 	 */
 	public function vote(int $gameUid, int $targetUid)

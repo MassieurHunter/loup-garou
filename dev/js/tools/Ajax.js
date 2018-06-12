@@ -193,7 +193,7 @@ class Ajax {
 					break;
 
 				case "vote" :
-					$('.action-form-container').html('');
+					$('.vote-form-container').html('');
 
 					let cancelVoteButton = new ABuilder(
 						'button',
@@ -209,7 +209,7 @@ class Ajax {
 						
 					});
 
-					$('.action-form-container').append(cancelVoteButton);
+					$('.vote-form-container').append(cancelVoteButton);
 					
 					$('.vote-message').append(
 						new ABuilder('div', {
@@ -221,7 +221,7 @@ class Ajax {
 
 				case "gameResults" :
 
-					$('.action-form-container').html('');
+					$('.vote-form-container').html('');
 
 					$('.game-results').append(
 						new ABuilder(

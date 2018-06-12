@@ -29,14 +29,17 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             '__DEV__' : false,
-            $: 'jquery',
-            jQuery: 'jquery',
-            'window.jQuery': 'jquery',
             Popper: ['popper.js', 'default'],
             'process.env': {
                 // This has effect on the react lib size
                 'NODE_ENV': JSON.stringify('production'),
             }
+        }),
+        new webpack.ProvidePlugin({
+            '__DEV__' : false,
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
         }),
         new webpack.optimize.AggressiveMergingPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),

@@ -27,6 +27,7 @@
 			<div class="turn-finished mt-1 md-1"></div>
 			<div class="action-results mt-1 md-1"></div>
 			<div class="action-form-container mt-1 md-1"></div>
+			<div class="vote-form-container mt-1 md-1"></div>
 			<div class="vote-message mt-1 md-1"></div>
 			<div class="vote-infos mt-1 md-1"></div>
 			<div class="game-results text-left mt-1 md-1"></div>

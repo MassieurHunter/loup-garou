@@ -6,6 +6,7 @@ import RoleModel from './models/RoleModel';
 import PlayerModel from './models/PlayerModel';
 import LangModel from "./models/LangModel";
 import $ from 'jquery';
+import * as io from 'socket.io-client';
 
 let loupGarou = {
 
@@ -173,8 +174,6 @@ let loupGarou = {
 						this.game.setProgress(message.progress);
 						this.game.displayProgress();
 
-						console.log(this.player.getRoleModel().getModel(), CurrentRole.getModel(), this.player.getRoleModel().getModel() === CurrentRole.getModel());
-						
 						if (this.player.getRoleModel().getModel() === CurrentRole.getModel()) {
 
 							if (this.player.getRoleModel().hasFirstAction() || this.player.getRoleModel().hasSecondAction()) {
@@ -214,8 +213,6 @@ let loupGarou = {
 								this.player.displayAction('second');
 
 							} else if (doppel && this.player.getRoleModel().getModel() === 'doppelganger') {
-
-								console.log('nouveau role du doppel', NewRole.getName())
 
 								this.player.setNewRole(NewRole.toJSON());
 

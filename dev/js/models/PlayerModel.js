@@ -437,8 +437,8 @@ export default class PlayerModel extends BaseModel {
 
 		$('.progress-role-name').html(this.getLangModel().getLine('now_vote'));
 		$('.vote-message').html('');
-		$('.action-form-container').html('');
-		$('.action-form-container')
+		$('.vote-form-container').html('');
+		$('.vote-form-container')
 			.removeClass('d-none')
 			.append(title)
 			.append(voteForm);

@@ -1,13 +1,6 @@
 {
 	"presets": [
-		[
-			"env",
-			{
-				"targets": {
-					"node": "current"
-				},
-				"useBuiltIns" : true
-			}
-		]
+		"es2015",
+		"stage-2"
 	]
 }
