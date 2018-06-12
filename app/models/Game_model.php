@@ -917,6 +917,7 @@ class Game_model extends MY_Model
 		}
 
 		$playerRole = clone $this->_roleModel;
+		$doppel = false;
 
 		foreach ($arrLogs as $log) {
 
@@ -956,7 +957,9 @@ class Game_model extends MY_Model
 					}
 
 				}
-
+				
+				
+				$doppel = $doppel || $playerRole->getModel() === 'doppelganger';
 				$actions[] = $playerRole->rebuildActionMessage($log->getAction(), $target1, $target2, $target3, $target1Role, $target2Role, $target3Role);
 
 
@@ -966,6 +969,7 @@ class Game_model extends MY_Model
 
 		$playerFinishedFirstAction = false;
 		$playerFinishedTurn = false;
+		$playerNbActions = 0;
 
 		if ($playerRole->getRoleUid()) {
 
@@ -992,18 +996,22 @@ class Game_model extends MY_Model
 				} elseif ($playerRole->getRunningOrder() === $loopRole->getRunningOrder()) {
 
 					$loopNbActions = $nbActions[$playerRole->getRoleUid()];
-					$playerNbActions = 0;
+					$playerNbActions = $playerNbActions ? $playerNbActions + 1 : 1;
+					
+					if(!$playerNbActions){
+						
+						if ($playerRole->getFirstActionTargetType() !== 'ajax') {
 
-					if ($playerRole->hasFirstAction() && $playerRole->getFirstActionTargetType() !== 'ajax') {
+							$playerNbActions++;
 
-						$playerNbActions++;
+						}
+						
+						if ($playerRole->isSecondActionNeedFailedFirst() && $log->getTarget1()) {
 
-					}
+							$playerNbActions++;
 
-					if ($playerRole->hasSecondAction() && !$playerRole->isSecondActionNeedFailedFirst()) {
-
-						$playerNbActions++;
-
+						}
+						
 					}
 
 					if ($loopNbActions > 0) {
@@ -1011,17 +1019,24 @@ class Game_model extends MY_Model
 						$playerFinishedFirstAction = true;
 
 					}
+					
+					if($loopNbActions == $playerNbActions){
+
+						$playerFinishedTurn = true;
+						
+					}
 
 				}
 
 			}
 
-		}
+		}		
 
 		return [
 			'actions'                   => $actions,
 			'playerFinishedFirstAction' => $playerFinishedFirstAction && !$playerFinishedTurn,
 			'finishedTurn'              => $playerFinishedTurn,
+			'doppel'              		=> $doppel,
 		];
 
 	}

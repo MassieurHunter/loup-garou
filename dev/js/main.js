@@ -269,7 +269,6 @@ let loupGarou = {
 
 					case 'playerFinishedTurn' :
 
-						console.log('plop');
 						this.player.finishTurn();
 
 						break;

@@ -78,8 +78,10 @@ io.sockets.on('connection', (socket) => {
 		setTimeout(() => {
 
 			if (gamesProgress.hasOwnProperty(roomUid)) {
+				
+				console.log(gamesProgress[roomUid].currentRole.getName());
 
-				if (gamesProgress[roomUid].currentRole.getName() !== '') {
+				if (gamesProgress[roomUid].currentRole.getName() !== null) {
 
 					gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
 						type: 'roleTurn',
