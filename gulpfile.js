@@ -67,7 +67,7 @@ gulp.task('styles:development', function () {
         './node_modules/bootswatch/dist/*/*.min.css',
         './node_modules/noty/lib/noty.css',
         './node_modules/noty/lib/themes/bootstrap-v4.css',
-        _styleSource + '/medias.scss'])
+        _styleSource + '/style.scss'])
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest(_stylePublic))
         .pipe(browserSync.stream());
@@ -120,7 +120,7 @@ gulp.task('styles:production', function () {
         './node_modules/bootswatch/dist/*/*.min.css',
         './node_modules/noty/lib/noty.css',
         './node_modules/noty/lib/themes/bootstrap-v4.css',
-        _styleSource + '/medias.scss'])
+        _styleSource + '/style.scss'])
 		.pipe(sass().on('error', sass.logError))
         .pipe(sourcemaps.init())
         .pipe(cssnano())

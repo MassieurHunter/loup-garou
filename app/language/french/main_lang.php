@@ -14,7 +14,7 @@ $lang['back_home'] = "Retourner à l'accueil";
  */
 $lang['join_game'] = "Rejoindre une partie";
 $lang['game_code'] = "Code de la partie";
-$lang['game_link'] = "Lien vers la partie :";
+$lang['game_link'] = "Lien vers la partie";
 $lang['join'] = "Rejoindre";
 
 /*

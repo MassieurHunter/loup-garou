@@ -195,7 +195,7 @@ class Game_model extends MY_Model
 	 */
 	public function getRolesForCasting(): array {
 		$arrRoles = $this->getRoles();
-		$nbPlayers = $this->getMaxPlayers();
+		$nbPlayers = $this->getMaxPlayers() + 3;
 
 		$arrSort = [];
 

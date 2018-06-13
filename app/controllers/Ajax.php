@@ -95,7 +95,7 @@ class Ajax extends MY_Controller
 			->setMaxPlayers($this->input->post('nbPlayers'))
 			->getRolesNameForCasting();
 
-		return $this->ajax->t([$roles]);
+		return $this->ajax->t(['roles' => $roles]);
 		
 		
 	}
@@ -276,10 +276,6 @@ class Ajax extends MY_Controller
 		$gameUid = $this->currentGame->getGameUid();
 		$arguments['gameUid'] = $gameUid;
 		$isDoppelCopiedRoleSecondAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger';
-
-//		$this->currentPlayer->initRoles($gameUid);
-//		print_r($this->currentPlayer);
-//		die;
 
 		if ($isDoppelCopiedRoleSecondAction) {
 

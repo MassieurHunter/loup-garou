@@ -14,7 +14,9 @@
                 <button class="btn btn-primary btn-block" type="submit" >{$lang['create']}</button>
             </div>
             <div class="form-group">
-                <div class="alert alert-info form-message form-message-info d-none text-left" role="alert"></div>
+                <div class="alert alert-info form-message form-message-info alert-future-role d-none text-left" role="alert">
+					{$lang['roles_list']} : <span class="future-roles"></span>
+				</div>
                 <div class="alert alert-success form-message form-message-success d-none text-center" role="alert"></div>
                 <div class="alert alert-danger form-message form-message-error d-none text-center" role="alert"></div>
             </div>

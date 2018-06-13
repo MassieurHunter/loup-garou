@@ -110,7 +110,7 @@ INSERT INTO `roles` VALUES
  (9, 'Sbire', 'Pendant la nuit, l’identité des loups lui est révélé. S’il meurt lors du vote et qu’aucun loup n’est tué, lui et les loups gagnent la partie. Si les loups ne sont pas joués, il ne gagne que si un autre joueur est tué.', 'sbire', 1, 1, 0, 0, 1, 'know_loups', 'player', 0, 1, 0, 0, '', '', 0, 0, 70, 20), 
  /*(10, 'Chasseur', 'S’il meurt lors du vote, la personne contre qui il a voté meurt aussi.', 'chasseur', 1, 0, 0, 1, 1, 'kill_someone', 'player', 1, 0, 0, 0, '', '', 0, 0, 80, 999),*/ 
  (11, 'Franc Maçon', 'Pendant la nuit, il va prendre connaissance de l’identité de son semblable.', 'francmac', 2, 0, 0, 1, 1, 'know_other_francmac', 'player', 0, 1, 0, 0, '', '', 0, 0, 90, 30),
- (12, 'Villageois', 'Le villageois ne peux rien faire et va gentiment attendre la fin de la nuit.', 'villageois', 3, 0, 0, 1, 0, '', '', 0, 0, 0, 0, '', '', 0, 0, 100, 1000);
+ (12, 'Villageois', 'Le villageois ne peux rien faire et va gentiment attendre la fin de la nuit.', 'villageois', 6, 0, 0, 1, 0, '', '', 0, 0, 0, 0, '', '', 0, 0, 100, 1000);
 
 
 DROP TABLE IF EXISTS `votes`;

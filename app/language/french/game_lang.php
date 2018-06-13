@@ -4,6 +4,7 @@
  */
 $lang['game_created'] = "La partie a été créé, vous allez être redirigé vers son lobby";
 $lang['sure_to_leave'] = 'Voulez vous vraiment quitter la partie, faire chier tous les autres et vous faire ban ?';
+$lang['connected_elsewhere'] = 'Voulez avez été deconnecté de la partie car vous vous êtes connecté sur un autre navigateur.';
 $lang['submit'] = 'Valider';
 $lang['play_game'] = 'Jouer';
 $lang['nb_players'] = 'Nombre de joueurs';
@@ -36,6 +37,7 @@ $lang['tanneur_won'] = 'Le tanneur a gagné';
 $lang['villageois_won'] = 'Les villageois ont gagné';
 $lang['you_won'] = 'Vous avez gagné';
 $lang['you_lost'] = 'Vous avez perdu';
+$lang['roles_list'] = 'Liste des rôles de la partie';
 $lang['vote_results'] = 'Résultat des votes: <ul>*votes_list*</ul>';
 $lang['starting_roles'] = 'Rôles au départ: <ul>*roles_list*</ul>';
 $lang['ending_roles'] = 'Rôles finaux: <ul>*roles_list*</ul>';

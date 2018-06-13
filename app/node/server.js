@@ -32,8 +32,6 @@ io.sockets.on('connection', (socket) => {
 		let Game = new GameModel(data.game);
 		let roomUid = 'game' + Game.getCode();
 
-		console.log('player ' + Player.getName() + ' joined the game with code ' + Game.getCode());
-
 		if (!gamesSockets.hasOwnProperty(roomUid)) {
 			gamesSockets[roomUid] = [];
 		}
@@ -42,7 +40,35 @@ io.sockets.on('connection', (socket) => {
 
 		if (gamesSockets[roomUid].hasOwnProperty(Player.getPlayerUid())) {
 
+			let oldSocket = gamesSockets[roomUid][Player.getPlayerUid()];
+			oldSocket.leave(roomUid);
+			oldSocket.emit('message', {
+				type: 'connectedElseWhere',
+				player: Player.toJSON(),
+				game: Game.toJSON()
+			});
+
+			console.log('player ' + Player.getName() + ' re-joined the game with code ' + Game.getCode());
+
 			gamesSockets[roomUid][Player.getPlayerUid()] = socket;
+
+			if (gamesPlayersForStarting.hasOwnProperty(roomUid)) {
+				
+				let oldGamesPlayersForStarting = gamesPlayersForStarting[roomUid];
+				gamesPlayersForStarting[roomUid] = [];
+
+				for (let loopPlayer of oldGamesPlayersForStarting) {
+
+					if (loopPlayer.getPlayerUid() !== Player.getPlayerUid()) {
+
+						gamesPlayersForStarting[roomUid].push(loopPlayer);
+
+					}
+
+				}
+				
+			}
+
 
 			io.in(roomUid).emit('message', {
 				type: 'playerRejoined',
@@ -50,7 +76,10 @@ io.sockets.on('connection', (socket) => {
 				game: Game.toJSON()
 			});
 
+
 		} else {
+
+			console.log('player ' + Player.getName() + ' joined the game with code ' + Game.getCode());
 
 			gamesSockets[roomUid][Player.getPlayerUid()] = socket;
 
@@ -70,14 +99,15 @@ io.sockets.on('connection', (socket) => {
 		let roomUid = 'game' + Game.getCode();
 		let Player = new PlayerModel(data.player);
 
-		gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
-			type: 'rolesInfos',
-			game: Game.toJSON()
-		});
-		
-		setTimeout(() => {
+		if (gamesProgress.hasOwnProperty(roomUid)) {
 
-			if (gamesProgress.hasOwnProperty(roomUid)) {
+			gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
+				type: 'rolesInfos',
+				game: Game.toJSON()
+			});
+
+			setTimeout(() => {
+
 
 				console.log(gamesProgress[roomUid].currentRole.getName());
 
@@ -109,9 +139,10 @@ io.sockets.on('connection', (socket) => {
 
 				}
 
-			}
 
-		}, 1000);
+			}, 1000);
+
+		}
 
 	});
 

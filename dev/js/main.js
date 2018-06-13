@@ -38,7 +38,9 @@ let loupGarou = {
 			let data = [{name: 'nbPlayers', value: range.val()}];
 
 			Ajax.post('game/future/role', data, (response) => {
-
+				$('.future-roles').html(response.data.roles);
+				$('.alert-future-role').removeClass('d-none');
+				
 			});
 
 		}).trigger('input')
@@ -139,6 +141,16 @@ let loupGarou = {
 
 						break;
 
+					case 'connectedElseWhere':
+
+						new Noty({
+							type: 'warning',
+							text: this.lang.getLine('connected_elsewhere'),
+							timeout: false
+						}).show();
+						
+						break;
+						
 					case 'gameStart':
 
 						Ajax.post('game/start', [], () => {
