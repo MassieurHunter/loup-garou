@@ -84,6 +84,7 @@ class Game extends MY_Controller
 
         $this->template
             ->setVar('game', $this->currentGame->getBasicInfos())
+            ->setVar('players', $this->currentGame->getRealPlayersName())
             ->display('game/play');
     }
 

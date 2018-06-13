@@ -33,6 +33,7 @@ class Game_model extends MY_Model
 		'nbPlayers'  => 'getNbPlayers',
 		'started'    => 'isStarted',
 		'finished'   => 'isFinished',
+		'players'    => 'getRealPlayersWithBasicInfos',
 	];
 	/**
 	 * @var array
@@ -127,22 +128,6 @@ class Game_model extends MY_Model
 	}
 
 	/**
-	 * @return int
-	 */
-	public function getMaxPlayers(): int {
-		return $this->maxPlayers;
-	}
-
-	/**
-	 * @param int $maxPlayers
-	 * @return Game_model
-	 */
-	public function setMaxPlayers(int $maxPlayers): Game_model {
-		$this->maxPlayers = $maxPlayers;
-		return $this;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function isStarted(): bool {
@@ -217,21 +202,6 @@ class Game_model extends MY_Model
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getRolesNameForCasting() : string {
-		
-		$rolesName = [];
-		
-		foreach ($this->getRolesForCasting() as $role){
-			$rolesName[] = $role->getName();
-		}
-		
-		return implode(', ', $rolesName);
-		
-	}
-
-	/**
 	 * @return Role_model[]
 	 */
 	public function getRoles(): array {
@@ -265,6 +235,22 @@ class Game_model extends MY_Model
 			}
 		}
 
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMaxPlayers(): int {
+		return $this->maxPlayers;
+	}
+
+	/**
+	 * @param int $maxPlayers
+	 * @return Game_model
+	 */
+	public function setMaxPlayers(int $maxPlayers): Game_model {
+		$this->maxPlayers = $maxPlayers;
+		return $this;
 	}
 
 	/**
@@ -368,6 +354,21 @@ class Game_model extends MY_Model
 		$this
 			->setNbPlayers($nbRealPlayers)
 			->saveModifications();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRolesNameForCasting(): string {
+
+		$rolesName = [];
+
+		foreach ($this->getRolesForCasting() as $role) {
+			$rolesName[] = $role->getName();
+		}
+
+		return implode(', ', $rolesName);
+
 	}
 
 	/**
@@ -971,8 +972,8 @@ class Game_model extends MY_Model
 					}
 
 				}
-				
-				
+
+
 				$doppel = $doppel || $playerRole->getModel() === 'doppelganger';
 				$actions[] = $playerRole->rebuildActionMessage($log->getAction(), $target1, $target2, $target3, $target1Role, $target2Role, $target3Role);
 
@@ -1011,21 +1012,21 @@ class Game_model extends MY_Model
 
 					$loopNbActions = $nbActions[$playerRole->getRoleUid()];
 					$playerNbActions = $playerNbActions ? $playerNbActions + 1 : 1;
-					
-					if(!$playerNbActions){
-						
+
+					if (!$playerNbActions) {
+
 						if ($playerRole->getFirstActionTargetType() !== 'ajax') {
 
 							$playerNbActions++;
 
 						}
-						
+
 						if ($playerRole->isSecondActionNeedFailedFirst() && $log->getTarget1()) {
 
 							$playerNbActions++;
 
 						}
-						
+
 					}
 
 					if ($loopNbActions > 0) {
@@ -1033,24 +1034,24 @@ class Game_model extends MY_Model
 						$playerFinishedFirstAction = true;
 
 					}
-					
-					if($loopNbActions == $playerNbActions){
+
+					if ($loopNbActions == $playerNbActions) {
 
 						$playerFinishedTurn = true;
-						
+
 					}
 
 				}
 
 			}
 
-		}		
+		}
 
 		return [
 			'actions'                   => $actions,
 			'playerFinishedFirstAction' => $playerFinishedFirstAction && !$playerFinishedTurn,
 			'finishedTurn'              => $playerFinishedTurn,
-			'doppel'              		=> $doppel,
+			'doppel'                    => $doppel,
 		];
 
 	}

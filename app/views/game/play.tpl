@@ -19,7 +19,11 @@
 					/ {$game['maxPlayers']}</strong>
 			</div>
 			<div class="roles-block text-left mt-3 md-1"></div>
-			<div class="players-list text-left mt-1 md-1"></div>
+			<div class="players-list text-left mt-1 md-1">
+				<div class="alert alert-primary" role="alert">
+					{$players}
+				</div>
+			</div>
 			<div class="game-progress mt-1 md-1"></div>
 			<div class="role-infos mt-1 md-1"></div>
 			<div class="turn-finished mt-1 md-1"></div>

@@ -176,7 +176,6 @@ class Ajax extends MY_Controller
 		return $this->ajax->t([
 			'game'    => $this->currentGame->getAdvancedInfos(),
 			'role'    => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
-			'players' => $this->currentGame->getRealPlayersName(),
 		]);
 
 	}

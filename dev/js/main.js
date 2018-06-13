@@ -94,6 +94,7 @@ let loupGarou = {
 
 						let Player = new PlayerModel(message.player);
 						this.game = new GameModel(message.game);
+						this.game.setLang(this.lang.toJSON());
 
 						if (Player.getPlayerUid() !== this.player.getPlayerUid()) {
 
@@ -101,10 +102,13 @@ let loupGarou = {
 								type: 'info',
 								text: this.lang.getLine('player_joined_game').replace('*playername*', Player.getName())
 							}).show();
+							
 
 						}
 
 						$('.nb-players').html(this.game.getNbPlayers());
+						
+						this.game.displayPlayers();
 
 						if (this.game.isReadyToStart()) {
 
@@ -174,7 +178,7 @@ let loupGarou = {
 							this.player.setLang(this.lang.toJSON());
 
 							this.game.displayRoles();
-							this.game.displayPlayers(response.data.players);
+							this.game.displayPlayers();
 							this.player.displayRoleName();
 							this.socket.emit('roleTurn', {
 								game: this.game.toJSON(),
@@ -291,8 +295,7 @@ let loupGarou = {
 
 					case 'rebuildActions' :
 
-						Ajax.post('player/actions/rebuild', [], (response) => {
-						});
+						Ajax.post('player/actions/rebuild', [], (response) => {});
 
 						break;
 
@@ -304,8 +307,7 @@ let loupGarou = {
 
 					case 'rebuildVote' :
 
-						Ajax.post('player/vote/rebuild', [], (response) => {
-						});
+						Ajax.post('player/vote/rebuild', [], (response) => {});
 
 						break;
 

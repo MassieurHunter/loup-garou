@@ -110,15 +110,29 @@ export default class GameModel extends BaseModel {
 
 	}
 
-	displayPlayers(players){
-
-		$('.players-list').append(
-			new ABuilder('div', {
-				'class': 'alert alert-primary',
-				'role': 'alert'
-			}, players)
-		);
+	displayPlayers() {
 		
+		console.log(this);
+		
+		let arrPlayersName = [];
+		
+		for(let Player of this.getPlayersModel()){
+
+			arrPlayersName.push(Player.getName());
+			
+		}
+		
+		let players = this.getLangModel().getLine('players_list') + arrPlayersName.join(', ');
+
+		$('.players-list')
+			.html('')
+			.append(
+				new ABuilder('div', {
+					'class': 'alert alert-primary',
+					'role': 'alert'
+				}, players)
+			);
+
 	}
 
 	displayRoles() {
@@ -222,12 +236,13 @@ export default class GameModel extends BaseModel {
 				},
 				this.getLangModel().getLine('nb_votes') + ' ' + nbVotes + '/' + this.getNbPlayers())
 		);
-		
-		if(nbVotes === this.getNbPlayers()){
-			
-			Ajax.post('vote/results', [], (response) => {});
+
+		if (nbVotes === this.getNbPlayers()) {
+
+			Ajax.post('vote/results', [], (response) => {
+			});
 			$(window).unbind('beforeunload');
-			
+
 		}
 
 	}
