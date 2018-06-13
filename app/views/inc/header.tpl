@@ -15,7 +15,6 @@
 </head>
 <body>
 <div class="container">
-	<h1 class="text-center"><a href="/" title="{$lang['back_home']}">{$lang['title']}</a></h1>
     <div class="themes-selector-container">
         <div class="input-group">
             <div class="input-group-prepend">
@@ -31,3 +30,4 @@
             </select>
         </div>
     </div>
+	<h1 class="text-center"><a href="/" title="{$lang['back_home']}">{$lang['title']}</a></h1>

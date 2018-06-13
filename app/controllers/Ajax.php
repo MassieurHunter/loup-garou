@@ -85,6 +85,21 @@ class Ajax extends MY_Controller
 		return $this->ajax->t();
 	}
 
+	/**
+	 * @return array
+	 */
+	private function gameFutureRole(): array {
+
+		$this->load->model('game_model', 'game');
+		$roles = $this->game
+			->setMaxPlayers($this->input->post('nbPlayers'))
+			->getRolesNameForCasting();
+
+		return $this->ajax->t([$roles]);
+		
+		
+	}
+
 
 	/**
 	 * @return array

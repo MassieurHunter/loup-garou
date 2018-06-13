@@ -4,6 +4,7 @@
 
 var fs = require('fs');
 var gutil = require('gulp-util');
+var sass = require('gulp-sass');
 var gulp = require('gulp');
 
 var sourcemaps = require('gulp-sourcemaps');
@@ -66,7 +67,8 @@ gulp.task('styles:development', function () {
         './node_modules/bootswatch/dist/*/*.min.css',
         './node_modules/noty/lib/noty.css',
         './node_modules/noty/lib/themes/bootstrap-v4.css',
-        _styleSource + '/style.css'])
+        _styleSource + '/medias.scss'])
+        .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest(_stylePublic))
         .pipe(browserSync.stream());
 
@@ -95,7 +97,7 @@ gulp.task('serve', ['styles:development'], function () {
         proxy: "http://loup-garou.local/"
     });
 
-    gulp.watch([_styleSource + "/**/*.css"], ['styles:development']);
+    gulp.watch([_styleSource + "/**/*.scss"], ['styles:development']);
 
     webpackConfig.watch = true;
 
@@ -118,7 +120,8 @@ gulp.task('styles:production', function () {
         './node_modules/bootswatch/dist/*/*.min.css',
         './node_modules/noty/lib/noty.css',
         './node_modules/noty/lib/themes/bootstrap-v4.css',
-        _styleSource + '/style.css'])
+        _styleSource + '/medias.scss'])
+		.pipe(sass().on('error', sass.logError))
         .pipe(sourcemaps.init())
         .pipe(cssnano())
         .pipe(sourcemaps.write('.'))

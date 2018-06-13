@@ -34,6 +34,13 @@ let loupGarou = {
 
 		range.on('input', () => {
 			$('.nb-max-players').html(range.val());
+			
+			let data = [{name: 'nbPlayers', value: range.val()}];
+
+			Ajax.post('game/future/role', data, (response) => {
+
+			});
+
 		}).trigger('input')
 	},
 
@@ -86,7 +93,7 @@ let loupGarou = {
 						let Player = new PlayerModel(message.player);
 						this.game = new GameModel(message.game);
 
-						if(Player.getPlayerUid() !== this.player.getPlayerUid()) {
+						if (Player.getPlayerUid() !== this.player.getPlayerUid()) {
 
 							new Noty({
 								type: 'info',
@@ -107,13 +114,13 @@ let loupGarou = {
 						}
 
 						break;
-						
+
 					case 'playerRejoined' :
 
 						let Player2 = new PlayerModel(message.player);
 						this.game = new GameModel(message.game);
-						
-						if(Player2.getPlayerUid() !== this.player.getPlayerUid()) {
+
+						if (Player2.getPlayerUid() !== this.player.getPlayerUid()) {
 
 							new Noty({
 								type: 'info',
@@ -126,8 +133,8 @@ let loupGarou = {
 								game: this.game.toJSON(),
 								player: this.player.toJSON(),
 							});
-							
-							
+
+
 						}
 
 						break;
@@ -269,11 +276,12 @@ let loupGarou = {
 						this.player.finishTurn();
 
 						break;
-						
+
 					case 'rebuildActions' :
-						
-						Ajax.post('player/actions/rebuild', [], (response) => {});
-						
+
+						Ajax.post('player/actions/rebuild', [], (response) => {
+						});
+
 						break;
 
 					case 'actionsFinished' :
@@ -284,7 +292,8 @@ let loupGarou = {
 
 					case 'rebuildVote' :
 
-						Ajax.post('player/vote/rebuild', [], (response) => {});
+						Ajax.post('player/vote/rebuild', [], (response) => {
+						});
 
 						break;
 

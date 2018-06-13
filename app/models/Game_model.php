@@ -195,8 +195,7 @@ class Game_model extends MY_Model
 	 */
 	public function getRolesForCasting(): array {
 		$arrRoles = $this->getRoles();
-		$arrPlayers = $this->getPlayers();
-		$nbPlayers = count($arrPlayers);
+		$nbPlayers = $this->getMaxPlayers();
 
 		$arrSort = [];
 
@@ -215,6 +214,21 @@ class Game_model extends MY_Model
 
 		return array_splice($arrRoles, 0, $nbPlayers);
 
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRolesNameForCasting() : string {
+		
+		$rolesName = [];
+		
+		foreach ($this->getRolesForCasting() as $role){
+			$rolesName[] = $role->getName();
+		}
+		
+		return implode(', ', $rolesName);
+		
 	}
 
 	/**
