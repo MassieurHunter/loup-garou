@@ -42,7 +42,7 @@ class History_model extends MY_Model
 	 */
 	public function getGameHistoryUid(): int
 	{
-		return $this->gameHistoryUid;
+		return (int) $this->gameHistoryUid;
 	}
 
 	/**
@@ -60,7 +60,7 @@ class History_model extends MY_Model
 	 */
 	public function getGameUid(): int
 	{
-		return $this->gameUid;
+		return (int) $this->gameUid;
 	}
 
 	/**
@@ -78,7 +78,7 @@ class History_model extends MY_Model
 	 */
 	public function getPlayerUid(): int
 	{
-		return $this->playerUid;
+		return (int) $this->playerUid;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class History_model extends MY_Model
 	 */
 	public function isWinner(): bool
 	{
-		return $this->winner;
+		return $this->winner == true;
 	}
 
 	/**
@@ -114,7 +114,7 @@ class History_model extends MY_Model
 	 */
 	public function getTeam(): string
 	{
-		return $this->team;
+		return (string) $this->team;
 	}
 
 	/**
@@ -132,7 +132,7 @@ class History_model extends MY_Model
 	 */
 	public function getAllies(): string
 	{
-		return $this->allies;
+		return (string) $this->allies;
 	}
 
 	/**

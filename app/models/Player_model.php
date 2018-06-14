@@ -7,6 +7,7 @@
  * @property \Role_model $_roleModel
  * @property \Vote_model $newVote
  * @property \Vote_model $_vote
+ * @property \History_model $_history
  *
  */
 class Player_model extends MY_Model
@@ -57,6 +58,10 @@ class Player_model extends MY_Model
 	 * @var array
 	 */
 	protected $arrRoleModel = [];
+	/**
+	 * @var array
+	 */
+	protected $arrGamesHistory = [];
 
 	/**
 	 * @return string
@@ -608,5 +613,57 @@ class Player_model extends MY_Model
 		return $this->getCurrentRoleModel($arguments['gameUid'])->secondAction($arguments);
 	}
 
+
+	/**
+	 * @param int $gameUid
+	 * @return History_model
+	 */
+	public function getGameHistory(int $gameUid): History_model
+	{
+		$this->load->model('history_model', '_history');
+		
+		if (empty($this->arrGamesHistory)) {
+			
+			$this->initGamesHistory();
+			
+		}
+
+		return isset($this->arrGamesHistory[$gameUid]) ? $this->arrGamesHistory[$gameUid] : $this->_history;
+	}
+
+	/**
+	 * 
+	 */
+	public function initGamesHistory()
+	{
+
+		$this->arrGamesHistory = [];
+		$this->load->model('history_model', '_history');
+
+		$arrGamesHistory = $this->db
+			->select('*')
+			->where('playerUid', $this->getPlayerUid())
+			->order_by('gameUid')
+			->get($this->_history->table)
+			->result();
+
+		foreach ($arrGamesHistory as $history) {
+			$oHistory = clone $this->_history;
+			$this->arrGamesHistory[$oHistory->getGameUid()] = $oHistory->init(false, $history);
+		}
+
+	}
+
+	/**
+	 * @param array $arrGamesHistory
+	 * @return Player_model
+	 */
+	public function setArrGamesHistory(array $arrGamesHistory): Player_model {
+		$this->arrGamesHistory = $arrGamesHistory;
+		return $this;
+	}
+
+	
+	
 
 }

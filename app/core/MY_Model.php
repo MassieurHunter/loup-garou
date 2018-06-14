@@ -164,7 +164,7 @@ class MY_Model extends CI_Model
      * @param array|object $arrParams array of parama if you don't provide the primary key (faster if you already have the datas from a SQL query )
      * @return self
      */
-    public function init($pkValue = false, $arrParams = [])
+    public function init($pkValue = false, $arrParams = []) 
     {
         /*
          * If we give the value of the primary key we execute the SQL query to get all the datas

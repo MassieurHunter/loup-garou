@@ -90,6 +90,11 @@ class Game_model extends MY_Model
 	protected $arrVotes = [];
 
 	/**
+	 * @var History_model[]
+	 */
+	protected $arrHistories;
+
+	/**
 	 * @return string
 	 */
 	public function getCode(): string {
@@ -241,7 +246,7 @@ class Game_model extends MY_Model
 	 * @return int
 	 */
 	public function getMaxPlayers(): int {
-		return $this->maxPlayers;
+		return (int) $this->maxPlayers;
 	}
 
 	/**
@@ -289,6 +294,17 @@ class Game_model extends MY_Model
 
 	}
 
+	/**
+	 * @param Player_model[] $arrPlayers
+	 * @return Game_model
+	 */
+	public function setArrPlayers(array $arrPlayers): Game_model {
+		$this->arrPlayers = $arrPlayers;
+		return $this;
+	}
+
+	
+	
 	/**
 	 * @return int
 	 */
@@ -394,19 +410,22 @@ class Game_model extends MY_Model
 		$arrPlayers = [];
 
 		foreach ($this->getRealPlayers() as $playerUid => $player) {
-			$arrPlayers[] = $player->getBasicInfos();
+			$arrPlayers[$playerUid] = $player->getBasicInfos();
 		}
 
 		return $arrPlayers;
 	}
 
+	/**
+	 * @return Player_model[]
+	 */
 	public function getRealPlayers() {
 
 		$arrPlayers = [];
 
 		foreach ($this->getPlayers() as $playerUid => $player) {
 			if ($playerUid > 3) {
-				$arrPlayers[] = $player;
+				$arrPlayers[$playerUid] = $player;
 			}
 		}
 
@@ -522,7 +541,7 @@ class Game_model extends MY_Model
 	 * @return int
 	 */
 	public function getNbPlayers(): int {
-		return $this->nbPlayers;
+		return (int) $this->nbPlayers;
 	}
 
 	/**
@@ -678,7 +697,7 @@ class Game_model extends MY_Model
 			->setTeam($currentPlayerTeam)
 			->setAllies(implode(',', $playerAllies))
 			->create();
-
+		
 
 		return $arrMessages;
 
@@ -1056,5 +1075,50 @@ class Game_model extends MY_Model
 
 	}
 
+	/**
+	 * @return History_model[]
+	 */
+	public function getArrHistories(): array {
+		
+		if(empty($this->arrHistories)){
+			
+			$this->initHistories();
+			
+		}
+		
+		return $this->arrHistories;
+	}
+
+	/**
+	 *
+	 */
+	public function initHistories() {
+
+		$this->arrHistories = [];
+		$this->load->model('history_model', '_history');
+
+		$arrHistories = $this->db
+			->select('*')
+			->where('gameUid', $this->getGameUid())
+			->get($this->_history->table)
+			->result();
+
+		foreach ($arrHistories as $history) {
+			$oHistory = clone $this->_history;
+			$this->arrHistories[$oHistory->getPlayerUid()] = $oHistory->init(false, $history);
+		}
+
+	}
+
+
+		/**
+	 * @param array $arrHistories
+	 * @return Game_model
+	 */
+	public function setArrHistories(array $arrHistories): Game_model {
+		$this->arrHistories = $arrHistories;
+		return $this;
+	}
+	
 
 }
