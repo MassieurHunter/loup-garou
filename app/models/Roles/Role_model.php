@@ -283,10 +283,28 @@ class Role_model extends MY_Model
 	}
 
 	/**
+	 * @param bool $firstActionPassive
+	 * @return Role_model
+	 */
+	public function setFirstActionPassive(bool $firstActionPassive): Role_model {
+		$this->firstActionPassive = $firstActionPassive;
+		return $this;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getFirstActionNbTargets(): int {
 		return (int)$this->firstActionNbTargets;
+	}
+
+	/**
+	 * @param int $firstActionNbTargets
+	 * @return Role_model
+	 */
+	public function setFirstActionNbTargets(int $firstActionNbTargets): Role_model {
+		$this->firstActionNbTargets = $firstActionNbTargets;
+		return $this;
 	}
 
 	/**
@@ -313,10 +331,28 @@ class Role_model extends MY_Model
 	}
 
 	/**
+	 * @param bool $secondActionPassive
+	 * @return Role_model
+	 */
+	public function setSecondActionPassive(bool $secondActionPassive): Role_model {
+		$this->secondActionPassive = $secondActionPassive;
+		return $this;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getSecondActionNbTargets(): int {
 		return (int)$this->secondActionNbTargets;
+	}
+
+	/**
+	 * @param int $secondActionNbTargets
+	 * @return Role_model
+	 */
+	public function setSecondActionNbTargets(int $secondActionNbTargets): Role_model {
+		$this->secondActionNbTargets = $secondActionNbTargets;
+		return $this;
 	}
 
 	/**
@@ -449,46 +485,19 @@ class Role_model extends MY_Model
 	}
 
 	/**
-	 * @param string $actionName
-	 * @param Player_model $target1
-	 * @param Player_model $target2
-	 * @param Player_model $target3
-	 * @param Role_model $target1Role
-	 * @param Role_model $target2Role
-	 * @param Role_model $target3Role
-	 * @return string
-	 */
-	public function rebuildActionMessage(string $actionName, Player_model $target1, Player_model $target2, Player_model $target3, Role_model $target1Role, Role_model $target2Role, Role_model $target3Role): string {
-
-		if ($actionName !== 'did_nothing') {
-
-
-			$actionLangKey = $actionName . ($actionName ? '_result' . (!$target1->getPlayerUid() && $this->getModel() !== 'insomniaque' ? '_empty' : '') : '');
-			$actionLang = $this->lang->line($actionLangKey);
-
-			$actionLang = str_replace(['*li_player_1*', '*player_1*', '*card_1*'], $target1->getPlayerUid() ? ['<li>' . $target1->getName() . '</li>', $target1->getName(), $target1->getName()] : '', $actionLang);
-			$actionLang = str_replace(['*li_player_2*', '*player_2*', '*card_2*'], $target2->getPlayerUid() ? ['<li>' . $target2->getName() . '</li>', $target2->getName(), $target2->getName()] : '', $actionLang);
-			$actionLang = str_replace(['*li_player_3*', '*player_3*'], $target3->getPlayerUid() ? ['<li>' . $target3->getName() . '</li>', $target3->getName()] : '', $actionLang);
-			$actionLang = str_replace('*role_1*', $target1Role->getRoleUid() ? $target1Role->getName() : '', $actionLang);
-			$actionLang = str_replace('*role_2*', $target2Role->getRoleUid() ? $target2Role->getName() : '', $actionLang);
-
-		} else {
-
-			$actionLangKey = 'you_did_nothing';
-			$actionLang = $this->lang->line($actionLangKey);
-
-		}
-
-		return $actionLang;
-
-	}
-
-
-	/**
 	 * @return string
 	 */
 	public function getFirstActionName(): string {
 		return (string)$this->firstActionName;
+	}
+
+	/**
+	 * @param string $firstActionName
+	 * @return Role_model
+	 */
+	public function setFirstActionName(string $firstActionName): Role_model {
+		$this->firstActionName = $firstActionName;
+		return $this;
 	}
 
 	/**
@@ -568,40 +577,6 @@ class Role_model extends MY_Model
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getSecondActionTargetType(): string {
-		return (string)$this->secondActionTargetType;
-	}
-
-	/**
-	 * @param bool $firstActionPassive
-	 * @return Role_model
-	 */
-	public function setFirstActionPassive(bool $firstActionPassive): Role_model {
-		$this->firstActionPassive = $firstActionPassive;
-		return $this;
-	}
-
-	/**
-	 * @param string $firstActionName
-	 * @return Role_model
-	 */
-	public function setFirstActionName(string $firstActionName): Role_model {
-		$this->firstActionName = $firstActionName;
-		return $this;
-	}
-
-	/**
-	 * @param int $firstActionNbTargets
-	 * @return Role_model
-	 */
-	public function setFirstActionNbTargets(int $firstActionNbTargets): Role_model {
-		$this->firstActionNbTargets = $firstActionNbTargets;
-		return $this;
-	}
-
-	/**
 	 * @param string $firstActionTargetType
 	 * @return Role_model
 	 */
@@ -611,21 +586,10 @@ class Role_model extends MY_Model
 	}
 
 	/**
-	 * @param bool $secondActionPassive
-	 * @return Role_model
+	 * @return string
 	 */
-	public function setSecondActionPassive(bool $secondActionPassive): Role_model {
-		$this->secondActionPassive = $secondActionPassive;
-		return $this;
-	}
-
-	/**
-	 * @param int $secondActionNbTargets
-	 * @return Role_model
-	 */
-	public function setSecondActionNbTargets(int $secondActionNbTargets): Role_model {
-		$this->secondActionNbTargets = $secondActionNbTargets;
-		return $this;
+	public function getSecondActionTargetType(): string {
+		return (string)$this->secondActionTargetType;
 	}
 
 	/**
@@ -636,7 +600,57 @@ class Role_model extends MY_Model
 		$this->secondActionTargetType = $secondActionTargetType;
 		return $this;
 	}
-	
+
+	/**
+	 * @param string $actionName
+	 * @param Player_model $target1
+	 * @param Player_model $target2
+	 * @param Player_model $target3
+	 * @param Role_model $target1Role
+	 * @param Role_model $target2Role
+	 * @param Role_model $target3Role
+	 * @return string
+	 */
+	public function rebuildActionMessage(string $actionName, Player_model $target1, Player_model $target2, Player_model $target3, Role_model $target1Role, Role_model $target2Role, Role_model $target3Role): string {
+
+		if ($actionName !== 'did_nothing') {
+
+
+			$actionLangKey = $actionName . ($actionName ? '_result' . (!$target1->getPlayerUid() && $this->getModel() !== 'insomniaque' ? '_empty' : '') : '');
+			$actionLang = $this->lang->line($actionLangKey);
+
+			$actionLang = str_replace(['*li_player_1*', '*player_1*', '*card_1*'], $target1->getPlayerUid() ? ['<li>' . $target1->getName() . '</li>', $target1->getName(), $target1->getName()] : '', $actionLang);
+			$actionLang = str_replace(['*li_player_2*', '*player_2*', '*card_2*'], $target2->getPlayerUid() ? ['<li>' . $target2->getName() . '</li>', $target2->getName(), $target2->getName()] : '', $actionLang);
+			$actionLang = str_replace(['*li_player_3*', '*player_3*'], $target3->getPlayerUid() ? ['<li>' . $target3->getName() . '</li>', $target3->getName()] : '', $actionLang);
+			$actionLang = str_replace('*role_1*', $target1Role->getRoleUid() ? $target1Role->getName() : '', $actionLang);
+			$actionLang = str_replace('*role_2*', $target2Role->getRoleUid() ? $target2Role->getName() : '', $actionLang);
+
+		} else {
+
+			$actionLangKey = 'you_did_nothing';
+			$actionLang = $this->lang->line($actionLangKey);
+
+		}
+
+		return $actionLang;
+
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName(): string {
+		return (string)$this->name;
+	}
+
+	/**
+	 * @param string $name
+	 * @return Role_model
+	 */
+	public function setName(string $name): Role_model {
+		$this->name = $name;
+		return $this;
+	}
 
 	/**
 	 * @param string $actionName
@@ -669,17 +683,21 @@ class Role_model extends MY_Model
 	/**
 	 * @return string
 	 */
-	public function getName(): string {
-		return (string)$this->name;
-	}
+	public function getTeam(): string {
+		$team = 'villageois';
 
-	/**
-	 * @param string $name
-	 * @return Role_model
-	 */
-	public function setName(string $name): Role_model {
-		$this->name = $name;
-		return $this;
+		if ($this->isLoup()) {
+
+			$team = 'loup';
+
+		} elseif ($this->isTanneur()) {
+
+			$team = 'tanneur';
+
+		}
+
+		return $team;
+
 	}
 
 

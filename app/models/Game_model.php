@@ -246,7 +246,7 @@ class Game_model extends MY_Model
 	 * @return int
 	 */
 	public function getMaxPlayers(): int {
-		return (int) $this->maxPlayers;
+		return (int)$this->maxPlayers;
 	}
 
 	/**
@@ -303,8 +303,7 @@ class Game_model extends MY_Model
 		return $this;
 	}
 
-	
-	
+
 	/**
 	 * @return int
 	 */
@@ -541,7 +540,7 @@ class Game_model extends MY_Model
 	 * @return int
 	 */
 	public function getNbPlayers(): int {
-		return (int) $this->nbPlayers;
+		return (int)$this->nbPlayers;
 	}
 
 	/**
@@ -600,10 +599,10 @@ class Game_model extends MY_Model
 				$arrMessages['killed'][] =
 					str_replace('*player_name*', $player->getName(), $this->lang->line('player_killed'))
 					. ', '
-					. str_replace(['*player_name*', '*player_role*'], [$player->getName(), $player->getCurrentRoleModel($this->getGameUid())->getName()], $this->lang->line('player_was_role'));
+					. str_replace(['*player_name*', '*player_role*'], [$player->getName(), $player->getCurrentRole($this->getGameUid())->getName()], $this->lang->line('player_was_role'));
 
-				$loupKilled = $loupKilled || $player->getCurrentRoleModel($this->getGameUid())->isLoup();
-				$tanneurKilled = $tanneurKilled || $player->getCurrentRoleModel($this->getGameUid())->isTanneur();
+				$loupKilled = $loupKilled || $player->getCurrentRole($this->getGameUid())->isLoup();
+				$tanneurKilled = $tanneurKilled || $player->getCurrentRole($this->getGameUid())->isTanneur();
 
 			}
 
@@ -634,22 +633,21 @@ class Game_model extends MY_Model
 
 			if ($playerUid === $player->getPlayerUid()) {
 
-				if ($player->getCurrentRoleModel($this->getGameUid())->isLoup()) {
+				$playerTeam[$player->getPlayerUid()] = $player->getCurrentRole($this->getGameUid())->getTeam();
+					
+				if ($player->getCurrentRole($this->getGameUid())->isLoup()) {
 
-					$playerTeam[$player->getPlayerUid()] = 'loup';
 					$arrMessages['playerMessage'] = $loupKilled ? $this->lang->line('you_lost') : $this->lang->line('you_won');
 					$arrMessages['playerWon'] = !$loupKilled;
 
-				} else if ($player->getCurrentRoleModel($this->getGameUid())->isTanneur()) {
+				} else if ($player->getCurrentRole($this->getGameUid())->isTanneur()) {
 
-					$playerTeam[$player->getPlayerUid()] = 'tanneur';
 					$arrMessages['playerMessage'] = $tanneurKilled ? $this->lang->line('you_won') : $this->lang->line('you_lost');
 					$arrMessages['playerWon'] = $tanneurKilled;
 
 
 				} else {
 
-					$playerTeam[$player->getPlayerUid()] = 'villageois';
 					$arrMessages['playerMessage'] = $loupKilled ? $this->lang->line('you_won') : $this->lang->line('you_lost');
 					$arrMessages['playerWon'] = $loupKilled;
 
@@ -657,11 +655,11 @@ class Game_model extends MY_Model
 
 			} else {
 
-				if ($player->getCurrentRoleModel($this->getGameUid())->isLoup()) {
+				if ($player->getCurrentRole($this->getGameUid())->isLoup()) {
 
 					$playerTeam[$player->getPlayerUid()] = 'loup';
 
-				} else if ($player->getCurrentRoleModel($this->getGameUid())->isTanneur()) {
+				} else if ($player->getCurrentRole($this->getGameUid())->isTanneur()) {
 
 					$playerTeam[$player->getPlayerUid()] = 'tanneur';
 
@@ -697,7 +695,7 @@ class Game_model extends MY_Model
 			->setTeam($currentPlayerTeam)
 			->setAllies(implode(',', $playerAllies))
 			->create();
-		
+
 
 		return $arrMessages;
 
@@ -1079,13 +1077,13 @@ class Game_model extends MY_Model
 	 * @return History_model[]
 	 */
 	public function getArrHistories(): array {
-		
-		if(empty($this->arrHistories)){
-			
+
+		if (empty($this->arrHistories)) {
+
 			$this->initHistories();
-			
+
 		}
-		
+
 		return $this->arrHistories;
 	}
 
@@ -1111,7 +1109,7 @@ class Game_model extends MY_Model
 	}
 
 
-		/**
+	/**
 	 * @param array $arrHistories
 	 * @return Game_model
 	 */
@@ -1119,6 +1117,6 @@ class Game_model extends MY_Model
 		$this->arrHistories = $arrHistories;
 		return $this;
 	}
-	
+
 
 }

@@ -26,8 +26,8 @@ class Soulard_model extends Role_model
 
 		$this->load->model('player_model', 'middleCard');
 		$this->middleCard->init($cardNumber);
-		$middleCardRole = $this->middleCard->getCurrentRoleModel($gameUid);
-		$playerRole = $oPlayer->getCurrentRoleModel($gameUid);
+		$middleCardRole = $this->middleCard->getCurrentRole($gameUid);
+		$playerRole = $oPlayer->getCurrentRole($gameUid);
 
 		$oPlayer->addNewRole($gameUid, $middleCardRole);
 		$this->middleCard->addNewRole($gameUid, $playerRole);

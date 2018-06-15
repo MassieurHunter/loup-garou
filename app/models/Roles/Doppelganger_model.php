@@ -27,7 +27,7 @@ class Doppelganger_model extends Role_model
 		$this->load->model('player_model', 'otherPlayer');
 		$this->otherPlayer->init($playerUid);
 		/** @var $otherPlayerCardRole Role_model */
-		$otherPlayerCardRole = $this->otherPlayer->getCurrentRoleModel($gameUid);
+		$otherPlayerCardRole = $this->otherPlayer->getCurrentRole($gameUid);
 
 		$oPlayer->addNewRole($gameUid, $otherPlayerCardRole);
 

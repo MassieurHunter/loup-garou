@@ -26,8 +26,8 @@ class Voleur_model extends Role_model
 
 		$this->load->model('player_model', 'otherPlayer');
 		$this->otherPlayer->init($playerUid);
-		$otherPlayerRole = $this->otherPlayer->getCurrentRoleModel($gameUid);
-		$playerRole = $oPlayer->getCurrentRoleModel($gameUid);
+		$otherPlayerRole = $this->otherPlayer->getCurrentRole($gameUid);
+		$playerRole = $oPlayer->getCurrentRole($gameUid);
 
 		$oPlayer->addNewRole($gameUid, $otherPlayerRole);
 		$this->otherPlayer->addNewRole($gameUid, $playerRole);

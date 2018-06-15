@@ -519,11 +519,12 @@ class MY_Model extends CI_Model
     /**
      *
      * @param string $tableAlias
+     * @param string $orderBy
      * @param boolean $distinct
      * @param boolean $useGroupSeparator
      * @return string
      */
-    public function getGroupConcat($tableAlias = null, $distinct = false, $useGroupSeparator = false)
+    public function getGroupConcat($tableAlias = null, $orderBy = null, $distinct = false, $useGroupSeparator = false)
     {
         $arrFields = $this->getArrFields();
 
@@ -535,6 +536,7 @@ class MY_Model extends CI_Model
         }
 
         $groupConcat .= $distinct ? '))' : ')';
+        $groupConcat .= $orderBy ? ' ORDER BY "' . $orderBy . ' ' : '';
         $groupConcat .= $useGroupSeparator ? ' SEPARATOR "' . self::GROUP_CONCAT_SEPARATOR . '")' : ')';
 
 
@@ -546,7 +548,7 @@ class MY_Model extends CI_Model
      * @param string $tableAlias
      * @return string
      */
-    public function getConcat($tableAlias = false)
+    public function getConcat($tableAlias = null)
     {
         $arrFields = $this->getArrFields();
 
@@ -566,6 +568,7 @@ class MY_Model extends CI_Model
      *
      * @param array $arrColumns
      * @param boolean $distinct
+     * @param boolean $useGroupSeparator
      * @return string
      */
     public function groupConcatColumns($arrColumns, $distinct = false, $useGroupSeparator = false)
@@ -587,7 +590,7 @@ class MY_Model extends CI_Model
      *
      * @return int
      */
-    public function getID()
+    public function getUid()
     {
         return $this->getPrimaryKeyValue();
     }
@@ -678,16 +681,6 @@ class MY_Model extends CI_Model
             }
         }
         return false;
-    }
-
-    /**
-     * Gets basic informations of the instance
-     *
-     * @return array
-     */
-    public function getInfos($advanced = false)
-    {
-        return $advanced ? $this->getAdvanceInfos() : $this->getBasicInfos();
     }
 
     /**

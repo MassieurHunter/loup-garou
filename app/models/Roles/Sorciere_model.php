@@ -63,8 +63,8 @@ class Sorciere_model extends Role_model
 		$this->middleCard->init($cardNumber);
 		$this->player->init($playerUid);
 
-		$cardRoleModel = $this->middleCard->getCurrentRoleModel($gameUid);
-		$playerRoleModel = $this->player->getCurrentRoleModel($gameUid);
+		$cardRoleModel = $this->middleCard->getCurrentRole($gameUid);
+		$playerRoleModel = $this->player->getCurrentRole($gameUid);
 
 		$this->middleCard->addNewRole($gameUid, $playerRoleModel);
 		$this->player->addNewRole($gameUid, $cardRoleModel);

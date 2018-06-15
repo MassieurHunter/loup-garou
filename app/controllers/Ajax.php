@@ -96,8 +96,8 @@ class Ajax extends MY_Controller
 			->getRolesNameForCasting();
 
 		return $this->ajax->t(['roles' => $roles]);
-		
-		
+
+
 	}
 
 
@@ -174,8 +174,8 @@ class Ajax extends MY_Controller
 	private function rolesInfos(): array {
 
 		return $this->ajax->t([
-			'game'    => $this->currentGame->getAdvancedInfos(),
-			'role'    => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
+			'game' => $this->currentGame->getAdvancedInfos(),
+			'role' => $this->currentPlayer->getOriginalRoleWithBasicInfos($this->currentGame->getGameUid()),
 		]);
 
 	}
@@ -190,29 +190,29 @@ class Ajax extends MY_Controller
 		$arguments['currentPlayer'] = $this->currentPlayer;
 		$gameUid = $this->currentGame->getGameUid();
 		$arguments['gameUid'] = $gameUid;
-		$isDoppelFirstAction = $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger'
-			&& $this->currentPlayer->getCurrentRoleModel($gameUid)->getModel() === 'doppelganger';
-		$isDoppelCopiedRoleFirstAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger';
+		$isDoppelFirstAction = $this->currentPlayer->getOriginalRole($gameUid)->getModel() === 'doppelganger'
+			&& $this->currentPlayer->getCurrentRole($gameUid)->getModel() === 'doppelganger';
+		$isDoppelCopiedRoleFirstAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRole($gameUid)->getModel() === 'doppelganger';
 
 		if ($isDoppelCopiedRoleFirstAction) {
 
-			$roleModel = $this->currentPlayer->getCurrentRoleModel($gameUid);
+			$role = $this->currentPlayer->getCurrentRole($gameUid);
 
 		} else {
 
-			$roleModel = $this->currentPlayer->getOriginalRoleModel($gameUid);
+			$role = $this->currentPlayer->getOriginalRole($gameUid);
 
 		}
 
 		if (!isset($arguments['nothing'])) {
 
-			$actionResponse = $roleModel->firstAction($arguments);
-			$actionMessage = $roleModel->buildActionMessage(1, $actionResponse);
+			$actionResponse = $role->firstAction($arguments);
+			$actionMessage = $role->buildActionMessage(1, $actionResponse);
 
 
-			if ($roleModel->hasSecondAction() || $isDoppelFirstAction) {
+			if ($role->hasSecondAction() || $isDoppelFirstAction) {
 
-				if ($roleModel->isSecondActionNeedFailedFirst()) {
+				if ($role->isSecondActionNeedFailedFirst()) {
 
 					$socketMessage = $actionResponse['result'] ? 'playerFinishedTurn' : 'playerPlayedFirstAction';
 
@@ -230,7 +230,7 @@ class Ajax extends MY_Controller
 			}
 
 
-			if ($roleModel->getFirstActionTargetType() !== 'ajax') {
+			if ($role->getFirstActionTargetType() !== 'ajax') {
 
 				$this->ajax->socketMessage($socketMessage, [
 					'game'    => $this->currentGame->getAdvancedInfos(),
@@ -244,7 +244,7 @@ class Ajax extends MY_Controller
 
 		} else {
 
-			$actionMessage = $roleModel->buildActionMessage(0, [
+			$actionMessage = $role->buildActionMessage(0, [
 				'currentPlayer' => $this->currentPlayer->getBasicInfos(),
 				'gameUid'       => $gameUid,
 			]);
@@ -260,7 +260,7 @@ class Ajax extends MY_Controller
 		$this->ajax->actionResultMessage($actionMessage);
 
 		return $this->ajax->t(
-			$roleModel->getFirstActionTargetType() === 'ajax' ? $actionResponse : []
+			$role->getFirstActionTargetType() === 'ajax' ? $actionResponse : []
 		);
 
 	}
@@ -274,20 +274,20 @@ class Ajax extends MY_Controller
 		$arguments['currentPlayer'] = $this->currentPlayer;
 		$gameUid = $this->currentGame->getGameUid();
 		$arguments['gameUid'] = $gameUid;
-		$isDoppelCopiedRoleSecondAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRoleModel($gameUid)->getModel() === 'doppelganger';
+		$isDoppelCopiedRoleSecondAction = isset($arguments['doppel']) && $arguments['doppel'] === '1' && $this->currentPlayer->getOriginalRole($gameUid)->getModel() === 'doppelganger';
 
 		if ($isDoppelCopiedRoleSecondAction) {
 
-			$roleModel = $this->currentPlayer->getCurrentRoleModel($gameUid);
+			$role = $this->currentPlayer->getCurrentRole($gameUid);
 
 		} else {
 
-			$roleModel = $this->currentPlayer->getOriginalRoleModel($gameUid);
+			$role = $this->currentPlayer->getOriginalRole($gameUid);
 
 		}
 
-		$actionResponse = $roleModel->secondAction($arguments);
-		$actionMessage = $roleModel->buildActionMessage(2, $actionResponse);
+		$actionResponse = $role->secondAction($arguments);
+		$actionMessage = $role->buildActionMessage(2, $actionResponse);
 
 		$this->ajax->socketMessage('playerFinishedTurn', [
 			'game'   => $this->currentGame->getAdvancedInfos(),

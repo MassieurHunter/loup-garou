@@ -34,8 +34,8 @@ class Noiseuse_model extends Role_model
 		$this->player1->init($firstPlayerUid);
 		$this->player2->init($secondPlayerUid);
 
-		$player1RoleModel = $this->player1->getCurrentRoleModel($gameUid);
-		$player2RoleModel = $this->player2->getCurrentRoleModel($gameUid);
+		$player1RoleModel = $this->player1->getCurrentRole($gameUid);
+		$player2RoleModel = $this->player2->getCurrentRole($gameUid);
 
 		$this->player1->addNewRole($gameUid, $player2RoleModel);
 		$this->player2->addNewRole($gameUid, $player1RoleModel);
