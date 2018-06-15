@@ -3,6 +3,7 @@
 
 /**
  *
+ * @property \Game_model $_game
  * @property \Player_model $_oTestPlayer
  * @property \Role_model $_roleModel
  * @property \Vote_model $newVote
@@ -58,6 +59,10 @@ class Player_model extends MY_Model
 	 * @var array
 	 */
 	protected $arrRoleModel = [];
+	/**
+	 * @var Game_model[]
+	 */
+	protected $arrGames = [];
 	/**
 	 * @var array
 	 */
@@ -663,6 +668,54 @@ class Player_model extends MY_Model
 		return $this;
 	}
 
+	/**
+	 * 
+	 */
+	public function initGames(){
+
+		$this->arrGames = [];
+		$this->load->model('game_model', '_game');
+
+		$arrGames = $this->db
+			->select($this->_game->table . '*')
+			->join($this->player_games_table, $this->_game->primary_key)
+			->where('playerUid', $this->getPlayerUid())
+			->order_by('gameUid')
+			->get($this->_game->table)
+			->result();
+
+		foreach ($arrGames as $game) {
+			$oGame = clone $this->_game;
+			$this->arrGames[$oGame->getGameUid()] = $oGame->init(false, $game);
+		}
+		
+	}
+
+	/**
+	 * @return Game_model[]
+	 */
+	public function getGames() : array {
+	
+		if(empty($this->arrGames)){
+			
+			$this->initGames();
+			
+		}
+		
+		return $this->arrGames;
+		
+	}
+
+	/**
+	 * @param Game_model[] $arrGames
+	 * @return Player_model
+	 */
+	public function setArrGames(array $arrGames) : Player_model {
+
+		$this->arrGames = $arrGames;
+		return $this;
+		
+	}
 	
 	
 

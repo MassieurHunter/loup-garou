@@ -13,6 +13,10 @@ class Statistics_model extends MY_Model
 	 * @var Game_model[]
 	 */
 	protected $arrGames = [];
+	/**
+	 * @var Player_model[]
+	 */
+	protected $arrPlayers = [];
 
 	/**
 	 * Log_model constructor.
@@ -95,6 +99,16 @@ class Statistics_model extends MY_Model
 			'stats'   => $arrStats,
 		];
 
+	}
+
+	/**
+	 * @param int $playerUid
+	 * @return array
+	 */
+	public function getPlayerStats(int $playerUid): array {
+		
+		
+		
 	}
 
 	/**
@@ -211,6 +225,126 @@ class Statistics_model extends MY_Model
 			$this->arrGames[$oGame->getGameUid()] = $oGame;
 
 		}
+
+	}
+	
+	
+	public function initPlayers(){
+		$this->load->model('game_model', '_game');
+		$this->load->model('player_model', '_player');
+		$this->load->model('history_model', '_history');
+
+		$arrFieldsGame = $this->_game->getArrFields();
+		$arrFieldsPlayer = $this->_player->getArrFields();
+		$arrFieldsHistory = $this->_history->getArrFields();
+
+		$select = $this->_player->getConcat() . ' playersInfos';
+		$select .= ', ' . $this->_game->getGroupConcat() . ' gameInfos';
+		$select .= ', ' . $this->_history->getGroupConcat() . ' historiesInfos';
+
+		$arrPlayers = $this->db
+			->select($select)
+			->from($this->_player->table)
+			->join($this->_history->table, $this->_player->primary_key)
+			->join($this->_game->table, $this->_game->primary_key)
+			->group_by($this->_player->primary_key)
+			->order_by($this->_player->primary_key)
+			->get()
+			->result();
+
+		foreach ($arrPlayers as $player) {
+
+			$arrGames = [];
+			$arrFlatGames = array_unique(explode(',', $player->gameInfos));
+			$arrHistories = [];
+			$arrFlatHistories = array_unique(explode(',', $player->historiesInfos));
+
+			foreach ($arrFlatHistories as $key => $flatHistory) {
+
+				$arrHistory = explode(self::CONCAT_SEPARATOR, $flatHistory);
+				$arrHistoryWithKeys = [];
+
+				foreach ($arrHistory as $key2 => $value) {
+
+					if ($arrFieldsHistory[$key2] == $this->_history->primary_key && $value == '') {
+
+						continue 2;
+
+					}
+
+					$arrHistoryWithKeys[$arrFieldsHistory[$key2]] = $value;
+
+				}
+
+				$oHistory = clone $this->_history;
+				$oHistory->init(false, $arrHistoryWithKeys);
+				$arrHistories[$oHistory->getPlayerUid()] = $oHistory;
+			}
+
+			foreach ($arrFlatGames as $key => $flatGame) {
+
+
+				$arrGame = explode(self::CONCAT_SEPARATOR, $player->gameInfos);
+				$arrGameWithKeys = [];
+
+				foreach ($arrGame as $key2 => $value) {
+
+					if ($arrFieldsGame[$key2] == $this->_game->primary_key && $value == '') {
+
+						continue 2;
+
+					}
+
+					$arrGameWithKeys[$arrFieldsGame[$key2]] = $value;
+
+				}
+				
+				$oGame = clone $this->_game;
+				$oGame->init(false, $arrGameWithKeys);
+				
+				$arrGames[$oGame->getGameUid()] = $oGame;
+			}
+
+			$arrPlayer = explode(self::CONCAT_SEPARATOR, $player->playerInfos);
+			$arrPlayerWithKeys = [];
+
+			foreach ($arrPlayer as $key2 => $value) {
+
+				if ($arrFieldsPlayer[$key2] == $this->_player->primary_key && $value == '') {
+
+					continue 2;
+
+				}
+
+				$arrPlayerWithKeys[$arrFieldsPlayer[$key2]] = $value;
+
+			}
+
+			$oPlayer = clone $this->_player;
+			$oPlayer->init(false, $arrPlayerWithKeys);
+
+			
+			$oPlayer
+				->setArrGames($arrGames)
+				->setArrGamesHistory($arrHistories);
+
+			$this->arrPlayers[$oPlayer->getPlayerUid()] = $oPlayer;
+
+		}
+	}
+
+	/**
+	 * @return Player_model[]
+	 */
+	public function getArrPlayers(): array {
+
+		if (empty($this->arrPlayers)) {
+
+			$this->initPlayers();
+
+		}
+
+		return $this->arrPlayers;
 
 	}
 
