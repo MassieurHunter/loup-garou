@@ -14,7 +14,7 @@
     <base href="{$baseUrl}">
 </head>
 <body>
-<div class="container">
+<div class="{$container}">
     <div class="themes-selector-container">
         <div class="input-group">
             <div class="input-group-prepend">

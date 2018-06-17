@@ -24,6 +24,7 @@ class Statistics_model extends MY_Model
 	 * @param array $arrParams
 	 */
 	public function __construct(array $arrParams = []) {
+		$this->db->query('SET SESSION group_concat_max_len = 10000000');
 		parent::__construct($arrParams);
 	}
 
@@ -36,6 +37,14 @@ class Statistics_model extends MY_Model
 		$nbGames = count($arrGames);
 
 		$ranking = [];
+		$teams = [
+			'loup',
+			'tanneur',
+			'villageois',
+		];
+
+		$sortWins = [];
+		$sortRatio = [];
 
 		foreach ($arrGames as $gameUid => $oGame) {
 
@@ -47,29 +56,32 @@ class Statistics_model extends MY_Model
 
 				if (!isset($ranking[$oPlayer->getPlayerUid()])) {
 					$ranking[$oPlayer->getPlayerUid()] = [
-						'player'             => $oPlayer->getBasicInfos(),
-						'games'              => 0,
-						'games_loup'         => 0,
-						'games_tanneur'      => 0,
-						'games_villageois'   => 0,
-						'wins'               => 0,
-						'wins_loup'          => 0,
-						'wins_tanneur'       => 0,
-						'wins_villageois'    => 0,
-						'losses'             => 0,
-						'losses_loup'        => 0,
-						'losses_tanneur'     => 0,
-						'losses_villageois'  => 0,
-						'percent'            => '-',
-						'percent_loup'       => '-',
-						'percent_tanneur'    => '-',
-						'percent_villageois' => '-',
+						'player'                   => $oPlayer->getName(),
+						'games_loup'               => 0,
+						'games_tanneur'            => 0,
+						'games_villageois'         => 0,
+						'games_all'                => 0,
+						'percent_games_loup'       => '-',
+						'percent_games_tanneur'    => '-',
+						'percent_games_villageois' => '-',
+						'wins_loup'                => 0,
+						'wins_tanneur'             => 0,
+						'wins_villageois'          => 0,
+						'wins_all'                 => 0,
+//						'losses'                   => 0,
+//						'losses_loup'              => 0,
+//						'losses_tanneur'           => 0,
+//						'losses_villageois'        => 0,
+						'percent_win_loup'         => '-',
+						'percent_win_tanneur'      => '-',
+						'percent_win_villageois'   => '-',
+						'percent_win_all'          => '-',
 
 					];
 				}
 
 				$playerStats = &$ranking[$oPlayer->getPlayerUid()];
-				$playerStats['games']++;
+				$playerStats['games_all']++;
 
 //				$playerRole = $oPlayer->getCurrentRoleModel($gameUid);
 				$suffix = '_' . $oPlayerGameHistory->getTeam();
@@ -78,22 +90,34 @@ class Statistics_model extends MY_Model
 
 				if ($oPlayerGameHistory->isWinner()) {
 
-					$playerStats['wins']++;
+					$playerStats['wins_all']++;
 					$playerStats['wins' . $suffix]++;
 
 				} else {
 
-					$playerStats['losses']++;
-					$playerStats['losses' . $suffix]++;
+//					$playerStats['losses']++;
+//					$playerStats['losses' . $suffix]++;
 
 				}
 
-				$playerStats['percent'] = round($playerStats['wins'] / $playerStats['games'] * 100, 2) . '%';
-				$playerStats['percent' . $suffix] = round($playerStats['wins' . $suffix] / $playerStats['games' . $suffix] * 100, 2) . '%';
+				$percentWin = round($playerStats['wins_all'] / $playerStats['games_all'] * 100, 2);
+				$playerStats['percent_win_all'] = $percentWin . '%';
+
+				foreach ($teams as $team) {
+
+					$playerStats['percent_games_' . $team] = round($playerStats['games_' . $team] / $playerStats['games_all'] * 100, 2) . '%';
+					$playerStats['percent_win_' . $team] = $playerStats['games_' . $team] ? round($playerStats['wins_' . $team] / $playerStats['games_' . $team] * 100, 2) . '%' : '-';
+
+				}
+
+				$sortWins[$oPlayer->getPlayerUid()] = $playerStats['wins_all'];
+				$sortRatio[$oPlayer->getPlayerUid()] = $percentWin;
 
 			}
 
 		}
+
+		array_multisort($sortWins, SORT_DESC, $sortRatio, SORT_DESC, $ranking);
 
 		return [
 			'nbGames' => $nbGames,
@@ -227,20 +251,80 @@ class Statistics_model extends MY_Model
 
 		$oPlayer = $this->getPlayer($playerUid);
 
-		$playerStats = [];
-		$allGames = [];
-		$gamesWithStartingRoles = [];
-		$gamesWithEndingRoles = [];
+		$playerStats = [
+			'all'           => [
+				'games'       => 0,
+				'wins'        => 0,
+				'percent_win' => '-',
+			],
+			'startingTeams' => [
+				'games'                    => 0,
+				'games_loup'               => 0,
+				'games_tanneur'            => 0,
+				'games_villageois'         => 0,
+				'wins'                     => 0,
+				'wins_loup'                => 0,
+				'wins_tanneur'             => 0,
+				'wins_villageois'          => 0,
+				'percent_games_loup'       => '-',
+				'percent_games_tanneur'    => '-',
+				'percent_games_villageois' => '-',
+				'percent_win'              => '-',
+				'percent_win_loup'         => '-',
+				'percent_win_tanneur'      => '-',
+				'percent_win_villageois'   => '-',
+			],
+			'endingTeams'   => [
+				'games'                    => 0,
+				'games_loup'               => 0,
+				'games_tanneur'            => 0,
+				'games_villageois'         => 0,
+				'wins'                     => 0,
+				'wins_loup'                => 0,
+				'wins_tanneur'             => 0,
+				'wins_villageois'          => 0,
+				'percent_games_loup'       => '-',
+				'percent_games_tanneur'    => '-',
+				'percent_games_villageois' => '-',
+				'percent_win'              => '-',
+				'percent_win_loup'         => '-',
+				'percent_win_tanneur'      => '-',
+				'percent_win_villageois'   => '-',
+			],
+			'startingRoles' => [],
+			'endingRoles'   => [],
+		];
+		$playerHistory = [
+			'all'           => [],
+			'startingTeams' => [],
+			'endingTeams'   => [],
+			'startingRoles' => [],
+			'endingRoles'   => [],
+		];
 
 		foreach ($oPlayer->getGames() as $gameUid => $game) {
 
-			$firstRole = $oPlayer->getOriginalRole($gameUid);
-			$lastRole = $oPlayer->getCurrentRole($gameUid);
+			$gameHistory = $oPlayer->getGameHistory($gameUid);
+
+			$startingRole = $oPlayer->getOriginalRole($gameUid);
+			$endingRole = $oPlayer->getCurrentRole($gameUid);
+
+			$playerStats = $this->buildPlayerStats($playerStats, $game, $startingRole, $endingRole, $gameHistory);
+			$playerHistory = $this->buildPlayerHistory($playerHistory, $game, $startingRole, $endingRole, $gameHistory);
 
 		}
 
+		return [
+			'history' => $playerHistory,
+			'stats'   => $playerStats,
+		];
+
 	}
 
+	/**
+	 * @param int $playerUid
+	 * @return Player_model
+	 */
 	public function getPlayer(int $playerUid): Player_model {
 
 		$arrPlayers = $this->getArrPlayers();
@@ -267,20 +351,24 @@ class Statistics_model extends MY_Model
 	public function initPlayers() {
 		$this->load->model('game_model', '_game');
 		$this->load->model('player_model', '_player');
-		$this->load->model('role_model', '_role');
+		$this->load->model('roles/role_model', '_role');
 		$this->load->model('history_model', '_history');
 
 		$arrFieldsGame = $this->_game->getArrFields();
 		$arrFieldsPlayer = $this->_player->getArrFields();
 		$arrFieldsHistory = $this->_history->getArrFields();
 		$arrFieldsRole = $this->_role->getArrFields();
+		$arrFieldsRole[] = 'gameUid';
 
-		$select = $this->_player->getConcat() . ' playersInfos';
-		$select .= ', ' . $this->_game->getGroupConcat() . ' gameInfos';
+		$select = $this->_player->getConcat() . ' playerInfos';
+		$select .= ', ' . $this->_game->getGroupConcat() . ' gamesInfos';
 		$select .= ', ' . $this->_history->getGroupConcat() . ' historiesInfos';
 		$select .= ', ' . $this->_role->getGroupConcat(
 				null,
-				$this->_player->player_roles_table . '.gameUid, ' . $this->_player->player_roles_table . '.order'
+				[$this->_player->player_roles_table . '.gameUid'],
+				$this->_player->player_roles_table . '.gameUid, ' . $this->_player->player_roles_table . '.order',
+				false,
+				true
 			) . ' rolesInfos';
 
 		/*
@@ -336,15 +424,14 @@ class Statistics_model extends MY_Model
 				 */
 				$oHistory = clone $this->_history;
 				$oHistory->init(false, $arrHistoryWithKeys);
-				$arrHistories[$oHistory->getPlayerUid()] = $oHistory;
+				$arrHistories[$oHistory->getGameUid()] = $oHistory;
 			}
-
 
 			/*
 			 * getting all the games of the player
 			 */
 			$arrGames = [];
-			$arrFlatGames = array_unique(explode(',', $player->gameInfos)); // "inflate" the games list
+			$arrFlatGames = array_unique(explode(',', $player->gamesInfos)); // "inflate" the games list
 
 			/*
 			 * looping on all "flat" games
@@ -384,13 +471,12 @@ class Statistics_model extends MY_Model
 			 * getting all the roles of the player
 			 */
 			$arrRoles = [];
-			$arrFlatRoles = array_unique(explode(',', $player->rolesInfos)); // "inflate" the roles list
+			$arrFlatRoles = array_unique(explode(self::GROUP_CONCAT_SEPARATOR, $player->rolesInfos)); // "inflate" the roles list
 
 			/*
 			 * looping on all "flat" roles
 			 */
 			foreach ($arrFlatRoles as $key => $flatRole) {
-
 
 				$arrRole = explode(self::CONCAT_SEPARATOR, $flatRole);// "inflate" the role infos
 				$arrRoleWithKeys = [];
@@ -415,9 +501,9 @@ class Statistics_model extends MY_Model
 				 * cloning and instantiating the Role object
 				 * putting it in an array
 				 */
-				$oRole = clone $this->_game;
+				$oRole = clone $this->_role;
 				$oRole->init(false, $arrRoleWithKeys);
-				$arrRoles[$oRole->getGameUid()][] = $oRole;
+				$arrRoles[$arrRoleWithKeys['gameUid']][] = $oRole;
 			}
 
 			/*
@@ -458,8 +544,153 @@ class Statistics_model extends MY_Model
 			$this->arrPlayers[$oPlayer->getPlayerUid()] = $oPlayer;
 
 		}
+
 	}
 
+	/**
+	 * @param array $playerStats
+	 * @param Game_model $game
+	 * @param Role_model $startingRole
+	 * @param Role_model $endingRole
+	 * @param History_model $gameHistory
+	 * @return array
+	 */
+	protected function buildPlayerStats(array $playerStats, Game_model $game, Role_model $startingRole, Role_model $endingRole, History_model $gameHistory): array {
+
+		$teams = [
+			'loup',
+			'tanneur',
+			'villageois',
+		];
+
+		$startingRoleName = $startingRole->getName();
+		$endingRoleName = $endingRole->getName();
+
+		$startingTeam = $startingRole->getTeam();
+		$endingTeam = $endingRole->getTeam();
+
+		if (!isset($playerStats['startingRoles'][$startingRoleName])) {
+			$playerStats['startingRoles'][$startingRoleName] = [
+				'games'       => 0,
+				'wins'        => 0,
+				'percent_win' => 0,
+			];
+		}
+		if (!isset($playerStats['endingRoles'][$endingRoleName])) {
+			$playerStats['endingRoles'][$endingRoleName] = [
+				'games'       => 0,
+				'wins'        => 0,
+				'percent_win' => 0,
+			];
+		}
+
+		$playerStats['all']['games']++;
+
+		$playerStats['startingRoles'][$startingRoleName]['games']++;
+		$playerStats['endingRoles'][$endingRoleName]['games']++;
+		$playerStats['startingTeams']['games']++;
+		$playerStats['startingTeams']['games_' . $startingTeam]++;
+		$playerStats['endingTeams']['games']++;
+		$playerStats['endingTeams']['games_' . $endingTeam]++;
+
+		if ($gameHistory->isWinner()) {
+
+			$playerStats['all']['wins']++;
+			$playerStats['startingRoles'][$startingRoleName]['wins']++;
+			$playerStats['endingRoles'][$endingRoleName]['wins']++;
+			$playerStats['startingTeams']['wins']++;
+			$playerStats['startingTeams']['wins_' . $startingTeam]++;
+			$playerStats['endingTeams']['wins']++;
+			$playerStats['endingTeams']['wins_' . $endingTeam]++;
+
+		}
+
+		$playerStats['all']['percent_win'] = $playerStats['all']['games'] ? round($playerStats['all']['wins'] / $playerStats['all']['games'] * 100, 2) . '%' : '-';
+		$playerStats['startingRoles'][$startingRoleName]['percent_win'] = $playerStats['startingRoles'][$startingRoleName]['games'] ? round($playerStats['startingRoles'][$startingRoleName]['wins'] / $playerStats['startingRoles'][$startingRoleName]['games'] * 100, 2) . '%' : '-';
+		$playerStats['endingRoles'][$endingRoleName]['percent_win'] = $playerStats['endingRoles'][$endingRoleName]['games'] ? round($playerStats['endingRoles'][$endingRoleName]['wins'] / $playerStats['endingRoles'][$endingRoleName]['games'] * 100, 2) . '%' : '-';
+		$playerStats['startingTeams']['percent_win'] = $playerStats['startingTeams']['games'] ? round($playerStats['startingTeams']['wins'] / $playerStats['startingTeams']['games'] * 100, 2) . '%' : '-';
+		$playerStats['endingTeams']['percent_win'] = $playerStats['endingTeams']['games'] ? round($playerStats['endingTeams']['wins'] / $playerStats['endingTeams']['games'] * 100, 2) . '%' : '-';
+
+		foreach ($teams as $team) {
+
+			$playerStats['startingTeams']['percent_games_' . $team] = $playerStats['startingTeams']['games_' . $team] / $playerStats['startingTeams']['games'] * 100 . '%';
+			$playerStats['startingTeams']['percent_win_' . $team] = $playerStats['startingTeams']['games_' . $team] ? round($playerStats['startingTeams']['wins_' . $team] / $playerStats['startingTeams']['games_' . $team] * 100, 2) . '%' : '-';
+			$playerStats['endingTeams']['percent_games_' . $team] = $playerStats['endingTeams']['games_' . $team] / $playerStats['endingTeams']['games'] * 100 . '%';
+			$playerStats['endingTeams']['percent_win_' . $team] = $playerStats['endingTeams']['games_' . $team] ? round($playerStats['endingTeams']['wins_' . $team] / $playerStats['endingTeams']['games_' . $team] * 100, 2) . '%' : '-';
+
+		}
+
+		return $playerStats;
+
+	}
+
+	/**
+	 * @param array $playerHistory
+	 * @param Game_model $game
+	 * @param Role_model $startingRole
+	 * @param Role_model $endingRole
+	 * @param History_model $gameHistory
+	 * @return array
+	 */
+	protected function buildPlayerHistory(array $playerHistory, Game_model $game, Role_model $startingRole, Role_model $endingRole, History_model $gameHistory): array {
+
+		$startingRoleName = $startingRole->getName();
+		$endingRoleName = $endingRole->getName();
+
+		$startingTeam = $startingRole->getTeam();
+		$endingTeam = $endingRole->getTeam();
+
+		if (!isset($playerHistory['startingRoles'][$startingRoleName])) {
+			$playerHistory['startingRoles'][$startingRoleName] = [];
+		}
+		if (!isset($playerHistory['endingRoles'][$endingRoleName])) {
+			$playerHistory['endingRoles'][$endingRoleName] = [];
+		}
+		if (!isset($playerHistory['startingTeams'][$startingTeam])) {
+			$playerHistory['startingTeams'][$startingTeam] = [];
+		}
+		if (!isset($playerHistory['endingTeams'][$endingTeam])) {
+			$playerHistory['endingTeams'][$endingTeam] = [];
+		}
+
+		$playerHistory['all'][] = [
+			'nbPlayers'    => $game->getNbPlayers(),
+			'startingRole' => $startingRoleName,
+			'endingRoles'  => $endingRoleName,
+			'startingTeam' => $startingTeam,
+			'endingTeam'   => $endingTeam,
+			'players'      => $game->getRealPlayersWithBasicInfos(),
+			'winner'       => $gameHistory->isWinner(),
+		];
+		$playerHistory['startingRoles'][$startingRoleName][] = [
+			'nbPlayers' => $game->getNbPlayers(),
+			'players'   => $game->getRealPlayersWithBasicInfos(),
+			'winner'    => $gameHistory->isWinner(),
+		];
+		$playerHistory['endingRoles'][$endingRoleName][] = [
+			'nbPlayers' => $game->getNbPlayers(),
+			'players'   => $game->getRealPlayersWithBasicInfos(),
+			'winner'    => $gameHistory->isWinner(),
+		];
+		$playerHistory['startingTeams'][$startingTeam][] = [
+			'nbPlayers' => $game->getNbPlayers(),
+			'players'   => $game->getRealPlayersWithBasicInfos(),
+			'winner'    => $gameHistory->isWinner(),
+		];
+		$playerHistory['endingTeams'][$endingTeam][] = [
+			'nbPlayers' => $game->getNbPlayers(),
+			'players'   => $game->getRealPlayersWithBasicInfos(),
+			'winner'    => $gameHistory->isWinner(),
+		];
+
+		return $playerHistory;
+
+	}
+
+	/**
+	 * @param int $gameUid
+	 * @return Game_model
+	 */
 	public function getGame(int $gameUid): Game_model {
 
 		$arrGames = $this->getArrGames();

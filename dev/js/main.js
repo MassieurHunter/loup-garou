@@ -7,6 +7,7 @@ import PlayerModel from './models/PlayerModel';
 import LangModel from "./models/LangModel";
 import $ from 'jquery';
 import * as io from 'socket.io-client';
+import ABuilder from "./tools/ABuilder";
 
 let loupGarou = {
 
@@ -26,6 +27,7 @@ let loupGarou = {
 		this.listenCreateGame();
 		this.listenThemeChange();
 		this.play();
+		this.stats();
 
 	},
 
@@ -337,8 +339,53 @@ let loupGarou = {
 
 
 		}
-	}
+	},
 
+	stats(){
+		
+		if ($('.overall-stats-table').length > 0) {
+		
+			Ajax.post('stats/overall', [], (response) => {
+				
+				let stats = response.data.stats;
+				let table = []; 
+				
+				for(let i in stats){
+					
+					let playerLine = stats[i];
+					let tds = [];
+					
+					for(let j in playerLine){
+						
+						let stat = playerLine[j]; 
+						let td = new ABuilder(
+							'td',
+							{'class' : j.indexOf('_all') !== -1 ? 'font-weight-bold' : ''},
+							stat
+						);
+						
+						tds.push(td);
+						
+					}
+
+
+					let tr = new ABuilder(
+						'tr',
+						{},
+						tds
+					);
+
+					table.push(tr);
+					
+				}
+				
+				$('.overall-stats-table tbody').html('').append(table);
+				
+			});
+			
+		}
+		
+	}
 
 };
 

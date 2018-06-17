@@ -17,6 +17,7 @@ class Stats extends MY_Controller
 
         $this->template
             ->setVar('lang', $this->lang->language)
+			->setVar('container', 'container-fluid')
             ->setVar('header', $this->template->saveInVar('inc/header'))
             ->setVar('footer', $this->template->saveInVar('inc/footer'));
 
@@ -29,33 +30,7 @@ class Stats extends MY_Controller
 
     public function index() {
 
-        $this->overallRanking();
-
-    }
-
-    /**
-     * Display the list of the groups
-     */
-    public function overallRanking() {
-
-		ini_set('xdebug.var_display_max_depth', 5);
-		ini_set('xdebug.var_display_max_children', 256);
-		ini_set('xdebug.var_display_max_data', 1024);
-		$globalStats = $this->stats->getOverallRanking();
-
-		var_dump($globalStats);
-		die;
-    	
-//        $this->template->display('stats/global');
-
-    }
-    
-    /**
-     * Display the list of the groups
-     */
-    public function playerStats() {
-
-        $this->template->display('stats/player');
+        $this->template->display('stats');
 
     }
 

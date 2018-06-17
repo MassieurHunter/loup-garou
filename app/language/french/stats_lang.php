@@ -1,0 +1,27 @@
+<?php
+$lang['statistics'] = 'Statistiques';
+$lang['stat_player'] = 'Joueur';
+$lang['stat_games'] = 'Parties';
+$lang['stat_games_all'] = 'Toutes';
+$lang['stat_games_loup'] = 'Loup';
+$lang['stat_games_tanneur'] = 'Tanneur';
+$lang['stat_games_villageois'] = 'Villageois';
+$lang['stat_wins'] = 'Victoires';
+$lang['stat_wins_all'] = 'Toutes';
+$lang['stat_wins_loup'] = 'Loup';
+$lang['stat_wins_tanneur'] = 'Tanneur';
+$lang['stat_wins_villageois'] = 'Villageois';
+$lang['stat_losses'] = 'Défaites';
+$lang['stat_losses_all'] = 'Toutes';
+$lang['stat_losses_loup'] = 'Loup';
+$lang['stat_losses_tanneur'] = 'Tanneur';
+$lang['stat_losses_villageois'] = 'Villageois';
+$lang['stat_percent_games'] = '% de partie';
+$lang['stat_percent_games_loup'] = 'Loup';
+$lang['stat_percent_games_tanneur'] = 'Tanneur';
+$lang['stat_percent_games_villageois'] = 'Villageois';
+$lang['stat_percent_win'] = '% de victoire';
+$lang['stat_percent_win_all'] = 'Toutes';
+$lang['stat_percent_win_loup'] = 'Loup';
+$lang['stat_percent_win_tanneur'] = 'Tanneur';
+$lang['stat_percent_win_villageois'] = 'Villageois'; 

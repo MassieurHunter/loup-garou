@@ -15,6 +15,7 @@ class Game extends MY_Controller
 
         $this->template
             ->setVar('lang', $this->lang->language)
+            ->setVar('container', 'container')
             ->setVar('header', $this->template->saveInVar('inc/header'))
             ->setVar('footer', $this->template->saveInVar('inc/footer'));
 

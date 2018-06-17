@@ -5,6 +5,7 @@
  * @property Player_model $player
  * @property AjaxResponse $ajax
  * @property CI_Lang $lang
+ * @property Statistics_model $stats
  *
  * @author Mâssieur Hunter
  */
@@ -301,6 +302,9 @@ class Ajax extends MY_Controller
 
 	}
 
+	/**
+	 * @return array
+	 */
 	private function playerActionsRebuild(): array {
 
 		$actionsRebuild = $this->currentGame->rebuildActions($this->currentPlayer);
@@ -326,7 +330,9 @@ class Ajax extends MY_Controller
 
 	}
 
-
+	/**
+	 * @return array
+	 */
 	private function playerVote(): array {
 		$this->load->model('player_model', 'player');
 		$gameUid = $this->currentGame->getGameUid();
@@ -348,6 +354,9 @@ class Ajax extends MY_Controller
 
 	}
 
+	/**
+	 * @return array
+	 */
 	private function playerVoteCancel(): array {
 		$gameUid = $this->currentGame->getGameUid();
 		$this->currentPlayer->cancelVote($gameUid);
@@ -361,6 +370,9 @@ class Ajax extends MY_Controller
 
 	}
 
+	/**
+	 * @return array
+	 */
 	private function playerVoteRebuild(): array {
 		$this->load->model('player_model', 'player');
 
@@ -394,7 +406,10 @@ class Ajax extends MY_Controller
 
 	}
 
-	private function voteResults() {
+	/**
+	 * @return array
+	 */
+	private function voteResults(): array {
 
 		$gameResultMessages = $this->currentGame->finish($this->currentPlayer->getPlayerUid());
 		$gameSummary = $this->currentGame->getSummary();
@@ -403,6 +418,33 @@ class Ajax extends MY_Controller
 		$this->ajax->gameSummary($gameSummary);
 
 		return $this->ajax->t();
+
+	}
+
+	/**
+	 * @return array
+	 */
+	private function statsOverall(): array {
+
+		$this->load->model('statistics_model', 'stats');
+		
+		$overallStats = $this->stats->getOverallRanking();
+
+		return $this->ajax->t($overallStats);
+
+	}
+	
+	/**
+	 * @return array
+	 */
+	private function statsPlayer(): array {
+
+		$this->load->model('statistics_model', 'stats');
+
+		$playerUid = $this->input->post('playerUid');
+		$playerStats = $this->stats->getPlayerStats($playerUid);
+
+		return $this->ajax->t($playerStats);
 
 	}
 

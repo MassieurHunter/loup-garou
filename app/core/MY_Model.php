@@ -519,12 +519,13 @@ class MY_Model extends CI_Model
     /**
      *
      * @param string $tableAlias
+     * @param array $additionalColumns
      * @param string $orderBy
      * @param boolean $distinct
      * @param boolean $useGroupSeparator
      * @return string
      */
-    public function getGroupConcat($tableAlias = null, $orderBy = null, $distinct = false, $useGroupSeparator = false)
+    public function getGroupConcat($tableAlias = null, $additionalColumns = [], $orderBy = null, $distinct = false, $useGroupSeparator = false)
     {
         $arrFields = $this->getArrFields();
 
@@ -535,8 +536,9 @@ class MY_Model extends CI_Model
             $groupConcat .= ($key > 0 ? ', "' . self::CONCAT_SEPARATOR . '",' : '') . 'IFNULL(' . $tablePrefix . '.' . $field . ',"")';
         }
 
+        $groupConcat .= $additionalColumns ? ', "' . self::CONCAT_SEPARATOR . '",' . implode(',"' . self::CONCAT_SEPARATOR . '",',$additionalColumns)  : '';
         $groupConcat .= $distinct ? '))' : ')';
-        $groupConcat .= $orderBy ? ' ORDER BY "' . $orderBy . ' ' : '';
+        $groupConcat .= $orderBy ? ' ORDER BY ' . $orderBy . ' ' : '';
         $groupConcat .= $useGroupSeparator ? ' SEPARATOR "' . self::GROUP_CONCAT_SEPARATOR . '")' : ')';
 
 
