@@ -34,7 +34,13 @@
 			<th class="font-weight-bold">{$lang['stat_percent_win_all']}</th>
 		</tr>
 		</thead>
-		<tbody></tbody>
+		<tbody>
+		<tr>
+			<td colspan="16" class="text-center p5">
+				<img src="/img/loader.svg" alt="...">
+			</td>
+		</tr>
+		</tbody>
 	</table>
 </div>
 

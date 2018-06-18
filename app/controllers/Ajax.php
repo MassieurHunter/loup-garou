@@ -50,6 +50,10 @@ class Ajax extends MY_Controller
 
 	public function index() {
 	}
+	
+	public function lang(){
+		return $this->ajax->t($this->lang->language);
+	}
 
 
 	/**

@@ -16,7 +16,13 @@ let loupGarou = {
 		this.forms = new Forms();
 		this.player = new PlayerModel();
 		this.game = new GameModel();
-		this.lang = new LangModel();
+
+		Ajax.post('lang', [], (response) => {
+
+			this.lang = new LangModel(response.data);
+			console.log(this.lang);
+
+		});
 
 		Noty.overrideDefaults({
 			theme: 'bootstrap-v4',
@@ -36,13 +42,13 @@ let loupGarou = {
 
 		range.on('input', () => {
 			$('.nb-max-players').html(range.val());
-			
+
 			let data = [{name: 'nbPlayers', value: range.val()}];
 
 			Ajax.post('game/future/role', data, (response) => {
 				$('.future-roles').html(response.data.roles);
 				$('.alert-future-role').removeClass('d-none');
-				
+
 			});
 
 		}).trigger('input')
@@ -82,7 +88,6 @@ let loupGarou = {
 
 							this.player = new PlayerModel(response.data.player);
 							this.game = new GameModel(response.data.game);
-							this.lang = new LangModel(response.data.lang);
 							this.socket.emit('playerJoined', response.data);
 
 							$(window).bind('beforeunload', (e) => {
@@ -104,12 +109,12 @@ let loupGarou = {
 								type: 'info',
 								text: this.lang.getLine('player_joined_game').replace('*playername*', Player.getName())
 							}).show();
-							
+
 
 						}
 
 						$('.nb-players').html(this.game.getNbPlayers());
-						
+
 						this.game.displayPlayers();
 
 						if (this.game.isReadyToStart()) {
@@ -154,9 +159,9 @@ let loupGarou = {
 							text: this.lang.getLine('connected_elsewhere'),
 							timeout: false
 						}).show();
-						
+
 						break;
-						
+
 					case 'gameStart':
 
 						Ajax.post('game/start', [], () => {
@@ -297,7 +302,8 @@ let loupGarou = {
 
 					case 'rebuildActions' :
 
-						Ajax.post('player/actions/rebuild', [], (response) => {});
+						Ajax.post('player/actions/rebuild', [], (response) => {
+						});
 
 						break;
 
@@ -309,7 +315,8 @@ let loupGarou = {
 
 					case 'rebuildVote' :
 
-						Ajax.post('player/vote/rebuild', [], (response) => {});
+						Ajax.post('player/vote/rebuild', [], (response) => {
+						});
 
 						break;
 
@@ -341,31 +348,40 @@ let loupGarou = {
 		}
 	},
 
-	stats(){
-		
+	stats() {
+
+		setTimeout(() => {
+			this.overallStats();
+			this.playerStats();
+		}, 2000);
+
+	},
+
+	overallStats() {
 		if ($('.overall-stats-table').length > 0) {
-		
+
 			Ajax.post('stats/overall', [], (response) => {
-				
+
 				let stats = response.data.stats;
-				let table = []; 
-				
-				for(let i in stats){
-					
+				let table = [];
+
+				for (let i in stats) {
+
 					let playerLine = stats[i];
 					let tds = [];
-					
-					for(let j in playerLine){
-						
-						let stat = playerLine[j]; 
+
+					for (let j in playerLine) {
+
+						let stat = playerLine[j];
+
 						let td = new ABuilder(
 							'td',
-							{'class' : j.indexOf('_all') !== -1 ? 'font-weight-bold' : ''},
+							{'class': j.indexOf('_all') !== -1 ? 'font-weight-bold' : ''},
 							stat
 						);
-						
+
 						tds.push(td);
-						
+
 					}
 
 
@@ -376,16 +392,93 @@ let loupGarou = {
 					);
 
 					table.push(tr);
-					
+
 				}
-				
+
 				$('.overall-stats-table tbody').html('').append(table);
-				
+
 			});
-			
+
 		}
-		
-	}
+	},
+	playerStats() {
+
+		if ($('.player-uid-stat').length > 0) {
+
+			let data = [
+				{
+					'name': 'playerUid',
+					'value': $('.player-uid-stat').val()
+				}
+			];
+			Ajax.post('stats/player', data, (response) => {
+
+				let history = response.data.history;
+				let stats = response.data.stats;
+
+				let allGames = history.all;
+				let startingTeamGames = history.startingTeam;
+				let endingTeamGames = history.endingTeam;
+				let startingRolesGames = history.startingRoles;
+				let endingRolesGames = history.endingRoles;
+
+				let allStats = stats.all;
+				let startingTeamStats = stats.startingTeam;
+				let endingTeamStats = stats.endingTeam;
+				let startingRolesStats = stats.startingRoles;
+				let endingRolesStats = stats.endingRoles;
+
+				let allGamesTable = [];
+
+				for (let i in allGames) {
+
+					let gameLine = allGames[i];
+
+					let tds = [];
+
+					for (let j in gameLine) {
+
+						let stat = gameLine[j];
+
+						let isWinnerCell = j.indexOf('winner') !== -1;
+						let isWinner = isWinnerCell && stat === true;
+						let isLooser = isWinnerCell && stat === false;
+
+						let cell = stat;
+
+						if (isWinner) {
+							cell = this.lang.getLine('stat_win');
+						} else if (isLooser) {
+							cell = this.lang.getLine('stat_loose');
+						}
+
+						let td = new ABuilder(
+							'td',
+							{'class': 'text-capitalize ' + (isWinner ? 'table-success' : (isLooser ? 'table-danger' : ''))},
+							cell
+						);
+
+						tds.push(td);
+
+					}
+
+
+					let tr = new ABuilder(
+						'tr',
+						{},
+						tds
+					);
+
+					allGamesTable.push(tr);
+
+				}
+
+				$('.player-games-all tbody').html('').append(allGamesTable);
+
+			});
+
+		}
+	},
 
 };
 

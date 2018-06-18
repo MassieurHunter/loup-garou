@@ -351,7 +351,7 @@ class Statistics_model extends MY_Model
 	public function initPlayers() {
 		$this->load->model('game_model', '_game');
 		$this->load->model('player_model', '_player');
-		$this->load->model('roles/role_model', '_role');
+		$this->load->model('Roles/role_model', '_role');
 		$this->load->model('history_model', '_history');
 
 		$arrFieldsGame = $this->_game->getArrFields();
@@ -655,10 +655,10 @@ class Statistics_model extends MY_Model
 
 		$playerHistory['all'][] = [
 			'nbPlayers'    => $game->getNbPlayers(),
-			'startingRole' => $startingRoleName,
-			'endingRoles'  => $endingRoleName,
 			'startingTeam' => $startingTeam,
+			'startingRole' => $startingRoleName,
 			'endingTeam'   => $endingTeam,
+			'endingRoles'  => $endingRoleName,
 			'players'      => $game->getRealPlayersWithBasicInfos(),
 			'winner'       => $gameHistory->isWinner(),
 		];

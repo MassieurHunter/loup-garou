@@ -30,7 +30,21 @@ class Stats extends MY_Controller
 
     public function index() {
 
-        $this->template->display('stats');
+        $this->overAll();
+
+    }
+    
+    public function overAll(){
+
+		$this->template->display('stats/overall');
+    	
+	}
+
+    public function player($playerUid) {
+
+        $this->template
+			->setVar('playerUid', $playerUid)
+			->display('stats/player');
 
     }
 
