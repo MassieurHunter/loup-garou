@@ -291,18 +291,8 @@ class Game_model extends MY_Model
 
 			$this->arrPlayers[$playerModel->getPlayerUid()] = $playerModel;
 		}
-
+		
 	}
-
-	/**
-	 * @param Player_model[] $arrPlayers
-	 * @return Game_model
-	 */
-	public function setArrPlayers(array $arrPlayers): Game_model {
-		$this->arrPlayers = $arrPlayers;
-		return $this;
-	}
-
 
 	/**
 	 * @return int
@@ -369,6 +359,15 @@ class Game_model extends MY_Model
 		$this
 			->setNbPlayers($nbRealPlayers)
 			->saveModifications();
+	}
+
+	/**
+	 * @param Player_model[] $arrPlayers
+	 * @return Game_model
+	 */
+	public function setArrPlayers(array $arrPlayers): Game_model {
+		$this->arrPlayers = $arrPlayers;
+		return $this;
 	}
 
 	/**
@@ -634,7 +633,7 @@ class Game_model extends MY_Model
 			if ($playerUid === $player->getPlayerUid()) {
 
 				$playerTeam[$player->getPlayerUid()] = $player->getCurrentRole($this->getGameUid())->getTeam();
-					
+
 				if ($player->getCurrentRole($this->getGameUid())->isLoup()) {
 
 					$arrMessages['playerMessage'] = $loupKilled ? $this->lang->line('you_lost') : $this->lang->line('you_won');
@@ -795,7 +794,8 @@ class Game_model extends MY_Model
 		$actions = [];
 		$loupPassed = false;
 		$francMacPassed = false;
-		foreach ($arrLogs as $log) {
+		$lastLoup = clone $this->_playerModel;
+		foreach ($arrLogs as $logUid => $log) {
 
 			$player = $arrPlayers[$log->getPlayerUid()];
 			$playerRole = clone $this->_roleModel;
@@ -813,9 +813,10 @@ class Game_model extends MY_Model
 
 			if ($playerRole->getModel() !== 'loup' || ($playerRole->getModel() === 'loup' && !$loupPassed)) {
 
+				$lastLoup = $player;
 				$loupPassed = true;
 
-			} else {
+			} elseif ($lastLoup->getPlayerUid() !== $player->getPlayerUid()) {
 
 				continue;
 
@@ -1088,6 +1089,15 @@ class Game_model extends MY_Model
 	}
 
 	/**
+	 * @param array $arrHistories
+	 * @return Game_model
+	 */
+	public function setArrHistories(array $arrHistories): Game_model {
+		$this->arrHistories = $arrHistories;
+		return $this;
+	}
+
+	/**
 	 *
 	 */
 	public function initHistories() {
@@ -1106,16 +1116,6 @@ class Game_model extends MY_Model
 			$this->arrHistories[$oHistory->getPlayerUid()] = $oHistory->init(false, $history);
 		}
 
-	}
-
-
-	/**
-	 * @param array $arrHistories
-	 * @return Game_model
-	 */
-	public function setArrHistories(array $arrHistories): Game_model {
-		$this->arrHistories = $arrHistories;
-		return $this;
 	}
 
 

@@ -102,7 +102,8 @@ export default class GameModel extends BaseModel {
 		let players = this.getPlayers();
 		let playersModel = [];
 
-		for (let player of players) {
+		for (let playerUid in players) {
+			let player = players[playerUid];
 			playersModel.push(new PlayerModel(player))
 		}
 
@@ -112,12 +113,12 @@ export default class GameModel extends BaseModel {
 
 	displayPlayers() {
 		
-		console.log(this);
-		
 		let arrPlayersName = [];
+		let arrPlayersModel = this.getPlayersModel();
 		
-		for(let Player of this.getPlayersModel()){
+		for(let playerUid in arrPlayersModel){
 
+			let Player = arrPlayersModel[playerUid];
 			arrPlayersName.push(Player.getName());
 			
 		}

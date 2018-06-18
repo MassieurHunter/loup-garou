@@ -108,9 +108,6 @@ io.sockets.on('connection', (socket) => {
 
 			setTimeout(() => {
 
-
-				console.log(gamesProgress[roomUid].currentRole.getName());
-
 				if (gamesProgress[roomUid].currentRole.getName() !== null) {
 
 					gamesSockets[roomUid][Player.getPlayerUid()].emit('message', {
@@ -192,7 +189,7 @@ io.sockets.on('connection', (socket) => {
 				let randomPlayerUid = randomPlayer.getPlayerUid();
 
 				console.log(randomPlayer.getName() + ' has been chosen to start the game');
-
+				
 				gamesSockets[roomUid][randomPlayerUid].emit('message', {
 					type: 'gameStart',
 				});

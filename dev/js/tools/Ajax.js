@@ -223,6 +223,7 @@ class Ajax {
 
 					$('.vote-form-container').html('');
 
+					$('.game-results').html('');
 					$('.game-results').append(
 						new ABuilder(
 							'div',
@@ -277,6 +278,7 @@ class Ajax {
 
 				case "gameSummary" :
 
+					$('.game-summary').html('');
 					$('.game-summary').append(
 						new ABuilder(
 							'div',

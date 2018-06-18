@@ -20,7 +20,6 @@ let loupGarou = {
 		Ajax.post('lang', [], (response) => {
 
 			this.lang = new LangModel(response.data);
-			console.log(this.lang);
 
 		});
 
@@ -401,6 +400,7 @@ let loupGarou = {
 
 		}
 	},
+
 	playerStats() {
 
 		if ($('.player-uid-stat').length > 0) {
@@ -417,67 +417,222 @@ let loupGarou = {
 				let stats = response.data.stats;
 
 				let allGames = history.all;
-				let startingTeamGames = history.startingTeam;
-				let endingTeamGames = history.endingTeam;
+				let startingTeamGames = history.startingTeams;
+				let endingTeamGames = history.endingTeams;
 				let startingRolesGames = history.startingRoles;
 				let endingRolesGames = history.endingRoles;
 
 				let allStats = stats.all;
-				let startingTeamStats = stats.startingTeam;
-				let endingTeamStats = stats.endingTeam;
+				let startingTeamStats = stats.startingTeams;
+				let endingTeamStats = stats.endingTeams;
 				let startingRolesStats = stats.startingRoles;
 				let endingRolesStats = stats.endingRoles;
 
-				let allGamesTable = [];
-
-				for (let i in allGames) {
-
-					let gameLine = allGames[i];
-
-					let tds = [];
-
-					for (let j in gameLine) {
-
-						let stat = gameLine[j];
-
-						let isWinnerCell = j.indexOf('winner') !== -1;
-						let isWinner = isWinnerCell && stat === true;
-						let isLooser = isWinnerCell && stat === false;
-
-						let cell = stat;
-
-						if (isWinner) {
-							cell = this.lang.getLine('stat_win');
-						} else if (isLooser) {
-							cell = this.lang.getLine('stat_loose');
-						}
-
-						let td = new ABuilder(
-							'td',
-							{'class': 'text-capitalize ' + (isWinner ? 'table-success' : (isLooser ? 'table-danger' : ''))},
-							cell
-						);
-
-						tds.push(td);
-
-					}
-
-
-					let tr = new ABuilder(
-						'tr',
-						{},
-						tds
-					);
-
-					allGamesTable.push(tr);
-
-				}
-
-				$('.player-games-all tbody').html('').append(allGamesTable);
+				this.playerGlobalHistory(allGames);
+				this.playerTeamRoleHistory(startingTeamGames, this.lang.getLine('stat_starting_team'), '.player-games-starting-team');
+				this.playerTeamRoleHistory(endingTeamGames, this.lang.getLine('stat_ending_team'), '.player-games-ending-team');
+				this.playerTeamRoleHistory(startingRolesGames, this.lang.getLine('stat_starting_role'), '.player-games-starting-role');
+				this.playerTeamRoleHistory(endingRolesGames, this.lang.getLine('stat_ending_role'), '.player-games-ending-role');
 
 			});
 
 		}
+	},
+
+	playerGlobalHistory(games) {
+		let allGamesTable = [];
+
+		for (let i in games) {
+
+			let gameLine = games[i];
+
+			let tds = [];
+
+			for (let j in gameLine) {
+
+				let stat = gameLine[j];
+
+				let isWinnerCell = j.indexOf('winner') !== -1;
+				let isWinner = isWinnerCell && stat === true;
+				let isLooser = isWinnerCell && stat === false;
+
+				let isPlayersCell = j.indexOf('players') !== -1;
+
+				let cell = stat;
+
+				if (isWinner) {
+					cell = this.lang.getLine('stat_win');
+				} else if (isLooser) {
+					cell = this.lang.getLine('stat_loose');
+				} else if (isPlayersCell) {
+
+					let arrPlayers = [];
+
+					for (let playerUid in stat) {
+
+						let player = stat[playerUid];
+						let playerName = player.name.trim().charAt(0).toUpperCase() + player.name.trim().slice(1);
+						arrPlayers.push(playerName);
+
+					}
+
+					arrPlayers.sort();
+					cell = arrPlayers.join(', ');
+
+				}
+
+				let td = new ABuilder(
+					'td',
+					{'class': 'text-capitalize ' + (isWinner ? 'table-success' : (isLooser ? 'table-danger' : ''))},
+					cell
+				);
+
+				tds.push(td);
+
+			}
+
+			let tr = new ABuilder(
+				'tr',
+				{},
+				tds
+			);
+
+			allGamesTable.push(tr);
+
+		}
+
+
+		$('.player-games-all tbody').html('').append(allGamesTable);
+	},
+
+	playerTeamRoleHistory(games, sectionTitle, container) {
+		let allTables = [];
+
+		let title = new ABuilder(
+			'h2',
+			{'class': 'mt-5 text-center text-uppercase'}
+			,
+			sectionTitle
+		);
+
+		for (let teamRole in games) {
+
+			let teamRoleTitle = new ABuilder(
+				'h3',
+				{'class': 'mt-3 text-capitalize'}
+				,
+				teamRole
+			);
+
+			let thead = new ABuilder(
+				'thead',
+				{},
+				new ABuilder(
+					'tr',
+					{},
+					[
+						new ABuilder(
+							'th',
+							{},
+							this.lang.getLine('stat_nb_players')
+						),
+						new ABuilder(
+							'th',
+							{},
+							this.lang.getLine('stat_players_list')
+						),
+						new ABuilder(
+							'th',
+							{},
+							this.lang.getLine('stat_result')
+						),
+					]
+				)
+			);
+
+			let gamesForRoleOrTeam = [];
+
+			let startingGames = games[teamRole];
+
+			for (let gameLine of startingGames) {
+
+				let tds = [];
+
+				for (let j in gameLine) {
+
+					let stat = gameLine[j];
+
+					let isWinnerCell = j.indexOf('winner') !== -1;
+					let isWinner = isWinnerCell && stat === true;
+					let isLooser = isWinnerCell && stat === false;
+
+					let isPlayersCell = j.indexOf('players') !== -1;
+
+					let cell = stat;
+
+					if (isWinner) {
+						cell = this.lang.getLine('stat_win');
+					} else if (isLooser) {
+						cell = this.lang.getLine('stat_loose');
+					} else if (isPlayersCell) {
+
+						let arrPlayers = [];
+
+						for (let playerUid in stat) {
+
+							let player = stat[playerUid];
+							let playerName = player.name.trim().charAt(0).toUpperCase() + player.name.trim().slice(1);
+							arrPlayers.push(playerName);
+
+						}
+
+						arrPlayers.sort();
+						cell = arrPlayers.join(', ');
+
+					}
+
+					let td = new ABuilder(
+						'td',
+						{'class': 'text-capitalize ' + (isWinner ? 'table-success' : (isLooser ? 'table-danger' : ''))},
+						cell
+					);
+
+					tds.push(td);
+
+				}
+
+				let tr = new ABuilder(
+					'tr',
+					{},
+					tds
+				);
+
+				gamesForRoleOrTeam.push(tr);
+
+			}
+
+			let gameTable = new ABuilder(
+				'table',
+				{'class': 'table table-hover table-striped table-bordered player-stats-table'},
+				[
+					thead,
+					new ABuilder(
+						'tbody',
+						{},
+						gamesForRoleOrTeam
+					)
+				]
+			);
+
+			allTables.push(teamRoleTitle);
+			allTables.push(gameTable);
+
+		}
+
+		$(container)
+			.html('')
+			.append(title)
+			.append(allTables);
 	},
 
 };
