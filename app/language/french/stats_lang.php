@@ -34,3 +34,6 @@ $lang['stat_players_list'] = 'Liste des joueurs';
 $lang['stat_result'] = 'Résultat';
 $lang['stat_win'] = 'Victoire';
 $lang['stat_loose'] = 'Défaite';
+
+$lang['stat_chart_global'] = 'Statistiques générales';
+$lang['stat_chart_ratio'] = 'Proportion';
