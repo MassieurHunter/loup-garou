@@ -44,3 +44,8 @@ $lang['stat_chart_team_tanneur'] = 'Tanneur';
 $lang['stat_chart_team_villageois'] = 'Villageois';
 $lang['stat_chart_starting_role_ratio'] = 'Rôles de départ';
 $lang['stat_chart_ending_role_ratio'] = 'Rôles en fin de nuit';
+
+$lang['stat_chart_starting_team_win_ratio'] = 'Équipes de départ';
+$lang['stat_chart_ending_team_win_ratio'] = 'Équipes en fin de nuit';
+$lang['stat_chart_starting_role_win_ratio'] = 'Rôles de départ';
+$lang['stat_chart_ending_role_win_ratio'] = 'Rôles en fin de nuit';

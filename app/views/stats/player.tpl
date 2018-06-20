@@ -24,9 +24,15 @@
 	</table>
 </div>
 
-<div class="player-stats-table-container d-none table-responsive player-games-team-roles-container"></div>
+<div class="player-stats-charts-container player-global-stats-container d-none">
+	
+</div>
 
-<div class="player-stats-charts-container d-none"></div>
+<div class="player-stats-table-container player-stats-charts-container d-none player-games-team-roles-container">
+	
+</div>
+
+
 
 <div class="d-none">
 	<div class="alert alert-primary hidden-primary" role="alert"></div>

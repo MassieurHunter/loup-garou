@@ -10,6 +10,12 @@ export default class Stats {
 
 		this.lang = lang;
 
+		this.teams = [
+			'villageois',
+			'tanneur',
+			'loup',
+		];
+
 		this.highchartsTheme();
 
 		this.overallStats();
@@ -94,10 +100,10 @@ export default class Stats {
 		let endingRolesGames = history.endingRoles;
 
 		this.playerGlobalHistory(allGames);
-		this.playerTeamRoleHistory(startingTeamGames, this.lang.getLine('stat_starting_team'));
-		this.playerTeamRoleHistory(endingTeamGames, this.lang.getLine('stat_ending_team'));
-		this.playerTeamRoleHistory(startingRolesGames, this.lang.getLine('stat_starting_role'));
-		this.playerTeamRoleHistory(endingRolesGames, this.lang.getLine('stat_ending_role'));
+		this.playerTeamRoleHistory(startingTeamGames, 'team', 'starting', this.lang.getLine('stat_starting_team'));
+		this.playerTeamRoleHistory(endingTeamGames, 'team', 'ending', this.lang.getLine('stat_ending_team'));
+		this.playerTeamRoleHistory(startingRolesGames, 'role', 'starting', this.lang.getLine('stat_starting_role'));
+		this.playerTeamRoleHistory(endingRolesGames, 'role', 'ending', this.lang.getLine('stat_ending_role'));
 
 		$('.player-stats-table-container').removeClass('d-none');
 
@@ -169,7 +175,7 @@ export default class Stats {
 		$('.player-games-all tbody').html('').append(allGamesTable);
 	}
 
-	playerTeamRoleHistory(games, sectionTitle) {
+	playerTeamRoleHistory(games, teamOrRole, startingEnding, sectionTitle) {
 		let allTables = [];
 
 		let title = new ABuilder(
@@ -187,6 +193,8 @@ export default class Stats {
 				,
 				teamRole
 			);
+
+			let classes = 'table-responsive ' + 'table-' + startingEnding + '-' + teamOrRole + '-' + teamRole;
 
 			let thead = new ABuilder(
 				'thead',
@@ -216,9 +224,9 @@ export default class Stats {
 
 			let gamesForRoleOrTeam = [];
 
-			let startingGames = games[teamRole];
+			let arrGames = games[teamRole];
 
-			for (let gameLine of startingGames) {
+			for (let gameLine of arrGames) {
 
 				let tds = [];
 
@@ -276,16 +284,20 @@ export default class Stats {
 			}
 
 			let gameTable = new ABuilder(
-				'table',
-				{'class': 'table table-hover table-striped table-bordered player-stats-table'},
-				[
-					thead,
-					new ABuilder(
-						'tbody',
-						{},
-						gamesForRoleOrTeam
-					)
-				]
+				'div',
+				{'class': classes},
+				new ABuilder(
+					'table',
+					{'class': 'table table-hover table-striped table-bordered player-stats-table'},
+					[
+						thead,
+						new ABuilder(
+							'tbody',
+							{},
+							gamesForRoleOrTeam
+						)
+					]
+				)
 			);
 
 			allTables.push(teamRoleTitle);
@@ -314,6 +326,23 @@ export default class Stats {
 
 		$('.player-stats-charts-container').removeClass('d-none');
 
+		setTimeout(() => {
+
+			$('.highcharts-point').mouseover();
+
+			$('.highcharts-label').each((index, element) => {
+
+				let tooltip = $(element);
+				let path = tooltip.find('path');
+
+				tooltip
+					.attr({transform: 'translate(5000,5000)'})
+					.prepend(path);
+
+			});
+
+		}, 1000);
+
 	}
 
 	playerGlobalCharts(stats) {
@@ -335,14 +364,6 @@ export default class Stats {
 			''
 		);
 
-		let statTitle = new ABuilder(
-			'h2',
-			{
-				'class': 'text-center',
-			},
-			this.lang.getLine('stat_chart_global')
-		);
-		
 		let chartTitle = new ABuilder(
 			'h3',
 			{
@@ -351,124 +372,141 @@ export default class Stats {
 			this.lang.getLine('stat_chart_win_ratio')
 		);
 
-		$('.player-stats-charts-container')
-			.append(statTitle)
+		$('.player-global-stats-container')
 			.append(
-			chartRow.append(
-				chartContainer
-			)
-		);
+				chartRow.append(
+					chartContainer
+				)
+			);
 
-		Highcharts.chart('global-chart-win-container', {
-			chart: {
-				plotBackgroundColor: 'transparent',
-				plotBorderWidth: 1,
-				plotShadow: true,
-				type: 'pie'
-			},
-			title: {
-				text: ''
-			},
-			tooltip: {
-				pointFormat: '{point.y} ({point.percentage:.1f}%)'
-			},
-			plotOptions: {
-				pie: {
-					allowPointSelect: true,
-					cursor: 'pointer',
-					dataLabels: {
-						enabled: false,
-					}
-				}
-			},
-			series: [{
-				name: this.lang.getLine('stat_chart_ratio'),
-				colorByPoint: true,
-				data: [{
-					name: this.lang.getLine('stat_wins'),
-					color: $('.hidden-success').css('background-color'),
-					y: stats.wins,
-				}, {
-					name: this.lang.getLine('stat_losses'),
-					color: $('.hidden-danger').css('background-color'),
-					y: stats.losses,
-				}
-				]
-			}]
-		});
+		let data = [
+			{
+				name: this.lang.getLine('stat_wins'),
+				color: $('.hidden-success').css('background-color'),
+				y: stats.wins,
+			}, {
+				name: this.lang.getLine('stat_losses'),
+				color: $('.hidden-danger').css('background-color'),
+				y: stats.losses,
+			}
+		];
+
+		this.playerChart(data, 'global-chart-win-container');
 
 		chartContainer.prepend(chartTitle)
 
 	}
 
 	playerTeamCharts(stats, endingStarting) {
-		let globalRow = $('.player-chart-global-row');
-		
-		let id = endingStarting === 'starting' ? 'global-chart-starting-team-container' : 'global-chart-ending-team-container';
+		/*
+		 * teams games ratio
+		 */
 
-		let chartTitle = new ABuilder(
+		let globalRow = $('.player-chart-global-row');
+
+		let gameStatsId = 'global-chart-' + endingStarting + '-team-container';
+
+		let gamesStatsChartTitle = new ABuilder(
 			'h3',
 			{
 				'class': 'text-center',
 			},
-			endingStarting === 'starting' ? this.lang.getLine('stat_chart_starting_team_ratio') :this.lang.getLine('stat_chart_ending_team_ratio') 
+			this.lang.getLine('stat_chart_' + endingStarting + '_team_ratio')
 		);
 
-		let chartContainer = new ABuilder(
+		let gameStatsChartContainer = new ABuilder(
 			'div',
 			{
-				'id': id,
+				'id': gameStatsId,
 				'class': 'player-chart-container col-sm-6 col-md-6 col-lg-4',
 			},
 			''
 		);
 
-		globalRow.append(chartContainer);
-		
+		globalRow.append(gameStatsChartContainer);
 
-		Highcharts.chart(id, {
-			chart: {
-				plotBackgroundColor: 'transparent',
-				plotBorderWidth: 1,
-				plotShadow: true,
-				type: 'pie'
-			},
-			title: {
-				text: ''
-			},
-			tooltip: {
-				pointFormat: '{point.y} ({point.percentage:.1f}%)'
-			},
-			plotOptions: {
-				pie: {
-					allowPointSelect: true,
-					cursor: 'pointer',
-					dataLabels: {
-						enabled: false,
+		let gameStatsData = [
+			{
+				name: this.lang.getLine('stat_chart_team_villageois'),
+				color: $('.hidden-info').css('background-color'),
+				y: stats.games_villageois,
+			}, {
+				name: this.lang.getLine('stat_chart_team_loup'),
+				color: $('.hidden-dark').css('background-color'),
+				y: stats.games_loup,
+			}, {
+				name: this.lang.getLine('stat_chart_team_tanneur'),
+				color: $('.hidden-warning').css('background-color'),
+				y: stats.games_tanneur,
+			}
+		];
+
+		this.playerChart(gameStatsData, gameStatsId);
+
+		gameStatsChartContainer.prepend(gamesStatsChartTitle);
+
+
+		/*
+		 * win ratio by team (starting and ending)
+		 */
+
+		for (let team of this.teams) {
+
+			if (stats['games_' + team] > 0) {
+
+				let ratioRow = new ABuilder(
+					'div',
+					{
+						'class': 'row player-chart-team-' + team + '-win-ratio-row',
+					},
+					''
+				);
+
+				let tableClass = '.table-' + endingStarting + '-team-' + team;
+
+				let teamStatsId = 'ratio-chart-' + endingStarting + '-team-' + team + '-container';
+
+				let ratioChartContainer = new ABuilder(
+					'div',
+					{
+						'id': teamStatsId,
+						'class': 'player-chart-container col-sm-12 col-md-12 col-lg-12',
+					},
+					''
+				);
+
+				let chartTitle = new ABuilder(
+					'h3',
+					{
+						'class': 'text-center',
+					},
+					this.lang.getLine('stat_chart_win_ratio')
+				);
+				
+				ratioRow
+					.append(ratioChartContainer)
+					.insertAfter(tableClass);
+
+
+				let data = [
+					{
+						name: this.lang.getLine('stat_wins'),
+						color: $('.hidden-success').css('background-color'),
+						y: stats['wins_' + team],
+					}, {
+						name: this.lang.getLine('stat_losses'),
+						color: $('.hidden-danger').css('background-color'),
+						y: stats['losses_' + team],
 					}
-				}
-			},
-			series: [{
-				name: this.lang.getLine('stat_chart_ratio'),
-				colorByPoint: true,
-				data: [{
-					name: this.lang.getLine('stat_chart_team_villageois'),
-					color: $('.hidden-info').css('background-color'),
-					y: stats.games_villageois,
-				}, {
-					name: this.lang.getLine('stat_chart_team_loup'),
-					color: $('.hidden-dark').css('background-color'),
-					y: stats.games_loup,
-				}, {
-					name: this.lang.getLine('stat_chart_team_tanneur'),
-					color: $('.hidden-warning').css('background-color'),
-					y: stats.games_tanneur,
-				}
-				]
-			}]
-		});
+				];
 
-		chartContainer.prepend(chartTitle)
+				this.playerChart(data, teamStatsId);
+
+				ratioChartContainer.prepend(chartTitle);
+
+			}
+		}
+
 	}
 
 	playerRoleCharts(stats, endingStarting) {
@@ -481,7 +519,7 @@ export default class Stats {
 			{
 				'class': 'text-center',
 			},
-			endingStarting === 'starting' ? this.lang.getLine('stat_chart_starting_role_ratio') :this.lang.getLine('stat_chart_ending_role_ratio')
+			endingStarting === 'starting' ? this.lang.getLine('stat_chart_starting_role_ratio') : this.lang.getLine('stat_chart_ending_role_ratio')
 		);
 
 		let chartContainer = new ABuilder(
@@ -494,21 +532,83 @@ export default class Stats {
 		);
 
 		globalRow.append(chartContainer);
-		
+
 		let data = [];
-		
-		for(let role in stats){
-			
+
+		for (let role in stats) {
+
 			let roleStat = stats[role];
 			data.push({
-				name : role.trim().charAt(0).toUpperCase() + role.trim().slice(1),
-				y : roleStat.games
+				name: role.trim().charAt(0).toUpperCase() + role.trim().slice(1),
+				y: roleStat.games
 			});
+
+
+
+
+
+			let ratioRow = new ABuilder(
+				'div',
+				{
+					'class': 'row player-chart-role-' + role + '-win-ratio-row',
+				},
+				''
+			);
+
+			let tableClass = '.table-' + endingStarting + '-role-' + role;
+
+			let roleStatsId = 'ratio-chart-' + endingStarting + '-role-' + role + '-container';
+
+			let ratioChartContainer = new ABuilder(
+				'div',
+				{
+					'id': roleStatsId,
+					'class': 'player-chart-container col-sm-12 col-md-12 col-lg-12',
+				},
+				''
+			);
+
+			let chartTitle = new ABuilder(
+				'h3',
+				{
+					'class': 'text-center',
+				},
+				this.lang.getLine('stat_chart_win_ratio')
+			);
+
+			ratioRow
+				.append(ratioChartContainer)
+				.insertAfter(tableClass);
+
+
+			let dataRole = [
+				{
+					name: this.lang.getLine('stat_wins'),
+					color: $('.hidden-success').css('background-color'),
+					y: roleStat.wins,
+				}, {
+					name: this.lang.getLine('stat_losses'),
+					color: $('.hidden-danger').css('background-color'),
+					y: roleStat.losses,
+				}
+			];
+
+			this.playerChart(dataRole, roleStatsId);
+
+			ratioChartContainer.prepend(chartTitle)
 			
+
 		}
 
 
-		Highcharts.chart(id, {
+		this.playerChart(data, id);
+
+		chartContainer.prepend(chartTitle)
+	}
+
+	playerChart(data, container) {
+
+		Highcharts.chart(container, {
 			chart: {
 				plotBackgroundColor: 'transparent',
 				plotBorderWidth: 1,
@@ -531,16 +631,10 @@ export default class Stats {
 				}
 			},
 			series: [{
-				name: this.lang.getLine('stat_chart_ratio'),
 				colorByPoint: true,
 				data: data
 			}]
 		});
-
-		chartContainer.prepend(chartTitle)
-	}
-
-	playerCharts(stats, sectionTitle, container) {
 
 	}
 
