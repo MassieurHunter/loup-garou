@@ -255,59 +255,35 @@ class Statistics_model extends MY_Model
 			'all'           => [
 				'games'          => 0,
 				'wins'           => 0,
-				'percent_wins'   => '-',
 				'losses'         => 0,
-				'percent_losses' => '-',
 			],
 			'startingTeams' => [
-				'games'                     => 0,
-				'games_loup'                => 0,
-				'games_tanneur'             => 0,
-				'games_villageois'          => 0,
-				'wins'                      => 0,
-				'wins_loup'                 => 0,
-				'wins_tanneur'              => 0,
-				'wins_villageois'           => 0,
-				'percent_games_loup'        => 0,
-				'percent_games_tanneur'     => 0,
-				'percent_games_villageois'  => 0,
-				'percent_wins'              => 0,
-				'percent_wins_loup'         => 0,
-				'percent_wins_tanneur'      => 0,
-				'percent_wins_villageois'   => 0,
-				'losses'                    => 0,
-				'losses_loup'               => 0,
-				'losses_tanneur'            => 0,
-				'losses_villageois'         => 0,
-				'percent_losses'            => 0,
-				'percent_losses_loup'       => 0,
-				'percent_losses_tanneur'    => 0,
-				'percent_losses_villageois' => 0,
+				'games'             => 0,
+				'games_loup'        => 0,
+				'games_tanneur'     => 0,
+				'games_villageois'  => 0,
+				'wins'              => 0,
+				'wins_loup'         => 0,
+				'wins_tanneur'      => 0,
+				'wins_villageois'   => 0,
+				'losses'            => 0,
+				'losses_loup'       => 0,
+				'losses_tanneur'    => 0,
+				'losses_villageois' => 0,
 			],
 			'endingTeams'   => [
-				'games'                     => 0,
-				'games_loup'                => 0,
-				'games_tanneur'             => 0,
-				'games_villageois'          => 0,
-				'wins'                      => 0,
-				'wins_loup'                 => 0,
-				'wins_tanneur'              => 0,
-				'wins_villageois'           => 0,
-				'percent_games_loup'        => 0,
-				'percent_games_tanneur'     => 0,
-				'percent_games_villageois'  => 0,
-				'percent_wins'              => 0,
-				'percent_wins_loup'         => 0,
-				'percent_wins_tanneur'      => 0,
-				'percent_wins_villageois'   => 0,
-				'losses'                    => 0,
-				'losses_loup'               => 0,
-				'losses_tanneur'            => 0,
-				'losses_villageois'         => 0,
-				'percent_losses'            => 0,
-				'percent_losses_loup'       => 0,
-				'percent_losses_tanneur'    => 0,
-				'percent_losses_villageois' => 0,
+				'games'             => 0,
+				'games_loup'        => 0,
+				'games_tanneur'     => 0,
+				'games_villageois'  => 0,
+				'wins'              => 0,
+				'wins_loup'         => 0,
+				'wins_tanneur'      => 0,
+				'wins_villageois'   => 0,
+				'losses'            => 0,
+				'losses_loup'       => 0,
+				'losses_tanneur'    => 0,
+				'losses_villageois' => 0,
 			],
 			'startingRoles' => [],
 			'endingRoles'   => [],
@@ -589,20 +565,16 @@ class Statistics_model extends MY_Model
 
 		if (!isset($playerStats['startingRoles'][$startingRoleName])) {
 			$playerStats['startingRoles'][$startingRoleName] = [
-				'games'         => 0,
-				'wins'          => 0,
-				'percent_win'   => 0,
-				'losses'        => 0,
-				'percent_loose' => 0,
+				'games'  => 0,
+				'wins'   => 0,
+				'losses' => 0,
 			];
 		}
 		if (!isset($playerStats['endingRoles'][$endingRoleName])) {
 			$playerStats['endingRoles'][$endingRoleName] = [
-				'games'         => 0,
-				'wins'          => 0,
-				'percent_win'   => 0,
-				'losses'        => 0,
-				'percent_loose' => 0,
+				'games'  => 0,
+				'wins'   => 0,
+				'losses' => 0,
 			];
 		}
 
@@ -641,30 +613,6 @@ class Statistics_model extends MY_Model
 			$playerStartingTeamStats['losses_' . $startingTeam]++;
 			$playerEndingTeamStats['losses']++;
 			$playerEndingTeamStats['losses_' . $endingTeam]++;
-
-		}
-
-		$playerAllStats['percent_wins'] = round($playerAllStats['wins'] / max($playerAllStats['games'], 1) * 100, 2);
-		$playerStartingRoleStats['percent_wins'] = round($playerStartingRoleStats['wins'] / max($playerStartingRoleStats['games'], 1) * 100, 2);
-		$playerEndingRoleStats['percent_wins'] = round($playerEndingRoleStats['wins'] / max($playerEndingRoleStats['games'], 1) * 100, 2);
-		$playerStartingTeamStats['percent_wins'] = round($playerStartingTeamStats['wins'] / max($playerStartingTeamStats['games'], 1) * 100, 2);
-		$playerEndingTeamStats['percent_wins'] = round($playerEndingTeamStats['wins'] / max($playerEndingTeamStats['games'], 1) * 100, 2);
-
-		$playerAllStats['percent_losses'] = round($playerAllStats['losses'] / max($playerAllStats['games'], 1) * 100, 2);
-		$playerStartingRoleStats['percent_losses'] = round($playerStartingRoleStats['losses'] / max($playerStartingRoleStats['games'], 1) * 100, 2);
-		$playerEndingRoleStats['percent_losses'] = round($playerEndingRoleStats['losses'] / max($playerEndingRoleStats['games'], 1) * 100, 2);
-		$playerStartingTeamStats['percent_losses'] = round($playerStartingTeamStats['losses'] / max($playerStartingTeamStats['games'], 1) * 100, 2);
-		$playerEndingTeamStats['percent_losses'] = round($playerEndingTeamStats['losses'] / max($playerEndingTeamStats['games'], 1) * 100, 2);
-
-		foreach ($teams as $team) {
-
-			$playerStartingTeamStats['percent_games_' . $team] = round($playerStartingTeamStats['games_' . $team] / max($playerStartingTeamStats['games'], 1) * 100, 2);
-			$playerStartingTeamStats['percent_wins_' . $team] = round($playerStartingTeamStats['wins_' . $team] / max($playerStartingTeamStats['games_' . $team], 1) * 100, 2);
-			$playerStartingTeamStats['percent_losses_' . $team] = round($playerStartingTeamStats['losses_' . $team] / max($playerStartingTeamStats['games_' . $team], 1) * 100, 2);
-
-			$playerEndingTeamStats['percent_games_' . $team] = round($playerEndingTeamStats['games_' . $team] / max($playerEndingTeamStats['games'], 1) * 100, 2);
-			$playerEndingTeamStats['percent_wins_' . $team] = round($playerEndingTeamStats['wins_' . $team] / max($playerEndingTeamStats['games_' . $team], 1) * 100, 2);
-			$playerEndingTeamStats['percent_losses_' . $team] = round($playerEndingTeamStats['losses_' . $team] / max($playerEndingTeamStats['games_' . $team], 1) * 100, 2);
 
 		}
 

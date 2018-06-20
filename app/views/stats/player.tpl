@@ -28,6 +28,15 @@
 
 <div class="player-stats-charts-container d-none"></div>
 
+<div class="d-none">
+	<div class="alert alert-primary hidden-primary" role="alert"></div>
+	<div class="alert alert-success hidden-success" role="alert"></div>
+	<div class="alert alert-info hidden-info" role="alert"></div>
+	<div class="alert alert-danger hidden-danger" role="alert"></div>
+	<div class="alert alert-warning hidden-warning" role="alert"></div>
+	<div class="alert alert-dark hidden-dark" role="alert"></div>
+</div>
+
 <input type="hidden" value="{$playerUid}" class="player-uid-stat">
 
 {$footer}

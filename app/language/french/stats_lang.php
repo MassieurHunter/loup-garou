@@ -36,4 +36,11 @@ $lang['stat_win'] = 'Victoire';
 $lang['stat_loose'] = 'Défaite';
 
 $lang['stat_chart_global'] = 'Statistiques générales';
-$lang['stat_chart_ratio'] = 'Proportion';
+$lang['stat_chart_win_ratio'] = 'Proportion de victoire';
+$lang['stat_chart_starting_team_ratio'] = 'Équipes de départ';
+$lang['stat_chart_ending_team_ratio'] = 'Équipes en fin de nuit';
+$lang['stat_chart_team_loup'] = 'Loup';
+$lang['stat_chart_team_tanneur'] = 'Tanneur';
+$lang['stat_chart_team_villageois'] = 'Villageois';
+$lang['stat_chart_starting_role_ratio'] = 'Rôles de départ';
+$lang['stat_chart_ending_role_ratio'] = 'Rôles en fin de nuit';

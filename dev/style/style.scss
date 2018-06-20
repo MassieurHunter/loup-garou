@@ -71,3 +71,20 @@ ul {
 	}
 
 }
+
+.highcharts-plot-border, .highcharts-plot-background{
+	stroke: transparent !important;
+}
+
+.player-stats-charts-container{
+	.row{
+		
+		margin-bottom: 3rem;
+		
+		div{
+			
+			height: 30rem;
+			
+		}
+	}
+}
