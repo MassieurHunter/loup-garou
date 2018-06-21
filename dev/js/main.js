@@ -8,7 +8,6 @@ import PlayerModel from './models/PlayerModel';
 import LangModel from "./models/LangModel";
 import $ from 'jquery';
 import * as io from 'socket.io-client';
-import ABuilder from "./tools/ABuilder";
 
 let loupGarou = {
 
@@ -351,7 +350,7 @@ let loupGarou = {
 	stats() {
 
 		setTimeout(() => {
-			this.stats = new Stats(this.lang);
+			let stats = new Stats(this.lang);
 		}, 2000);
 
 	},

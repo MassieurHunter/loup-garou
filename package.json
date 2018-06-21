@@ -44,6 +44,8 @@
     "bootstrap": "^4.1.1",
     "bootswatch": "^4.1.1",
     "child_process": "^1.0.2",
+    "datatables.net": "^1.10.18",
+    "datatables.net-bs4": "^1.10.18",
     "express": "^4.16.3",
     "highcharts": "^6.1.0",
     "jquery": "^3.3.1",
