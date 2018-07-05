@@ -3,6 +3,7 @@ import ABuilder from "../tools/ABuilder";
 import $ from "jquery";
 import Highcharts from 'highcharts';
 import gridLight from 'highcharts/themes/grid-light';
+import 'datatables.net';
 
 export default class Stats {
 
@@ -20,6 +21,21 @@ export default class Stats {
 
 		this.overallStats();
 		this.renderPlayer();
+
+		setTimeout(() => {
+			$('table').each((index, element) => {
+
+				let table = $(element);
+
+				table.DataTable({
+					searching : false,
+					paging : false,
+					info : false,
+				});
+
+			});
+
+		}, 1500);
 	}
 
 	overallStats() {
@@ -194,7 +210,7 @@ export default class Stats {
 				teamRole
 			);
 
-			let classes = 'table-responsive ' + 'table-' + startingEnding + '-' + teamOrRole + '-' + teamRole;
+			let classes = 'table-responsive ' + 'table-' + startingEnding + '-' + teamOrRole + '-' + teamRole.replace(/[^a-z]+/gi, '-').toLowerCase();
 
 			let thead = new ABuilder(
 				'thead',
@@ -482,7 +498,7 @@ export default class Stats {
 					},
 					this.lang.getLine('stat_chart_win_ratio')
 				);
-				
+
 				ratioRow
 					.append(ratioChartContainer)
 					.insertAfter(tableClass);
@@ -544,20 +560,17 @@ export default class Stats {
 			});
 
 
-
-
-
 			let ratioRow = new ABuilder(
 				'div',
 				{
-					'class': 'row player-chart-role-' + role + '-win-ratio-row',
+					'class': 'row player-chart-role-' + role.replace(/[^a-z]+/gi, '-').toLowerCase() + '-win-ratio-row',
 				},
 				''
 			);
 
-			let tableClass = '.table-' + endingStarting + '-role-' + role;
+			let tableClass = '.table-' + endingStarting + '-role-' + role.replace(/[^a-z]+/gi, '-').toLowerCase();
 
-			let roleStatsId = 'ratio-chart-' + endingStarting + '-role-' + role + '-container';
+			let roleStatsId = 'ratio-chart-' + endingStarting + '-role-' + role.replace(/[^a-z]+/gi, '-').toLowerCase() + '-container';
 
 			let ratioChartContainer = new ABuilder(
 				'div',
@@ -596,10 +609,8 @@ export default class Stats {
 			this.playerChart(dataRole, roleStatsId);
 
 			ratioChartContainer.prepend(chartTitle)
-			
 
 		}
-
 
 		this.playerChart(data, id);
 
@@ -607,7 +618,7 @@ export default class Stats {
 	}
 
 	playerChart(data, container) {
-
+		
 		Highcharts.chart(container, {
 			chart: {
 				plotBackgroundColor: 'transparent',
