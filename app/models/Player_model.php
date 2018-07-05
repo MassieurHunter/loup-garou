@@ -314,7 +314,7 @@ class Player_model extends MY_Model
 
 				if (!$game->isFinished()) {
 
-					if ($game->getNbPlayers() < $game->getMaxPlayers()) {
+					if ($game->getNbPlayers() < $game->getMaxPlayers() || $this->isInGame($game)) {
 
 						$game->addPlayer($this);
 						$success = true;
@@ -344,6 +344,17 @@ class Player_model extends MY_Model
 			'message' => $message,
 		];
 
+	}
+
+	/**
+	 * @param Game_model $game
+	 * @return bool
+	 */
+	public function isInGame(Game_model $game): bool {
+		$arrPlayers = $game->getRealPlayers();
+
+
+		return isset($arrPlayers[$this->getPlayerUid()]);
 	}
 
 	/**
