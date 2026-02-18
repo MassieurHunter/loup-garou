@@ -1,3 +1,4 @@
+import { io } from 'socket.io-client';
 import ABuilder from './ABuilder';
 
 class Ajax {
@@ -179,7 +180,7 @@ class Ajax {
 				case "socketMessage":
 					let getUrl = window.location;
 					let baseUrl = getUrl.protocol + "//" + getUrl.host;
-					let socket = io.connect(baseUrl + ':3000');
+					let socket = io(baseUrl + ':3000');
 					socket.emit(action.message, action.params);
 					break;
 

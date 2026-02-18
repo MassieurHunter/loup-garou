@@ -10,7 +10,13 @@ let ssl_options = {
 };
 
 let server = https.createServer(ssl_options);
-let io = require('socket.io').listen(server);
+const { Server } = require('socket.io');
+let io = new Server(server, {
+	cors: {
+		origin: true,
+		credentials: true
+	}
+});
 let gamesPlayersForStarting = {};
 let gamesPlayersVoted = {};
 let gamesPlayersWithRoles = {};
@@ -19,7 +25,7 @@ let gamesProgress = {};
 
 const {exec} = require('child_process');
 
-io.sockets.on('connection', (socket) => {
+io.on('connection', (socket) => {
 
 	socket.emit('message', {
 		type: 'connection',

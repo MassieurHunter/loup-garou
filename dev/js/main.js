@@ -7,7 +7,7 @@ import RoleModel from './models/RoleModel';
 import PlayerModel from './models/PlayerModel';
 import LangModel from "./models/LangModel";
 import $ from 'jquery';
-import * as io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 let loupGarou = {
 
@@ -79,7 +79,7 @@ let loupGarou = {
 
 			let getUrl = window.location;
 			let baseUrl = getUrl.protocol + "//" + getUrl.host;
-			this.socket = io.connect(baseUrl + ':3000');
+			this.socket = io(baseUrl + ':3000');
 			this.socket.on('message', (message) => {
 				switch (message.type) {
 					case 'connection' :
