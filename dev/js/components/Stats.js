@@ -651,7 +651,15 @@ export default class Stats {
 
 	highchartsTheme() {
 
-		gridLight(Highcharts);
+		let applyTheme = gridLight;
+
+		if (typeof applyTheme !== 'function' && typeof gridLight.default === 'function') {
+			applyTheme = gridLight.default;
+		}
+
+		if (typeof applyTheme === 'function') {
+			applyTheme(Highcharts);
+		}
 
 	}
 
